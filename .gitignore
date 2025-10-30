@@ -1,0 +1,5 @@
+#vertelt Git wat het moet negeren
+venv/
+__pycache__/
+*.pyc
+.env

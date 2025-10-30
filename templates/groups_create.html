@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head><title>Nieuwe groep</title></head>
+<body>
+  <h2>Nieuwe groep aanmaken</h2>
+  <form method="post">
+    <div>
+      <label>Groepsnaam:</label>
+      <input type="text" name="name" required />
+    </div>
+    <div>
+      <label>Startdatum:</label>
+      <input type="date" name="start_date" required />
+    </div>
+    <div>
+      <label>Einddatum:</label>
+      <input type="date" name="end_date" required />
+    </div>
+    <button type="submit">Aanmaken</button>
+  </form>
+  <p><a href="{{ url_for('groups_list') }}">Terug</a></p>
+</body>
+</html>
