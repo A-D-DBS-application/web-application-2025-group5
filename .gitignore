@@ -1,6 +1,9 @@
 #vertelt Git wat het moet negeren
 env/
+venv/
+.venv/
+
 __pycache__/
 *.pyc
-.vscode/
+
 
