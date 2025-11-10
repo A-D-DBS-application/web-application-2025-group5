@@ -1,0 +1,18 @@
+# uitgaven (Milan)
+
+<h2>Uitgave toevoegen aan {{ group.name }}</h2>
+<form method="post">
+    Beschrijving: <input type="text" name="description"><br>
+    Totaal bedrag: <input type="number" step="0.01" name="total_amount"><br>
+    Betaald door:
+    <select name="paid_by">
+        {% for member in members %}
+            <option value="{{ member.user_id }}">{{ member.name }}</option>
+        {% endfor %}
+    </select><br>
+    <h3>Verdeel het bedrag:</h3>
+    {% for member in members %}
+        {{ member.name }}: <input type="number" step="0.01" name="share_{{ member.user_id }}"><br>
+    {% endfor %}
+    <input type="submit" value="Toevoegen">
+</form>
