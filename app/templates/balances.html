@@ -1,0 +1,10 @@
+<h2>Balans voor {{ group.name }}</h2>
+<table>
+  <tr><th>Naam</th><th>Balans</th></tr>
+  {% for bal in balances %}
+    <tr>
+      <td>{{ bal.name }}</td>
+      <td>{{ bal.saldo }}</td>
+    </tr>
+  {% endfor %}
+</table>

@@ -1,0 +1,74 @@
+<h2>Groep: {{ group.name }}</h2>
+
+<h3>Leden:</h3>
+<ul>
+  {% for member in members %}
+    <li>{{ member.users.name }}</li>
+  {% endfor %}
+</ul>
+
+<h3>Nieuwe uitgave toevoegen</h3>
+<form method="post">
+  Beschrijving: <input type="text" name="description"><br>
+  Totaal bedrag: <input type="number" step="0.01" name="total_amount"><br>
+  Betaald door:
+  <select name="paid_by">
+    {% for member in members %}
+      {% set uid = member['users']['user_id'] if member.get('users') else member['user_id'] %}
+      <option value="{{ uid }}">{{ member['users']['name'] if member.get('users') else member['name'] }}</option>
+    {% endfor %}
+  </select><br>
+  <h4>Verdeling over leden:</h4>
+  {% for member in members %}
+    {% set uid = member['users']['user_id'] if member.get('users') else member['user_id'] %}
+    {{ member['users']['name'] if member.get('users') else member['name'] }}: <input type="number" step="0.01" name="share_{{ uid }}"><br>
+  {% endfor %}
+  <input type="submit" value="Toevoegen">
+</form>
+
+<h3>Alle uitgaven:</h3>
+<ul>
+  {% for expense in expenses %}
+    <li><strong>{{ expense['description'] }}</strong> - €{{ expense['total_amount'] }} door gebruiker-id {{ expense['paid_by'] }}</li>
+  {% endfor %}
+</ul>
+
+<h3>Totaal uitgaven: €{{ total }}</h3>
+
+<h4>Totaal betaald per persoon:</h4>
+<ul>
+  {% for member in members %}
+    <li>
+      {{ member.users.name }}: €{{ '%.2f' % paid[member.users.user_id] }}
+    </li>
+  {% endfor %}
+</ul>
+
+<h4>Saldo per persoon:</h4>
+<ul>
+  {% for member in members %}
+    <li>
+      {{ member.users.name }}:
+      {% if saldo[member.users.user_id] > 0 %}
+        krijgt €{{ '%.2f' % saldo[member.users.user_id] }} terug
+      {% elif saldo[member.users.user_id] < 0 %}
+        moet €{{ '%.2f' % (-saldo[member.users.user_id]) }} betalen
+      {% else %}
+        is quitte
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>
+
+<h4>Wie moet aan wie betalen:</h4>
+<ul>
+  {% for betaling in settlements %}
+    <li>{{ betaling.from }} moet €{{ '%.2f' % betaling.amount }} betalen aan {{ betaling.to }}</li>
+  {% endfor %}
+</ul>
+
+
+
+
+
+<a href="{{ url_for('add_member', group_id=group.group_id) }}">Lid toevoegen</a>
