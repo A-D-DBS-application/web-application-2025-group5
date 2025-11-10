@@ -99,10 +99,9 @@ def group_detail(group_id):
 
     # Totaal verschuldigd per persoon (via shares)
     verschuldigd = {member['users']['user_id']: 0 for member in members}
-    print("Shares per expense:", expense['description'], expense['shares'], flush=True)
-    print("Verschuldigd nu:", verschuldigd, flush=True)
-
     for expense in expenses:
+        print("Shares per expense:", expense['description'], expense.get('shares', {}), flush=True)
+        print("Verschuldigd nu:", verschuldigd, flush=True)
         for uid, amount in expense['shares'].items():
             verschuldigd[int(uid)] += float(amount)
 
