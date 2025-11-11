@@ -139,6 +139,8 @@ def group_detail(group_id):
         if creditor['bedrag'] < 0.01:
             j += 1
 
+    uid_naam = {member['users']['user_id']: member['users']['name'] for member in members}
+
     return render_template(
         "group_detail.html",
         group=group,
@@ -148,7 +150,8 @@ def group_detail(group_id):
         paid=paid,
         verschuldigd=verschuldigd,
         saldo=saldo,
-        settlements=settlements
+        settlements=settlements,
+        uid_naam=uid_naam 
     )
 
 
