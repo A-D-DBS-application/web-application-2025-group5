@@ -3,27 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - FairSplit+</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=2">
+  <title>Login • FairSplit+</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=3">
 </head>
 <body>
-  <h2>Login</h2>
-  <form method="post">
-    <label for="username">Gebruikersnaam:</label>
-    <input id="username" type="text" name="username" required>
-    <button type="submit">Login</button>
-  </form>
+  <!-- Login-container voor gecentreerde layout -->
+  <div class="login-container">
+    <h2>Login</h2>
 
-  {# Flash-berichten tonen, bv. "Je moet eerst inloggen." #}
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      <ul class="flash-messages">
-        {% for msg in messages %}
-          <li>{{ msg }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-  {% endwith %}
+    <!-- Flash-berichten -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flash-messages">
+          {% for msg in messages %}
+            <li>{{ msg }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Inlogformulier -->
+    <form method="post">
+      <label for="username">Gebruikersnaam:</label>
+      <input id="username" type="text" name="username" placeholder="Voer je naam in..." required>
+      <button type="submit">Inloggen</button>
+    </form>
+  </div>
 </body>
 </html>
 

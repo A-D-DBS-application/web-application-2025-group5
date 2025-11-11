@@ -1,206 +1,147 @@
-/* ===== Login Pagina Stijl ===== */
+/* =======================================
+   FairSplit+ Login Pagina (Responsive)
+   ======================================= */
 
-/* Basis reset en strakke fonts */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
+/* Basis reset */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
+/* Universele font + anti-aliasing */
+html {
+  font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ====== Pagina ====== */
 body {
-    min-height: 100vh;
-    display: flex;
-    /* warmer bruin-grijs-wit tint */
-    background-color: #ECE7E0;
-    font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    position: relative;
-    padding: 0;
-    color: #1F2428;
-}
-
-/* FairSplit+ logo in linkerbovenhoek */
-.brand-logo {
-    position: absolute;
-    top: 170px; /* iets verder naar onder */
-    left: 80px; /* iets naar rechts */
-    font-family: 'Poppins', sans-serif; /* strakker lettertype */
-    font-weight: 700;
-    font-size: 54px; /* iets groter */
-    color: #111217;
-    letter-spacing: 0.5px;
-    line-height: 1;
-}
-
-/* Main content met login naar rechts */
-.main-content {
-    width: 100%;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding-right: 10%;
-}
-
-/* Login container */
-.login-container {
-    /* iets warmere achtergrond voor het formulier */
-    background-color: #FFFBF4;
-    padding: 44px;
-    border-radius: 14px;
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.08);
-    width: 100%;
-    max-width: 420px;
-    margin-right: 40px;
-}
-
-/* Login titel */
-h2 {
-    color: #111217;
-    font-size: 32px; /* groter */
-    margin-bottom: 28px;
-    text-align: center;
-    font-weight: 700; /* strakker/dikker */
-    letter-spacing: 0.3px;
-}
-
-/* Form styling */
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-/* Label styling */
-label {
-    color: #1F2428;
-    font-size: 16px; /* groter */
-    font-weight: 600;
-    margin-bottom: 8px;
-    display: block;
-    letter-spacing: 0.2px;
-}
-
-/* Input velden */
-input[type="text"] {
-    width: 100%;
-    padding: 14px 16px;
-    border: 1px solid #D9D3CA;
-    border-radius: 10px;
-    font-size: 17px; /* iets groter, niet te veel */
-    background: #FFFBF4;
-    color: #1F2428;
-    outline: none;
-    transition: border-color .2s, box-shadow .2s;
-}
-
-input[type="text"]:focus {
-    border-color: #B07A50;
-    box-shadow: 0 0 0 4px rgba(176,122,80,.16);
-}
-
-/* Specifiek: maak de gebruikersnaam-input net iets groter voor betere leesbaarheid */
-input#username {
-    font-size: 18px;
-    padding-top: 15px;
-    padding-bottom: 15px;
-}
-
-/* Login knop */
-button {
-    background-color: #2F4F3A; /* donkergroen */
-    color: white;
-    padding: 14px;
-    border: none;
-    border-radius: 10px;
-    font-size: 18px; /* groter */
-    font-weight: 700; /* strakker */
-    cursor: pointer;
-    transition: background-color .2s, transform .06s;
-}
-
-button:hover {
-    background-color: #263F2F; /* iets donkerder */
-}
-
-button:active {
-    transform: translateY(1px);
-}
-
-/* Flash berichten styling */
-.flash-messages {
-    list-style: none;
-    margin-top: 20px;
-    padding: 0;
-}
-
-.flash-messages li {
-    color: #d93025;
-    font-size: 14px;
-    text-align: center;
-    padding: 8px;
-    background-color: #fce8e6;
-    border-radius: 4px;
-    margin-top: 8px;
-}
-
-/* Label + Input */
-label {
-  margin-bottom: 6px;
-  font-weight: 600;
-  font-family: Manrope, sans-serif;
-  font-size: 15px;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ede8e2;
   color: #1F2428;
+  padding: 20px; /* voorkomt dat inhoud tegen schermrand plakt */
 }
 
+/* ====== Login container ====== */
+.login-container {
+  background-color: #FFFBF4;
+  padding: 36px;
+  border-radius: 14px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+/* ====== Titel ====== */
+h2 {
+  color: #111217;
+  font-size: 28px;
+  margin-bottom: 24px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+/* ====== Formulier ====== */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ====== Labels ====== */
+label {
+  color: #1F2428;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  text-align: left;
+}
+
+/* ====== Invoerveld ====== */
 input[type="text"] {
-  padding: 12px 14px;
-  margin-bottom: 18px;
+  width: 100%;
+  padding: 14px 16px;
   border: 1px solid #D9D3CA;
   border-radius: 10px;
-  font-size: 15px;
+  font-size: 16px;
   background: #FFFBF4;
   color: #1F2428;
   outline: none;
-  transition: border-color .2s, box-shadow .2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 input[type="text"]:focus {
   border-color: #B07A50;
-  box-shadow: 0 0 0 3px rgba(176,122,80,.22);
+  box-shadow: 0 0 0 4px rgba(176, 122, 80, 0.16);
 }
 
-/* ✅ Donkergroene knop */
+/* ====== Login-knop ====== */
 button {
-  background-color: #2F4F3A; /* donkergroen */
+  background-color: #2F4F3A;
   color: white;
+  padding: 14px;
   border: none;
-  padding: 12px;
   border-radius: 10px;
+  font-size: 17px;
+  font-weight: 700;
   cursor: pointer;
-  font-size: 16px;
-  font-family: Manrope, sans-serif;
-  font-weight: 600;
-  transition: background-color .2s, transform .06s;
+  transition: background-color 0.2s, transform 0.06s;
 }
 
 button:hover {
-  background-color: #263F2F; /* iets donkerder */
+  background-color: #263F2F;
 }
 
 button:active {
   transform: translateY(1px);
 }
 
-/* Flash messages */
+/* ====== Flash berichten ====== */
 .flash-messages {
-  list-style-type: none;
-  padding: 0;
+  list-style: none;
   margin-top: 20px;
-  color: #b24040;
+  padding: 0;
+}
+
+.flash-messages li {
+  color: #d93025;
   font-size: 14px;
   text-align: center;
+  padding: 8px;
+  background-color: #fce8e6;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+
+/* ====== 📱 Responsiveness ====== */
+@media (max-width: 480px) {
+  body {
+    padding: 10px;
+  }
+
+  .login-container {
+    padding: 28px 20px;
+    border-radius: 12px;
+    max-width: 100%;
+  }
+
+  h2 {
+    font-size: 24px;
+  }
+
+  input[type="text"],
+  button {
+    font-size: 15px;
+    padding: 12px;
+  }
 }
 
 
