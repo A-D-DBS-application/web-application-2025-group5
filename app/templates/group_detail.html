@@ -1,75 +1,161 @@
-<h2>Groep: {{ group.name }}</h2>
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ group.name }} - FairSplit+</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=2">
+</head>
 
-<h3>Leden:</h3>
-<ul>
-  {% for member in members %}
-  <li>{{ member.users.name }}</li>
-  {% endfor %}
-</ul>
+<body class="app-layout">
 
-<h3>Nieuwe uitgave toevoegen</h3>
-<form method="post">
-  Beschrijving: <input type="text" name="description"><br>
-  Totaal bedrag: <input type="number" step="0.01" name="total_amount"><br>
-  Betaald door:
-  <select name="paid_by">
-    {% for member in members %}
-    {% set uid = member['users']['user_id'] if member.get('users') else member['user_id'] %}
-    <option value="{{ uid }}">{{ member['users']['name'] if member.get('users') else member['name'] }}</option>
-    {% endfor %}
-  </select><br>
-  <h4>Verdeling over leden:</h4>
-  {% for member in members %}
-  {% set uid = member['users']['user_id'] if member.get('users') else member['user_id'] %}
-  {{ member['users']['name'] if member.get('users') else member['name'] }}: <input type="number" step="0.01"
-    name="share_{{ uid }}"><br>
-  {% endfor %}
-  <input type="submit" value="Toevoegen">
-</form>
+<header class="topbar topbar-wrap">
+    <div class="topbar-left">
+        <div class="app-logo-circle">F</div>
+        <div>
+            <div class="app-name">FairSplit+</div>
+            <div class="app-subtitle">Groep: {{ group.name }}</div>
+        </div>
+    </div>
 
-<h3>Alle uitgaven:</h3>
-<ul>
-  {% for expense in expenses %}
-  <li>
-    <strong>{{ expense['description'] }}</strong>
-    - €{{ expense['total_amount'] }}
-    door {{ uid_naam.get(expense['paid_by'] | int, 'onbekend') }}
-  </li>
-  {% endfor %}
-</ul>
+    <div class="topbar-right">
+        <a href="{{ url_for('add_member', group_id=group.group_id) }}" class="btn btn-primary">
+            + Lid toevoegen
+        </a>
 
-<h3>Totaal uitgaven: €{{ total }}</h3>
+        <a href="{{ url_for('balances_route', group_id=group.group_id) }}" class="btn btn-ghost">
+            Balans
+        </a>
 
-<h4>Totaal betaald per persoon:</h4>
-<ul>
-  {% for member in members %}
-  <li>
-    {{ member.users.name }}: €{{ '%.2f' % paid[member.users.user_id] }}
-  </li>
-  {% endfor %}
-</ul>
-
-<h4>Saldo per persoon:</h4>
-<ul>
-  {% for member in members %}
-  <li>
-    {{ member.users.name }}:
-    {% if saldo[member.users.user_id] > 0 %}
-    krijgt €{{ '%.2f' % saldo[member.users.user_id] }} terug
-    {% elif saldo[member.users.user_id] < 0 %} moet €{{ '%.2f' % (-saldo[member.users.user_id]) }} betalen {% else %} is
-      quitte {% endif %} </li>
-      {% endfor %}
-</ul>
-
-<h4>Wie moet aan wie betalen:</h4>
-<ul>
-  {% for betaling in settlements %}
-  <li>{{ betaling.from }} moet €{{ '%.2f' % betaling.amount }} betalen aan {{ betaling.to }}</li>
-  {% endfor %}
-</ul>
+        <a href="{{ url_for('groups_list') }}" class="btn btn-ghost">
+            Terug
+        </a>
+    </div>
+</header>
 
 
+<main class="page-content">
 
+    <section class="page-header">
+        <h1 class="page-title">{{ group.name }}</h1>
+        <p class="page-intro">Overzicht van leden, uitgaven en saldo’s</p>
+    </section>
 
+    <!-- Leden card -->
+    <div class="detail-card">
+        <h2 class="card-title">Leden</h2>
+        <ul class="styled-list">
+            {% for member in members %}
+                <li>{{ member.users.name }}</li>
+            {% endfor %}
+        </ul>
+    </div>
 
-<a href="{{ url_for('add_member', group_id=group.group_id) }}">Lid toevoegen</a>
+    <!-- Nieuwe uitgave toevoegen -->
+    <div class="detail-card">
+        <h2 class="card-title">Nieuwe uitgave toevoegen</h2>
+
+        <form method="post" class="form-layout">
+
+            <div class="form-group">
+                <label>Beschrijving</label>
+                <input type="text" name="description" required>
+            </div>
+
+            <div class="form-group">
+                <label>Totaal bedrag (€)</label>
+                <input type="number" step="0.01" name="total_amount" required>
+            </div>
+
+            <div class="form-group">
+                <label>Betaald door</label>
+                <select name="paid_by">
+                    {% for member in members %}
+                        {% set uid = member['users']['user_id'] if member.get('users') else member['user_id'] %}
+                        <option value="{{ uid }}">
+                            {{ member['users']['name'] if member.get('users') else member['name'] }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <h3 class="subsection-title">Verdeling over leden</h3>
+
+            {% for member in members %}
+                {% set uid = member['users']['user_id'] if member.get('users') else member['user_id'] %}
+                <div class="form-group">
+                    <label>
+                        {{ member['users']['name'] if member.get('users') else member['name'] }}
+                    </label>
+                    <input type="number" step="0.01" name="share_{{ uid }}">
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-primary">Uitgave toevoegen</button>
+
+        </form>
+    </div>
+
+    <!-- Alle uitgaven -->
+    <div class="detail-card">
+        <h2 class="card-title">Alle uitgaven</h2>
+
+        {% if expenses %}
+            <ul class="styled-list">
+                {% for expense in expenses %}
+                    <li>
+                        <strong>{{ expense['description'] }}</strong>
+                         – €{{ '%.2f' % expense['total_amount'] }}
+                         <span class="small-meta">
+                            (door {{ uid_naam.get(expense['paid_by'] | int, 'onbekend') }})
+                         </span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="empty-text">Nog geen uitgaven toegevoegd.</p>
+        {% endif %}
+    </div>
+
+    <!-- Samenvatting -->
+    <div class="detail-card">
+        <h2 class="card-title">Samenvatting</h2>
+
+        <p><strong>Totaal uitgaven:</strong> €{{ '%.2f' % total }}</p>
+
+        <h3 class="subsection-title">Totaal betaald per persoon</h3>
+        <ul class="styled-list">
+            {% for member in members %}
+                <li>{{ member.users.name }}: €{{ '%.2f' % paid[member.users.user_id] }}</li>
+            {% endfor %}
+        </ul>
+
+        <h3 class="subsection-title">Saldo per persoon</h3>
+        <ul class="styled-list">
+            {% for member in members %}
+                <li>
+                    <strong>{{ member.users.name }}:</strong>
+                    {% if saldo[member.users.user_id] > 0 %}
+                        krijgt €{{ '%.2f' % saldo[member.users.user_id] }} terug
+                    {% elif saldo[member.users.user_id] < 0 %}
+                        moet €{{ '%.2f' % (-saldo[member.users.user_id]) }} betalen
+                    {% else %}
+                        is quitte
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+
+        <h3 class="subsection-title">Wie moet aan wie betalen</h3>
+        <ul class="styled-list">
+            {% for betaling in settlements %}
+                <li>{{ betaling.from }} moet €{{ '%.2f' % betaling.amount }} betalen aan {{ betaling.to }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+</main>
+
+</body>
+</html>
+

@@ -1,10 +1,74 @@
-<h2>Balans voor {{ group.name }}</h2>
-<table>
-  <tr><th>Naam</th><th>Balans</th></tr>
-  {% for bal in balances %}
-    <tr>
-      <td>{{ bal.name }}</td>
-      <td>{{ bal.saldo }}</td>
-    </tr>
-  {% endfor %}
-</table>
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balans – {{ group.name }} | FairSplit+</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=2">
+</head>
+
+<body class="app-layout">
+
+    <!-- Topbar -->
+    <header class="topbar topbar-wrap">
+        <div class="topbar-left">
+            <div class="app-logo-circle">F</div>
+            <div>
+                <div class="app-name">FairSplit+</div>
+                <div class="app-subtitle">Balans: {{ group.name }}</div>
+            </div>
+        </div>
+
+        <div class="topbar-right">
+            <a href="{{ url_for('group_detail', group_id=group.group_id) }}" class="btn btn-ghost">
+                Terug naar groep
+            </a>
+        </div>
+    </header>
+
+    <main class="page-content">
+
+        <!-- Header tekst -->
+        <section class="page-header">
+            <h1 class="page-title">Balansoverzicht</h1>
+            <p class="page-intro">
+                Bekijk wat ieder groepslid moet betalen of terugkrijgt.
+            </p>
+        </section>
+
+        <!-- Balans card -->
+        <div class="detail-card">
+            <h2 class="card-title">Saldo per persoon</h2>
+
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>Naam</th>
+                        <th>Saldo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bal in balances %}
+                    <tr>
+                        <td>{{ bal.name }}</td>
+
+                        <td>
+                            {% if bal.saldo > 0 %}
+                                <span class="saldo-plus">+€{{ '%.2f' % bal.saldo }}</span>
+                            {% elif bal.saldo < 0 %}
+                                <span class="saldo-min">-€{{ '%.2f' % (-bal.saldo) }}</span>
+                            {% else %}
+                                <span class="saldo-zero">€0.00</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

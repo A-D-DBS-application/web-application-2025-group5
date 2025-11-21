@@ -1,23 +1,68 @@
 <!DOCTYPE html>
-<html>
-<head><title>Nieuwe groep</title></head>
-<body>
-  <h2>Nieuwe groep aanmaken</h2>
-  <form method="post">
-    <div>
-      <label>Groepsnaam:</label>
-      <input type="text" name="name" required />
-    </div>
-    <div>
-      <label>Startdatum:</label>
-      <input type="date" name="start_date" required />
-    </div>
-    <div>
-      <label>Einddatum:</label>
-      <input type="date" name="end_date" required />
-    </div>
-    <button type="submit">Aanmaken</button>
-  </form>
-  <p><a href="{{ url_for('groups_list') }}">Terug</a></p>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nieuwe groep - FairSplit+</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=2">
+</head>
+
+<body class="app-layout">
+
+    <!-- Topbar -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <div class="app-logo-circle">F</div>
+            <div>
+                <div class="app-name">FairSplit+</div>
+                <div class="app-subtitle">Groep aanmaken</div>
+            </div>
+        </div>
+
+        <div class="topbar-right">
+            <a href="{{ url_for('groups_list') }}" class="btn btn-ghost">Terug</a>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <main class="page-content">
+
+        <section class="page-header">
+            <h1 class="page-title">Nieuwe groep aanmaken</h1>
+            <p class="page-intro">
+                Vul de naam en de periode van je groep in. Je kunt jouw groep later altijd aanpassen.
+            </p>
+        </section>
+
+        <div class="form-card">
+            <form method="post" class="form-layout">
+
+                <div class="form-group">
+                    <label for="name">Groepsnaam</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-two-columns">
+                    <div class="form-group">
+                        <label for="start_date">Startdatum</label>
+                        <input type="date" id="start_date" name="start_date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="end_date">Einddatum</label>
+                        <input type="date" id="end_date" name="end_date" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">
+                    Groep aanmaken
+                </button>
+
+            </form>
+        </div>
+
+    </main>
+
 </body>
 </html>
+

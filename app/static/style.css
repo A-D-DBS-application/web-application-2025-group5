@@ -1,147 +1,496 @@
 /* =======================================
-   FairSplit+ Login Pagina (Responsive)
+   FairSplit+ — GLOBALE BASISSTYLING
    ======================================= */
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
-/* Basis reset */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Universele font + anti-aliasing */
 html {
-  font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+  font-family: 'Poppins', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ====== Pagina ====== */
 body {
+  color: #1F2428;
+}
+
+/* =======================================
+   LOGIN PAGINA
+   ======================================= */
+
+body.login-page {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: #ede8e2;
-  color: #1F2428;
-  padding: 20px; /* voorkomt dat inhoud tegen schermrand plakt */
+  padding: 20px;
 }
 
-/* ====== Login container ====== */
 .login-container {
-  background-color: #FFFBF4;
+  background: #FFFBF4;
   padding: 36px;
-  border-radius: 14px;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.12);
   width: 100%;
   max-width: 400px;
-  text-align: center;
 }
 
-/* ====== Titel ====== */
-h2 {
-  color: #111217;
-  font-size: 28px;
-  margin-bottom: 24px;
+.login-container h2 {
+  font-size: 30px;
   font-weight: 700;
-  letter-spacing: 0.3px;
-}
-
-/* ====== Formulier ====== */
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-/* ====== Labels ====== */
-label {
   color: #1F2428;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+label {
+  display: block;
+  text-align: left;
   font-size: 15px;
   font-weight: 600;
-  letter-spacing: 0.2px;
-  text-align: left;
+  margin-bottom: 6px;
 }
 
-/* ====== Invoerveld ====== */
 input[type="text"] {
   width: 100%;
   padding: 14px 16px;
-  border: 1px solid #D9D3CA;
+  background: #edf3ff;
   border-radius: 10px;
+  border: 1px solid #d5d7da;
   font-size: 16px;
-  background: #FFFBF4;
   color: #1F2428;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: 0.25s;
 }
 
 input[type="text"]:focus {
-  border-color: #B07A50;
-  box-shadow: 0 0 0 4px rgba(176, 122, 80, 0.16);
+  outline: none;
+  border-color: #2F4F3A;
+  box-shadow: 0 0 0 3px rgba(47, 79, 58, 0.25);
 }
 
-/* ====== Login-knop ====== */
 button {
-  background-color: #2F4F3A;
-  color: white;
+  width: 100%;
   padding: 14px;
+  background: #2F4F3A;
   border: none;
   border-radius: 10px;
   font-size: 17px;
   font-weight: 700;
+  color: white;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.06s;
+  margin-top: 10px;
+  transition: background 0.2s, transform 0.06s;
 }
 
 button:hover {
-  background-color: #263F2F;
+  background: #263F2F;
 }
 
 button:active {
   transform: translateY(1px);
 }
 
-/* ====== Flash berichten ====== */
-.flash-messages {
-  list-style: none;
-  margin-top: 20px;
-  padding: 0;
+/* =======================================
+   NA LOGIN — ALGEMENE APP LAYOUT
+   ======================================= */
+
+body.app-layout {
+  background: #F9F5F0;
+  min-height: 100vh;
+  padding: 20px;
 }
 
-.flash-messages li {
-  color: #d93025;
+/* =======================================
+   TOPBAR
+   ======================================= */
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.app-logo-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #2F4F3A;
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2F4F3A;
+}
+
+.app-subtitle {
+  font-size: 13px;
+  color: #6C6C6C;
+}
+
+.topbar-right {
+  display: flex;
+  gap: 8px;
+}
+
+/* =======================================
+   KNOPPEN
+   ======================================= */
+
+.btn {
+  padding: 10px 14px;
+  border-radius: 10px;
   font-size: 14px;
-  text-align: center;
-  padding: 8px;
-  background-color: #fce8e6;
-  border-radius: 4px;
-  margin-top: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* ====== 📱 Responsiveness ====== */
-@media (max-width: 480px) {
-  body {
-    padding: 10px;
-  }
+.btn-primary {
+  background: #2F4F3A;
+  color: white;
+  box-shadow: 0 3px 10px rgba(47, 79, 58, 0.15);
+}
 
-  .login-container {
-    padding: 28px 20px;
-    border-radius: 12px;
-    max-width: 100%;
-  }
+.btn-primary:hover {
+  background: #263F2F;
+}
 
-  h2 {
-    font-size: 24px;
-  }
+.btn-ghost {
+  border: 1px solid rgba(47,79,58,0.3);
+  background: transparent;
+  color: #2F4F3A;
+}
 
-  input[type="text"],
-  button {
+.btn-ghost:hover {
+  background: rgba(47,79,58,0.08);
+}
+
+/* =======================================
+   PAGINA HEADER
+   ======================================= */
+
+.page-content {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.page-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #2F4F3A;
+  margin-bottom: 6px;
+}
+
+.page-intro {
+  font-size: 14px;
+  color: #6C6C6C;
+  margin-bottom: 20px;
+}
+
+/* =======================================
+   GROUPS — CARD VIEW
+   ======================================= */
+
+.groups-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.group-card {
+  background: white;
+  padding: 16px;
+  border-radius: 16px;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid rgba(47,79,58,0.1);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  transition: 0.2s;
+}
+
+.group-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.12);
+}
+
+.group-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2F4F3A;
+  margin-bottom: 4px;
+}
+
+.group-dates {
+  font-size: 13px;
+  color: #8A8A8A;
+  margin-bottom: 10px;
+}
+
+.group-meta {
+  font-size: 13px;
+  color: #6C6C6C;
+  margin-bottom: 12px;
+}
+
+.group-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #2F4F3A;
+}
+
+.group-chevron {
+  font-size: 20px;
+  opacity: 0.7;
+}
+
+/* =======================================
+   RESPONSIVE GRID
+   ======================================= */
+
+@media (min-width: 600px) {
+  .groups-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .groups-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+/* =======================================
+   Verbeterde uitlijning "Jouw groepen"
+   ======================================= */
+
+.page-header {
+    text-align: center;        /* alles centreren */
+    margin-top: 20px;
+    margin-bottom: 28px;
+}
+
+.page-title {
+    font-size: 28px;
+}
+
+.page-intro {
     font-size: 15px;
-    padding: 12px;
-  }
+    max-width: 600px;          /* zodat de tekst niet te breed wordt */
+    margin: 0 auto;            /* centreren */
+    line-height: 1.5;
 }
 
+/* tekst onder de intro (geen groepen) */
+.no-groups-text {
+    font-size: 16px;
+    text-align: center;
+    margin-top: 20px;
+}
 
+.no-groups-text a {
+    display: inline-block;
+    margin-top: 6px;           /* link mooi eronder */
+    font-size: 16px;
+}
+/* =======================================
+   Form card (groepen aanmaken)
+   ======================================= */
+
+.form-card {
+    background: white;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(47, 79, 58, 0.08);
+    max-width: 600px;
+    margin: 0 auto 40px auto;
+}
+
+.form-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-weight: 600;
+    font-size: 15px;
+    color: #2F4F3A;
+}
+
+.form-group input {
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #D9D3CA;
+    font-size: 15px;
+    background: #FFFBF4;
+    transition: 0.25s ease;
+}
+
+.form-group input:focus {
+    border-color: #2F4F3A;
+    box-shadow: 0 0 0 3px rgba(47, 79, 58, 0.25);
+}
+
+.form-two-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .form-two-columns {
+        grid-template-columns: 1fr;
+    }
+}
+/* =======================================
+   Details van de groep stijlen
+   ======================================= */
+
+.detail-card {
+    background: white;
+    padding: 20px 24px;
+    border-radius: 16px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(47,79,58,0.1);
+    margin-bottom: 26px;
+}
+
+.card-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #2F4F3A;
+    margin-bottom: 12px;
+}
+
+.subsection-title {
+    font-size: 18px;
+    margin-top: 16px;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #2F4F3A;
+}
+
+.styled-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.styled-list li {
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+.small-meta {
+    font-size: 13px;
+    color: #777;
+    margin-left: 4px;
+}
+
+.empty-text {
+    color: #6C6C6C;
+    font-style: italic;
+}
+/* =======================================
+   Lid toevoegen stijlen
+   ======================================= */
+
+.page-title {
+    font-size: 28px;
+}
+
+.page-intro {
+    font-size: 16px;
+    max-width: 600px;
+    margin: 0 auto;
+    color: #6C6C6C;
+}
+
+.form-card input[type="text"] {
+    background: #FFFBF4;
+    border: 1px solid #D9D3CA;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 15px;
+    transition: 0.25s ease;
+}
+
+.form-card input[type="text"]:focus {
+    border-color: #2F4F3A;
+    box-shadow: 0 0 0 3px rgba(47,79,58,0.25);
+}
+.topbar-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.topbar-right {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* Balans tabel */
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 15px;
+}
+
+.styled-table th, .styled-table td {
+    padding: 12px;
+    border-bottom: 1px solid #e6e1da;
+}
+
+.styled-table th {
+    text-align: left;
+    background: #f5f1eb;
+    font-weight: 600;
+    color: #2F4F3A;
+}
+
+.saldo-plus {
+    color: #2F7A40;
+    font-weight: 600;
+}
+
+.saldo-min {
+    color: #C0392B;
+    font-weight: 600;
+}
+
+.saldo-zero {
+    color: #777;
+}
