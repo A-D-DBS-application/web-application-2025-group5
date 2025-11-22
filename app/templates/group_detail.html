@@ -33,8 +33,18 @@
     </div>
 </header>
 
-
 <main class="page-content">
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flash-messages">
+          {% for category, msg in messages %}
+            <li class="flash-{{ category }}">{{ msg }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
 
     <section class="page-header">
         <h1 class="page-title">{{ group.name }}</h1>
@@ -71,23 +81,46 @@
                 <label>Betaald door</label>
                 <select name="paid_by">
                     {% for member in members %}
-                        {% set uid = member['users']['user_id'] if member.get('users') else member['user_id'] %}
+                        {% set uid = member.users.user_id %}
                         <option value="{{ uid }}">
-                            {{ member['users']['name'] if member.get('users') else member['name'] }}
+                            {{ member.users.name }}
                         </option>
                     {% endfor %}
                 </select>
             </div>
 
-            <h3 class="subsection-title">Verdeling over leden</h3>
+            <div class="form-group">
+                <label>Hoe verdelen?</label>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="split_type" value="equal" checked>
+                        Gelijk verdelen over geselecteerde leden
+                    </label>
+                    <label>
+                        <input type="radio" name="split_type" value="manual">
+                        Handmatig bedrag per persoon
+                    </label>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">Leden & bedragen</h3>
+            <p class="checkbox-help">Selecteer de leden die meebetalen aan deze uitgave:</p>
 
             {% for member in members %}
-                {% set uid = member['users']['user_id'] if member.get('users') else member['user_id'] %}
-                <div class="form-group">
-                    <label>
-                        {{ member['users']['name'] if member.get('users') else member['name'] }}
+                {% set uid = member.users.user_id %}
+                <div class="form-group member-row">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="members" value="{{ uid }}" checked>
+                        {{ member.users.name }}
                     </label>
-                    <input type="number" step="0.01" name="share_{{ uid }}">
+
+                    <!-- Dit veld wordt gebruikt bij "handmatig" verdelen -->
+                    <input
+                        type="number"
+                        step="0.01"
+                        name="amount_{{ uid }}"
+                        class="manual-amount"
+                        placeholder="Bedrag voor {{ member.users.name }}">
                 </div>
             {% endfor %}
 
@@ -104,11 +137,19 @@
             <ul class="styled-list">
                 {% for expense in expenses %}
                     <li>
-                        <strong>{{ expense['description'] }}</strong>
-                         – €{{ '%.2f' % expense['total_amount'] }}
-                         <span class="small-meta">
-                            (door {{ uid_naam.get(expense['paid_by'] | int, 'onbekend') }})
-                         </span>
+                        <strong>{{ expense.description }}</strong>
+                        – €{{ '%.2f' % expense.total_amount }}
+                        <span class="small-meta">
+                            (door {{ uid_naam.get(expense.paid_by | int, 'onbekend') }})
+                        </span>
+
+                        <!-- Delete-knop -->
+                        <form method="post"
+                              action="{{ url_for('delete_expense', expense_id=expense.expense_id) }}"
+                              class="inline-form"
+                              onsubmit="return confirm('Ben je zeker dat je deze uitgave wilt verwijderen?');">
+                            <button type="submit" class="btn btn-ghost btn-small">Verwijderen</button>
+                        </form>
                     </li>
                 {% endfor %}
             </ul>
@@ -158,4 +199,3 @@
 
 </body>
 </html>
-

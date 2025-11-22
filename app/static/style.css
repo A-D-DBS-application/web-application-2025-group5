@@ -494,3 +494,23 @@ body.app-layout {
 .saldo-zero {
     color: #777;
 }
+/* Grotere checkboxes */
+.form-group input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin-right: 8px;
+}
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.checkbox-help {
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+    color: #4A4A4A;
+}
