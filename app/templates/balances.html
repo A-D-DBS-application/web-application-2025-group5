@@ -38,7 +38,12 @@
         <!-- Balans card -->
         <div class="detail-card">
             <h2 class="card-title">Saldo per persoon</h2>
-            
+
+            <!-- PDF download knop -->
+            <a href="{{ url_for('download_pdf', group_id=group.group_id) }}" class="pdf-btn">
+                Download balans als PDF
+            </a>
+
             <!-- Uitleg over app-fee -->
             <p style="font-size: .95em; color: #444; margin-bottom: 0.8em;">
                 <strong>Let op:</strong>
@@ -73,3 +78,4 @@
     </main>
 </body>
 </html>
+

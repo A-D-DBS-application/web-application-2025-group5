@@ -333,3 +333,163 @@ def delete_expense(expense_id):
     flash("Uitgave verwijderd.", "success")
     # ga terug naar de vorige pagina (meestal group_detail)
     return redirect(request.referrer or url_for("groups_list"))
+
+# 10. PDF toevoegen
+from flask import make_response
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.lib.units import cm
+from io import BytesIO
+from datetime import datetime
+
+@app.route('/group/<int:group_id>/download_pdf')
+def download_pdf(group_id):
+
+    # ---------------------------------
+    # DATA OPHALEN
+    # ---------------------------------
+    balances = get_balances_for_group(group_id)
+
+    group = (
+        supabase.table("groups")
+        .select("name")
+        .eq("group_id", group_id)
+        .execute()
+        .data
+    )[0]
+
+    expenses = (
+        supabase.table("expenses")
+        .select("expense_id, description, total_amount, paid_by")
+        .eq("group_id", group_id)
+        .execute()
+        .data or []
+    )
+
+    users = supabase.table("users").select("user_id, name").execute().data
+    user_dict = {u["user_id"]: u["name"] for u in users}
+
+    # ---------------------------------
+    # PDF SETUP
+    # ---------------------------------
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4,
+                            rightMargin=2*cm, leftMargin=2*cm,
+                            topMargin=2*cm, bottomMargin=2*cm)
+
+    styles = getSampleStyleSheet()
+    content = []
+
+    # Stijlen aanmaken
+    title_style = ParagraphStyle(
+        'Title',
+        parent=styles['Title'],
+        fontSize=22,
+        alignment=1,  # center
+        spaceAfter=20
+    )
+
+    subtitle_style = ParagraphStyle(
+        'Subtitle',
+        fontSize=11,
+        textColor='#555555',
+        alignment=1,
+        spaceAfter=20
+    )
+
+    section_title = ParagraphStyle(
+        'SectionTitle',
+        fontSize=16,
+        spaceBefore=10,
+        spaceAfter=10
+    )
+
+    # ---------------------------------
+    # TITEL
+    # ---------------------------------
+    content.append(Paragraph(f"FairSplit+ Overzicht – {group['name']}", title_style))
+    content.append(Paragraph(f"Gegenereerd op {datetime.now().strftime('%d-%m-%Y %H:%M')}", subtitle_style))
+
+    # ---------------------------------
+    # UITGAVEN TABEL
+    # ---------------------------------
+    content.append(Paragraph("Uitgaven", section_title))
+
+    if not expenses:
+        content.append(Paragraph("Geen uitgaven geregistreerd.", styles['Normal']))
+    else:
+        table_data = [["Omschrijving", "Bedrag", "Betaald door"]]
+
+        for e in expenses:
+            payer = user_dict.get(e["paid_by"], "Onbekend")
+            table_data.append([
+                e["description"],
+                f"€{float(e['total_amount']):.2f}",
+                payer
+            ])
+
+        t = Table(table_data, colWidths=[7*cm, 3*cm, 5*cm])
+        t.setStyle(TableStyle([
+            ("GRID", (0,0), (-1,-1), 0.5, colors.grey),
+            ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#f0f0f0")),
+            ("FONTNAME", (0,0), (-1,0), "Helvetica-Bold"),
+            ("VALIGN", (0,0), (-1,-1), "TOP"),
+            ("BOTTOMPADDING", (0,0), (-1,0), 8),
+
+            # Alignment
+            ("ALIGN", (0,1), (0,-1), "LEFT"),    # Omschrijving
+            ("ALIGN", (1,1), (1,-1), "RIGHT"),   # Bedrag
+            ("ALIGN", (2,1), (2,-1), "RIGHT"),   # Betaald door
+        ]))
+
+        content.append(t)
+
+    # ---------------------------------
+    # BALANS TABEL
+    # ---------------------------------
+    content.append(Paragraph("Eindbalans per persoon", section_title))
+
+    balance_table = [["Naam", "Saldo", "App fee"]]
+
+    for b in balances:
+        balance_table.append([
+            b["name"],
+            f"€{b['saldo']:.2f}",
+            f"€{b['app_fee']:.2f}"
+        ])
+
+    tb = Table(balance_table, colWidths=[7*cm, 3*cm, 3*cm])
+    tb.setStyle(TableStyle([
+        ("GRID", (0,0), (-1,-1), 0.5, colors.grey),
+        ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#e8f0ff")),
+        ("FONTNAME", (0,0), (-1,0), "Helvetica-Bold"),
+        ("BOTTOMPADDING", (0,0), (-1,0), 8),
+
+        # Alignments
+        ("ALIGN", (0,1), (0,-1), "LEFT"),     # Naam
+        ("ALIGN", (1,1), (2,-1), "RIGHT"),    # Saldo & App fee rechts
+    ]))
+
+    # CONDITIONELE KLEUR VOOR SALDO'S
+    for row_idx, b in enumerate(balances, start=1):
+        saldo = b['saldo']
+        color = colors.green if saldo > 0 else colors.red if saldo < 0 else colors.black
+        tb.setStyle(TableStyle([
+            ("TEXTCOLOR", (1, row_idx), (1, row_idx), color)
+        ]))
+
+    content.append(tb)
+
+    # ---------------------------------
+    # PDF AFMAKEN
+    # ---------------------------------
+    doc.build(content)
+
+    buffer.seek(0)
+    response = make_response(buffer.read())
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = f'attachment; filename=balans_{group_id}.pdf'
+
+    return response
