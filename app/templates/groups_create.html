@@ -5,6 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nieuwe groep - FairSplit+</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=2">
+    <style>
+      /* Flash message styles */
+      .flash-messages { margin-bottom: 16px;}
+      .flash-error {
+        background: #f8d7da;
+        color: #842029;
+        border: 1px solid #f5c2c7;
+        border-radius: 5px;
+        padding: 12px 18px;
+        margin-bottom: 10px;
+      }
+      .flash-success {
+        background: #d1e7dd;
+        color: #0f5132;
+        border: 1px solid #badbcc;
+        border-radius: 5px;
+        padding: 12px 18px;
+        margin-bottom: 10px;
+      }
+    </style>
 </head>
 
 <body class="app-layout">
@@ -35,6 +55,18 @@
         </section>
 
         <div class="form-card">
+
+            <!-- Flash message display -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                <div class="flash-messages">
+                  {% for category, message in messages %}
+                    <div class="flash-{{ category }}">{{ message }}</div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+
             <form method="post" class="form-layout">
 
                 <div class="form-group">
@@ -57,12 +89,8 @@
                 <button type="submit" class="btn btn-primary" style="margin-top: 10px;">
                     Groep aanmaken
                 </button>
-
             </form>
         </div>
-
     </main>
-
 </body>
 </html>
-

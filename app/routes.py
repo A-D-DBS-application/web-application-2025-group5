@@ -10,6 +10,7 @@ from app.models import (
     get_balances_for_group,
     supabase,
 )
+from datetime import datetime  # <-- toegevoegd
 
 # 1. Hulpfunctie: login_required
 def login_required(route_function):
@@ -21,7 +22,6 @@ def login_required(route_function):
 
     wrapper.__name__ = route_function.__name__
     return wrapper
-
 
 # 2. LOGIN
 @app.route("/login", methods=["GET", "POST"])
@@ -41,14 +41,12 @@ def login():
 
     return render_template("login.html")
 
-
 # 3. LOGOUT
 @app.route("/logout")
 def logout():
     session.clear()
     flash("Je bent uitgelogd.", "success")
     return redirect(url_for("login"))
-
 
 # 4. GROEPEN OVERZICHT & AANMAKEN
 @app.route("/groups")
@@ -58,7 +56,7 @@ def groups_list():
     groups = get_user_groups(user_id)
     return render_template("groups_list.html", groups=groups)
 
-
+# [4A] AANGEPASTE ROUTE: VALIDATIE BEGIN- EN EINDDATUM
 @app.route("/groups/create", methods=["GET", "POST"])
 @login_required
 def groups_create():
@@ -72,12 +70,22 @@ def groups_create():
             flash("Geef een naam voor de groep in.", "error")
             return redirect(url_for("groups_create"))
 
+        # Validatie: einddatum niet vóór startdatum
+        try:
+            start_date_obj = datetime.strptime(start_date, "%Y-%m-%d")
+            end_date_obj = datetime.strptime(end_date, "%Y-%m-%d")
+        except ValueError:
+            flash("Ongeldige datum opgegeven.", "error")
+            return redirect(url_for("groups_create"))
+        if end_date_obj < start_date_obj:
+            flash("De einddatum mag niet vóór de startdatum liggen.", "error")
+            return redirect(url_for("groups_create"))
+
         create_group(name, start_date, end_date, organizer_id)
         flash("Groep aangemaakt.", "success")
         return redirect(url_for("groups_list"))
 
     return render_template("groups_create.html")
-
 
 # 5. GROEPSDETAIL: alles-in-één-pagina
 @app.route("/groups/<int:group_id>", methods=["GET", "POST"])
@@ -266,7 +274,6 @@ def group_detail(group_id):
         uid_naam=uid_naam,
     )
 
-
 # 6. BALANSOVERZICHT
 @app.route("/groups/<int:group_id>/balances")
 @login_required
@@ -275,12 +282,10 @@ def balances_route(group_id):
     balances = get_balances_for_group(group_id)
     return render_template("balances.html", group=group, balances=balances)
 
-
 # 7. STARTPAGINA
 @app.route("/")
 def index():
     return redirect(url_for("login"))
-
 
 # 8. LID TOEVOEGEN
 @app.route("/groups/<int:group_id>/add_member", methods=["GET", "POST"])
@@ -305,7 +310,6 @@ def add_member(group_id):
         return redirect(url_for("group_detail", group_id=group_id))
 
     return render_template("add_member.html", group=group, members=members)
-
 
 # 9. UITGAVE VERWIJDEREN
 @app.post("/expenses/<int:expense_id>/delete")
