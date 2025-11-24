@@ -274,6 +274,19 @@ def group_detail(group_id):
         uid_naam=uid_naam,
     )
 
+import urllib.parse
+from flask import redirect, url_for
+
+@app.route("/group/<int:group_id>/share")
+def share_group(group_id):
+    invite_url = url_for("group_detail", group_id=group_id, _external=True)
+    text = f"Join mijn FairSplit groepsuitgaven: {invite_url}"
+    encoded = urllib.parse.quote(text)
+
+    whatsapp_url = f"https://wa.me/?text={encoded}"
+    return redirect(whatsapp_url)
+
+
 # 6. BALANSOVERZICHT
 @app.route("/groups/<int:group_id>/balances")
 @login_required
