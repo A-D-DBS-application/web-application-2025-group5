@@ -18,7 +18,6 @@
                 <div class="app-subtitle">Balans: {{ group.name }}</div>
             </div>
         </div>
-
         <div class="topbar-right">
             <a href="{{ url_for('group_detail', group_id=group.group_id) }}" class="btn btn-ghost">
                 Terug naar groep
@@ -39,6 +38,12 @@
         <!-- Balans card -->
         <div class="detail-card">
             <h2 class="card-title">Saldo per persoon</h2>
+            
+            <!-- Uitleg over app-fee -->
+            <p style="font-size: .95em; color: #444; margin-bottom: 0.8em;">
+                <strong>Let op:</strong>
+                In alle saldi hieronder is het aandeel in de app fee (€{{ '%.2f' % balances[0].app_fee }} per persoon) al verrekend.
+            </p>
 
             <table class="styled-table">
                 <thead>
@@ -51,7 +56,6 @@
                     {% for bal in balances %}
                     <tr>
                         <td>{{ bal.name }}</td>
-
                         <td>
                             {% if bal.saldo > 0 %}
                                 <span class="saldo-plus">+€{{ '%.2f' % bal.saldo }}</span>
@@ -65,10 +69,7 @@
                     {% endfor %}
                 </tbody>
             </table>
-
         </div>
-
     </main>
-
 </body>
 </html>

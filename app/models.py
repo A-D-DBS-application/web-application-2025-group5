@@ -36,7 +36,8 @@ def create_group(name, start_date, end_date, organizer_id):
         "name": name,
         "start_date": start_date,
         "end_date": end_date,
-        "organizer_id": organizer_id
+        "organizer_id": organizer_id,
+        "app_fee": 3.00  # <- Hier voeg je de fee direct toe
     }).execute().data[0]
 
     # Organizer automatisch als lid toevoegen
@@ -47,6 +48,7 @@ def create_group(name, start_date, end_date, organizer_id):
     }).execute()
 
     return group
+
 
 
 def get_group_members(group_id):
@@ -97,7 +99,7 @@ def add_expense(group_id, paid_by, description, total_amount, shares_dict):
 # ============================
 
 def get_balances_for_group(group_id):
-    """Bereken balans per persoon voor de balanspagina."""
+    """Bereken balans per persoon voor de balanspagina en toon de app-fee."""
 
     # leden ophalen
     members = supabase.table("group_members").select("user_id").eq("group_id", group_id).execute().data
@@ -119,6 +121,14 @@ def get_balances_for_group(group_id):
         .in_("expense_id", expense_ids) \
         .execute().data or []
 
+    # App fee ophalen uit de groups-tabel
+    group_list = supabase.table("groups").select("app_fee").eq("group_id", group_id).execute().data
+    app_fee = float(group_list[0]["app_fee"]) if group_list and "app_fee" in group_list[0] else 0.0
+
+    n_members = len(members)
+    # Fee per persoon berekenen
+    fee_per_person = round(app_fee / n_members, 2) if (app_fee > 0 and n_members > 0) else 0.0
+
     # Totaal betaald per persoon
     paid = {m["user_id"]: 0.0 for m in members}
     for exp in expenses:
@@ -131,15 +141,17 @@ def get_balances_for_group(group_id):
         if share["user_id"] in owed:
             owed[share["user_id"]] += float(share["amount"])
 
-    # Balansen berekenen
+    # Balansen berekenen (en fee direct tonen in het resultaat)
     balances = []
     for m in members:
         uid = m["user_id"]
-        saldo = round(paid[uid] - owed[uid], 2)
+        saldo = round(paid[uid] - owed[uid] - fee_per_person, 2)
         balances.append({
             "user_id": uid,
             "name": user_dict.get(uid, "Onbekend"),
-            "saldo": saldo
+            "saldo": saldo,
+            "app_fee": fee_per_person  # Zo kun je direct op je balances.html laten zien: "Min app fee: € fee_per_person"
         })
 
     return balances
+
