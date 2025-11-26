@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deelname bevestigen • {{ group.name }} • FairSplit+</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=3">
+</head>
+
+<body class="login-page">
+
+    <div class="login-container">
+        <h2>Join groep: {{ group.name }}</h2>
+
+        <!-- Flash-berichten -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <ul class="flash-messages">
+            {% for category, message in messages %}
+            <li class="flash-{{ category }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+
+        <p style="margin-bottom: 10px;">
+            Vul je naam in om lid te worden van deze groep. We maken automatisch een account voor je
+            (of loggen je in als je naam al bestaat) en voegen je toe aan de groep.
+        </p>
+
+        <form method="post">
+            <label for="username">Je naam:</label>
+            <input id="username" type="text" name="username" placeholder="Bijvoorbeeld: Emma" required>
+
+            <button type="submit" class="btn btn-primary" style="margin-top: 10px;">
+                Join deze groep
+            </button>
+        </form>
+    </div>
+
+</body>
+
+</html>

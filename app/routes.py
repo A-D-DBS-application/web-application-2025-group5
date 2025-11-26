@@ -6,11 +6,13 @@ from app.models import (
     get_user_groups,
     create_group,
     get_group_detail,
+    get_group_members,
     add_expense,
     get_balances_for_group,
     supabase,
 )
 from datetime import datetime  # <-- toegevoegd
+import urllib.parse    
 
 # 1. Hulpfunctie: login_required
 def login_required(route_function):
@@ -274,17 +276,6 @@ def group_detail(group_id):
         uid_naam=uid_naam,
     )
 
-import urllib.parse
-from flask import redirect, url_for
-
-@app.route("/group/<int:group_id>/share")
-def share_group(group_id):
-    invite_url = url_for("group_detail", group_id=group_id, _external=True)
-    text = f"Join mijn FairSplit groepsuitgaven: {invite_url}"
-    encoded = urllib.parse.quote(text)
-
-    whatsapp_url = f"https://wa.me/?text={encoded}"
-    return redirect(whatsapp_url)
 
 
 # 6. BALANSOVERZICHT
@@ -323,6 +314,63 @@ def add_member(group_id):
         return redirect(url_for("group_detail", group_id=group_id))
 
     return render_template("add_member.html", group=group, members=members)
+
+# 8b. WHATSAPP-LINK MAKEN MET JOIN-URL
+@app.route("/group/<int:group_id>/share")
+@login_required
+def share_group(group_id):
+    # Haal groep op voor een mooie naam in het bericht
+    group, _ = get_group_detail(group_id)
+    group_name = group["name"] if group else "mijn FairSplit+ groep"
+
+    # Dit is de URL waar de genodigden terechtkomen en hun naam invullen
+    invite_url = url_for("join_group", group_id=group_id, _external=True)
+
+    text = f"Join mijn FairSplit+ groep '{group_name}': {invite_url}"
+    encoded = urllib.parse.quote(text)
+
+    whatsapp_url = f"https://wa.me/?text={encoded}"
+    return redirect(whatsapp_url)
+
+
+# 8c. JOIN-PAGINA: NAAM INGEVEN EN AUTOMATISCH LID WORDEN
+@app.route("/group/<int:group_id>/join", methods=["GET", "POST"])
+def join_group(group_id):
+    group, members = get_group_detail(group_id)
+    if not group:
+        flash("Groep niet gevonden.", "error")
+        return redirect(url_for("groups_list"))
+
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        if not username:
+            flash("Geef een naam in.", "error")
+            return redirect(url_for("join_group", group_id=group_id))
+
+        # Bestaat deze user al?
+        existing = get_user_by_name(username)
+        user = existing[0] if existing else create_user(username)
+        user_id = user["user_id"]
+
+        # Zit deze user al in de groep?
+        already_member = any(m["user_id"] == user_id for m in members)
+        if not already_member:
+            supabase.table("group_members").insert({
+                "group_id": group_id,
+                "user_id": user_id,
+                "role": "member"
+            }).execute()
+
+        # Log de user direct in
+        session["user_id"] = user_id
+        session["username"] = user["name"]
+
+        flash("Welkom in de groep!", "success")
+        return redirect(url_for("group_detail", group_id=group_id))
+
+    # GET: toon de join-pagina
+    return render_template("join_group.html", group=group)
+
 
 # 9. UITGAVE VERWIJDEREN
 @app.post("/expenses/<int:expense_id>/delete")
