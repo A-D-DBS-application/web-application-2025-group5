@@ -530,3 +530,76 @@ body.app-layout {
 .pdf-btn:hover {
     background-color: #357ABD;
 }
+/* ============================================================
+   OPTIMALE AFBETALINGEN – Styling
+   ============================================================ */
+
+.detail-card {
+    background: #FFFBF4;
+    padding: 24px;
+    margin-bottom: 20px;
+    border-radius: 14px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+}
+
+.card-title {
+    font-size: 1.35em;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #1F2428;
+}
+
+.card-description {
+    font-size: 0.95em;
+    color: #555;
+    margin-bottom: 16px;
+}
+
+/* Tabel styling voor balans én optimale betalingen */
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.styled-table thead {
+    background-color: #f3ece4;
+}
+
+.styled-table th {
+    text-align: left;
+    padding: 10px 12px;
+    font-weight: 600;
+    color: #1F2428;
+    border-bottom: 2px solid #e0d8cf;
+}
+
+.styled-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #eee5da;
+    font-size: 0.95em;
+}
+
+.styled-table tbody tr:hover {
+    background: #f9f4ee;
+}
+
+/* Saldi kleuren */
+.saldo-plus {
+    color: #0c7b31;
+    font-weight: 600;
+}
+
+.saldo-min {
+    color: #b00020;
+    font-weight: 600;
+}
+
+.saldo-zero {
+    color: #444;
+}
+
+/* Extra spacing tussen meerdere cards */
+.detail-card + .detail-card {
+    margin-top: 28px;
+}

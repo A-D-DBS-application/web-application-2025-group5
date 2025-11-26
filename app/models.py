@@ -155,3 +155,72 @@ def get_balances_for_group(group_id):
 
     return balances
 
+#ons "slim" algoritme dat aantal betalingen minimaliseert
+def compute_optimal_transactions(balances):
+    # Kleine marge om afrondingsfouten op te vangen
+    EPS = 0.005
+
+    # 1. Opsplitsen in debiteuren (negatief) en crediteuren (positief)
+    debtors = []
+    creditors = []
+
+    for bal in balances:
+        # Zorg dat we altijd een float hebben
+        amount = float(bal.get("saldo", 0))
+
+        if amount < -EPS:
+            debtors.append({
+                "user_id": bal.get("user_id"),
+                "name": bal.get("name"),
+                # positief maken: dit is wat ze verschuldigd zijn
+                "amount": -amount,
+            })
+        elif amount > EPS:
+            creditors.append({
+                "user_id": bal.get("user_id"),
+                "name": bal.get("name"),
+                "amount": amount,
+            })
+
+    # Als er niemand moet betalen of ontvangen: geen transacties
+    if not debtors or not creditors:
+        return []
+
+    # 2. Sorteer: grootste schuld / grootste tegoed eerst
+    debtors.sort(key=lambda x: x["amount"], reverse=True)
+    creditors.sort(key=lambda x: x["amount"], reverse=True)
+
+    transactions = []
+    i = 0  # index in debtors
+    j = 0  # index in creditors
+
+    # 3. Greedy matching
+    while i < len(debtors) and j < len(creditors):
+        d = debtors[i]
+        c = creditors[j]
+
+        amount = min(d["amount"], c["amount"])
+
+        # Alleen een transactie toevoegen als het effectief iets is
+        if amount > EPS:
+            transactions.append({
+                "from_user_id": d["user_id"],
+                "from_name": d["name"],
+                "to_user_id": c["user_id"],
+                "to_name": c["name"],
+                "amount": round(amount, 2),
+            })
+
+        # Update resterende bedragen
+        d["amount"] -= amount
+        c["amount"] -= amount
+
+        # Als de debiteur "klaar" is, ga naar de volgende
+        if d["amount"] <= EPS:
+            i += 1
+
+        # Als de crediteur "volledig betaald" is, ga naar de volgende
+        if c["amount"] <= EPS:
+            j += 1
+
+    return transactions

@@ -47,7 +47,8 @@
             <!-- Uitleg over app-fee -->
             <p style="font-size: .95em; color: #444; margin-bottom: 0.8em;">
                 <strong>Let op:</strong>
-                In alle saldi hieronder is het aandeel in de app fee (€{{ '%.2f' % balances[0].app_fee }} per persoon) al verrekend.
+                In alle saldi hieronder is het aandeel in de app fee 
+                (€{{ '%.2f' % balances[0].app_fee }} per persoon) al verrekend.
             </p>
 
             <table class="styled-table">
@@ -75,7 +76,44 @@
                 </tbody>
             </table>
         </div>
+
+
+        <!-- OPTIMALE BETALINGEN BLOK -->
+        <div class="detail-card" style="margin-top: 24px;">
+            <h2 class="card-title">Optimale afbetalingen</h2>
+
+            {% if optimal_transactions and optimal_transactions|length > 0 %}
+                <p class="card-description">
+                    Deze betalingen zorgen ervoor dat iedereen op €0 uitkomt met het
+                    <strong>minimum aantal transacties</strong>.
+                </p>
+
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>Betaler</th>
+                            <th>Ontvanger</th>
+                            <th>Bedrag</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in optimal_transactions %}
+                        <tr>
+                            <td>{{ t.from_name }}</td>
+                            <td>{{ t.to_name }}</td>
+                            <td>€{{ '%.2f' % t.amount }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            {% else %}
+                <p class="card-description">
+                    🎉 Iedereen staat op €0 — er zijn geen betalingen nodig!
+                </p>
+            {% endif %}
+        </div>
+
     </main>
 </body>
 </html>
-
