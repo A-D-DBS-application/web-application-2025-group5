@@ -7,22 +7,18 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=3">
 </head>
 <body class="login-page">
-  <!-- Login-container voor gecentreerde layout -->
   <div class="login-container">
     <h2>Login</h2>
 
-    <!-- Flash-berichten -->
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul class="flash-messages">
-          {% for msg in messages %}
-            <li>{{ msg }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
+    {% set messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class="flash-messages">
+        {% for msg in messages %}
+          <li>{{ msg }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
 
-    <!-- Inlogformulier -->
     <form method="post">
       <label for="username">Gebruikersnaam:</label>
       <input id="username" type="text" name="username" placeholder="Voer je naam in..." required>
@@ -31,4 +27,3 @@
   </div>
 </body>
 </html>
-
