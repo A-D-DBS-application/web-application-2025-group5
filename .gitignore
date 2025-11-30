@@ -1,11 +1,15 @@
 #vertelt Git wat het moet negeren
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 .env
 
 =======
 venv/
 >>>>>>> 2e18190e083b1b43c3d2fcd307f9ddf98b3ac2cd
-__pycache__/
-*.pyc
+=======
 .env
+venv/
+>>>>>>> 365f40965bd7328b2f8ff4f0034008afada9ba0c
+__pycache__/
+

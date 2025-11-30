@@ -1,96 +1,54 @@
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nieuwe groep - FairSplit+</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=2">
-    <style>
-      /* Flash message styles */
-      .flash-messages { margin-bottom: 16px;}
-      .flash-error {
-        background: #f8d7da;
-        color: #842029;
-        border: 1px solid #f5c2c7;
-        border-radius: 5px;
-        padding: 12px 18px;
-        margin-bottom: 10px;
-      }
-      .flash-success {
-        background: #d1e7dd;
-        color: #0f5132;
-        border: 1px solid #badbcc;
-        border-radius: 5px;
-        padding: 12px 18px;
-        margin-bottom: 10px;
-      }
-    </style>
-</head>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
-<body class="app-layout">
+{% extends "base.html" %}
+{% block title %}Nieuwe groep{% endblock %}
+{% block body_class %}bg-app{% endblock %}
 
-    <!-- Topbar -->
-    <header class="topbar">
-        <div class="topbar-left">
-            <div class="app-logo-circle">F</div>
-            <div>
-                <div class="app-name">FairSplit+</div>
-                <div class="app-subtitle">Groep aanmaken</div>
-            </div>
+{% block content %}
+<div class="header-green">
+    <div class="header-inner">
+        <a href="{{ url_for('groups_list') }}" class="back-link">←</a>
+        <div>
+            <h1 class="header-title">Nieuwe groep</h1>
+            <p class="header-subtitle">Maak een nieuwe groep aan om uitgaven te delen</p>
+        </div>
+    </div>
+</div>
+
+<main class="page top-overlap">
+    <div class="card form-card">
+
+        <label class="label">Kies een icoon</label>
+
+        <div class="icon-picker">
+             {% for emoji in ["🏖️","🍽️","🎉","🚗","🏕️","🛒","💼","🏡","✈️"] %}
+            <label class="icon-option">
+              <input type="radio" name="icon" value="{{ emoji }}" required>
+                 <span class="icon-emoji">{{ emoji }}</span>
+                    </label>
+            {% endfor %}
         </div>
 
-        <div class="topbar-right">
-            <a href="{{ url_for('groups_list') }}" class="btn btn-ghost">Terug</a>
-        </div>
-    </header>
+        <div class="icon-square">👥</div>
 
-    <!-- Content -->
-    <main class="page-content">
+        <form method="post" class="form">
+            <label class="label" for="name">Groepsnaam</label>
+            <input
+                type="text"
+                id="name"
+                name="name"
+                class="input"
+                placeholder="Bijv. Vakantie Spanje 2024"
+            >
 
-        <section class="page-header">
-            <h1 class="page-title">Nieuwe groep aanmaken</h1>
-            <p class="page-intro">
-                Vul de naam en de periode van je groep in. Je kunt jouw groep later altijd aanpassen.
-            </p>
-        </section>
+            <label class="label" for="start_date">Startdatum</label>
+            <input type="date" id="start_date" name="start_date" class="input">
 
-        <div class="form-card">
+            <label class="label" for="end_date">Einddatum</label>
+            <input type="date" id="end_date" name="end_date" class="input">
 
-            <!-- Flash message display -->
-            {% with messages = get_flashed_messages(with_categories=true) %}
-              {% if messages %}
-                <div class="flash-messages">
-                  {% for category, message in messages %}
-                    <div class="flash-{{ category }}">{{ message }}</div>
-                  {% endfor %}
-                </div>
-              {% endif %}
-            {% endwith %}
-
-            <form method="post" class="form-layout">
-
-                <div class="form-group">
-                    <label for="name">Groepsnaam</label>
-                    <input type="text" id="name" name="name" required>
-                </div>
-
-                <div class="form-two-columns">
-                    <div class="form-group">
-                        <label for="start_date">Startdatum</label>
-                        <input type="date" id="start_date" name="start_date" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="end_date">Einddatum</label>
-                        <input type="date" id="end_date" name="end_date" required>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">
-                    Groep aanmaken
-                </button>
-            </form>
-        </div>
-    </main>
-</body>
-</html>
+            <button type="submit" class="btn btn-primary btn-full">Groep aanmaken</button>
+        </form>
+    </div>
+</main>
+{% endblock %}

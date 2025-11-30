@@ -1,119 +1,58 @@
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Balans – {{ group.name }} | FairSplit+</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=2">
-</head>
+{% extends "base.html" %}
+{% block title %}Balans{% endblock %}
+{% block body_class %}bg-app{% endblock %}
 
-<body class="app-layout">
+{% block content %}
 
-    <!-- Topbar -->
-    <header class="topbar topbar-wrap">
-        <div class="topbar-left">
-            <div class="app-logo-circle">F</div>
-            <div>
-                <div class="app-name">FairSplit+</div>
-                <div class="app-subtitle">Balans: {{ group.name }}</div>
-            </div>
-        </div>
-        <div class="topbar-right">
-            <a href="{{ url_for('group_detail', group_id=group.group_id) }}" class="btn btn-ghost">
-                Terug naar groep
-            </a>
-        </div>
-    </header>
+<div class="header-green">
+    <div class="header-inner space-between">
 
-    <main class="page-content">
-
-        <!-- Header tekst -->
-        <section class="page-header">
-            <h1 class="page-title">Balansoverzicht</h1>
-            <p class="page-intro">
-                Bekijk wat ieder groepslid moet betalen of terugkrijgt.
-            </p>
-        </section>
-
-        <!-- Balans card -->
-        <div class="detail-card">
-            <h2 class="card-title">Saldo per persoon</h2>
-
-            <!-- PDF download knop -->
-            <a href="{{ url_for('download_pdf', group_id=group.group_id) }}" class="pdf-btn">
-                Download balans als PDF
-            </a>
-
-            <!-- Uitleg over app-fee -->
-            <p style="font-size: .95em; color: #444; margin-bottom: 0.8em;">
-                <strong>Let op:</strong>
-                In alle saldi hieronder is het aandeel in de app fee 
-                (€{{ '%.2f' % balances[0].app_fee }} per persoon) al verrekend.
-            </p>
-
-            <table class="styled-table">
-                <thead>
-                    <tr>
-                        <th>Naam</th>
-                        <th>Saldo</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for bal in balances %}
-                    <tr>
-                        <td>{{ bal.name }}</td>
-                        <td>
-                            {% if bal.saldo > 0 %}
-                                <span class="saldo-plus">+€{{ '%.2f' % bal.saldo }}</span>
-                            {% elif bal.saldo < 0 %}
-                                <span class="saldo-min">-€{{ '%.2f' % (-bal.saldo) }}</span>
-                            {% else %}
-                                <span class="saldo-zero">€0.00</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div>
+            <h1 class="header-title">Balans</h1>
+            <p class="header-subtitle">{{ group.name }}</p>
         </div>
 
+        <!-- Download PDF knop -->
+        <a href="{{ url_for('download_pdf', group_id=group.group_id) }}"
+           class="btn btn-primary btn-sm">
+            PDF ↓
+        </a>
 
-        <!-- OPTIMALE BETALINGEN BLOK -->
-        <div class="detail-card" style="margin-top: 24px;">
-            <h2 class="card-title">Optimale afbetalingen</h2>
+    </div>
+</div>
 
-            {% if optimal_transactions and optimal_transactions|length > 0 %}
-                <p class="card-description">
-                    Deze betalingen zorgen ervoor dat iedereen op €0 uitkomt met het
-                    <strong>minimum aantal transacties</strong>.
-                </p>
+<main class="page top-overlap">
 
-                <table class="styled-table">
-                    <thead>
-                        <tr>
-                            <th>Betaler</th>
-                            <th>Ontvanger</th>
-                            <th>Bedrag</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for t in optimal_transactions %}
-                        <tr>
-                            <td>{{ t.from_name }}</td>
-                            <td>{{ t.to_name }}</td>
-                            <td>€{{ '%.2f' % t.amount }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    {% if balances %}
+        {% set app_fee_per_person = balances[0].app_fee %}
+        <p class="small muted" style="margin-bottom: 16px;">
+            <strong>Let op:</strong>
+            In alle saldi hieronder is het aandeel in de app fee
+            (€{{ "%.2f"|format(app_fee_per_person) }} per persoon) al verrekend.
+        </p>
+    {% endif %}
 
-            {% else %}
-                <p class="card-description">
-                    🎉 Iedereen staat op €0 — er zijn geen betalingen nodig!
-                </p>
-            {% endif %}
-        </div>
+   
+    <div class="card">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Naam</th>
+                    <th>Saldo</th>
+                    <th>App-fee</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for b in balances %}
+                <tr>
+                    <td>{{ b.name }}</td>
+                    <td>€{{ "%.2f"|format(b.saldo) }}</td>
+                    <td>€{{ "%.2f"|format(b.app_fee) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
 
-    </main>
-</body>
-</html>
+{% endblock %}

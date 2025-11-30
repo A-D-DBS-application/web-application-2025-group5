@@ -1,57 +1,38 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
 <!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lid toevoegen - {{ group.name }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=2">
-</head>
+{% extends "base.html" %}
+{% block title %}Lid toevoegen{% endblock %}
+{% block body_class %}bg-app{% endblock %}
 
-<body class="app-layout">
-
-    <!-- Topbar -->
-    <header class="topbar">
-        <div class="topbar-left">
-            <div class="app-logo-circle">F</div>
-            <div>
-                <div class="app-name">FairSplit+</div>
-                <div class="app-subtitle">Lid toevoegen</div>
-            </div>
+{% block content %}
+<div class="header-green">
+    <div class="header-inner">
+        <div>
+            <h1 class="header-title">Lid toevoegen</h1>
+            <p class="header-subtitle">Voeg een nieuw lid toe aan {{ group.name }}</p>
         </div>
+    </div>
+</div>
 
-        <div class="topbar-right">
-            <a href="{{ url_for('group_detail', group_id=group.group_id) }}" class="btn btn-ghost">
-                Terug
-            </a>
-        </div>
-    </header>
-
-    <!-- Content -->
-    <main class="page-content">
-
-        <section class="page-header">
-            <h1 class="page-title">Lid toevoegen</h1>
-            <p class="page-intro">
-                Voeg een nieuw lid toe aan de groep <strong>{{ group.name }}</strong>.
+<main class="page top-overlap">
+    <div class="card form-card">
+        <div class="icon-square">👤</div>
+        <form method="post" class="form">
+            <label class="label" for="name">Naam van nieuw lid</label>
+            <input
+                type="text"
+                id="name"
+                name="name"
+                class="input"
+                placeholder="Voer de naam in..."
+            >
+            <p class="muted small">
+                Als deze persoon nog geen account heeft, wordt er automatisch een aangemaakt.
             </p>
-        </section>
+            <button type="submit" class="btn btn-primary btn-full mt-16">Lid toevoegen</button>
+        </form>
+    </div>
+</main>
+{% endblock %}
 
-        <div class="form-card">
-            <form method="post" class="form-layout">
-
-                <div class="form-group">
-                    <label for="name">Naam van het nieuwe lid</label>
-                    <input type="text" id="name" name="name" required placeholder="Bijvoorbeeld: Thomas">
-                </div>
-
-                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">
-                    Lid toevoegen
-                </button>
-
-            </form>
-        </div>
-
-    </main>
-
-</body>
-</html>

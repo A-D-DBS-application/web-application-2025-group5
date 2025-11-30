@@ -78,8 +78,7 @@ def logout():
 @login_required
 def groups_list():
     groups = get_user_groups(session["user_id"])
-    return render_template("groups_list.html", groups=groups)
-
+    return render_template("groups_list.html", groups=groups, group=None)
 
 @app.route("/groups/create", methods=["GET", "POST"])
 @login_required
@@ -123,6 +122,20 @@ def group_detail(group_id):
     if not group:
         flash("Groep niet gevonden.", "error")
         return redirect(url_for("groups_list"))
+    
+    def fmt(d):
+        # Supabase geeft meestal '2025-11-29' terug
+        if isinstance(d, str):
+            try:
+                dt = datetime.fromisoformat(d)
+            except ValueError:
+                return d
+        else:
+            dt = d
+        return dt.strftime("%d-%m-%Y")   # bv. 29-11-2025
+
+    start_date_fmt = fmt(group["start_date"])
+    end_date_fmt = fmt(group["end_date"])
 
     # ----------------------------
     # POST: Expense toevoegen
@@ -175,7 +188,7 @@ def group_detail(group_id):
                     return redirect(url_for("group_detail", group_id=group_id))
 
             add_expense(group_id, paid_by, description, total_amount, shares)
-            flash("Uitgave toegevoegd.", "success")
+            flash("Uitgave toegevoegd.", "expense_success")
             return redirect(url_for("group_detail", group_id=group_id))
 
         except Exception as e:
@@ -225,6 +238,12 @@ def group_detail(group_id):
 
     saldo = {uid: paid[uid] - verschuldigd[uid] for uid in paid}
 
+    current_user_id = session["user_id"]
+    user_balance = saldo.get(current_user_id, 0.0)
+    je_schuld = round(-user_balance, 2) if user_balance < 0 else 0.0
+    krijg_je = round(user_balance, 2) if user_balance > 0 else 0.0
+    netto = round(user_balance, 2)
+
     # settlement voor deze pagina (oude systeem)
     uid_naam = {m["users"]["user_id"]: m["users"]["name"] for m in members}
 
@@ -272,7 +291,13 @@ def group_detail(group_id):
         saldo=saldo,
         settlements=settlements,
         uid_naam=uid_naam,
+        start_date_fmt=start_date_fmt,
+        end_date_fmt=end_date_fmt,
+        je_schuld=je_schuld,
+        krijg_je=krijg_je,
+        netto=netto,
     )
+
 
 
 # ============================================================
@@ -344,7 +369,7 @@ def add_member(group_id):
 @login_required
 def delete_expense(expense_id):
     supabase.table("expenses").delete().eq("expense_id", expense_id).execute()
-    flash("Uitgave verwijderd.", "success")
+    flash("Expense successfully deleted.", "success")
     return redirect(request.referrer or url_for("groups_list"))
 
 
