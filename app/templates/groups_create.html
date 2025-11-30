@@ -1,23 +1,54 @@
-<!DOCTYPE html>
-<html>
-<head><title>Nieuwe groep</title></head>
-<body>
-  <h2>Nieuwe groep aanmaken</h2>
-  <form method="post">
-    <div>
-      <label>Groepsnaam:</label>
-      <input type="text" name="name" required />
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+{% extends "base.html" %}
+{% block title %}Nieuwe groep{% endblock %}
+{% block body_class %}bg-app{% endblock %}
+
+{% block content %}
+<div class="header-green">
+    <div class="header-inner">
+        <a href="{{ url_for('groups_list') }}" class="back-link">←</a>
+        <div>
+            <h1 class="header-title">Nieuwe groep</h1>
+            <p class="header-subtitle">Maak een nieuwe groep aan om uitgaven te delen</p>
+        </div>
     </div>
-    <div>
-      <label>Startdatum:</label>
-      <input type="date" name="start_date" required />
+</div>
+
+<main class="page top-overlap">
+    <div class="card form-card">
+
+        <label class="label">Kies een icoon</label>
+
+        <div class="icon-picker">
+             {% for emoji in ["🏖️","🍽️","🎉","🚗","🏕️","🛒","💼","🏡","✈️"] %}
+            <label class="icon-option">
+              <input type="radio" name="icon" value="{{ emoji }}" required>
+                 <span class="icon-emoji">{{ emoji }}</span>
+                    </label>
+            {% endfor %}
+        </div>
+
+        <div class="icon-square">👥</div>
+
+        <form method="post" class="form">
+            <label class="label" for="name">Groepsnaam</label>
+            <input
+                type="text"
+                id="name"
+                name="name"
+                class="input"
+                placeholder="Bijv. Vakantie Spanje 2024"
+            >
+
+            <label class="label" for="start_date">Startdatum</label>
+            <input type="date" id="start_date" name="start_date" class="input">
+
+            <label class="label" for="end_date">Einddatum</label>
+            <input type="date" id="end_date" name="end_date" class="input">
+
+            <button type="submit" class="btn btn-primary btn-full">Groep aanmaken</button>
+        </form>
     </div>
-    <div>
-      <label>Einddatum:</label>
-      <input type="date" name="end_date" required />
-    </div>
-    <button type="submit">Aanmaken</button>
-  </form>
-  <p><a href="{{ url_for('groups_list') }}">Terug</a></p>
-</body>
-</html>
+</main>
+{% endblock %}

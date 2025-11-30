@@ -1,5 +1,38 @@
-<h2>Lid toevoegen aan groep: {{ group.name }}</h2>
-<form method="post">
-  Naam van nieuw lid: <input type="text" name="name"><br>
-  <button type="submit">Toevoegen</button>
-</form>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% block title %}Lid toevoegen{% endblock %}
+{% block body_class %}bg-app{% endblock %}
+
+{% block content %}
+<div class="header-green">
+    <div class="header-inner">
+        <div>
+            <h1 class="header-title">Lid toevoegen</h1>
+            <p class="header-subtitle">Voeg een nieuw lid toe aan {{ group.name }}</p>
+        </div>
+    </div>
+</div>
+
+<main class="page top-overlap">
+    <div class="card form-card">
+        <div class="icon-square">👤</div>
+        <form method="post" class="form">
+            <label class="label" for="name">Naam van nieuw lid</label>
+            <input
+                type="text"
+                id="name"
+                name="name"
+                class="input"
+                placeholder="Voer de naam in..."
+            >
+            <p class="muted small">
+                Als deze persoon nog geen account heeft, wordt er automatisch een aangemaakt.
+            </p>
+            <button type="submit" class="btn btn-primary btn-full mt-16">Lid toevoegen</button>
+        </form>
+    </div>
+</main>
+{% endblock %}
+

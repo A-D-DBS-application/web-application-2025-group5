@@ -1,10 +1,58 @@
-<h2>Balans voor {{ group.name }}</h2>
-<table>
-  <tr><th>Naam</th><th>Balans</th></tr>
-  {% for bal in balances %}
-    <tr>
-      <td>{{ bal.name }}</td>
-      <td>{{ bal.saldo }}</td>
-    </tr>
-  {% endfor %}
-</table>
+{% extends "base.html" %}
+{% block title %}Balans{% endblock %}
+{% block body_class %}bg-app{% endblock %}
+
+{% block content %}
+
+<div class="header-green">
+    <div class="header-inner space-between">
+
+        <div>
+            <h1 class="header-title">Balans</h1>
+            <p class="header-subtitle">{{ group.name }}</p>
+        </div>
+
+        <!-- Download PDF knop -->
+        <a href="{{ url_for('download_pdf', group_id=group.group_id) }}"
+           class="btn btn-primary btn-sm">
+            PDF ↓
+        </a>
+
+    </div>
+</div>
+
+<main class="page top-overlap">
+
+    {% if balances %}
+        {% set app_fee_per_person = balances[0].app_fee %}
+        <p class="small muted" style="margin-bottom: 16px;">
+            <strong>Let op:</strong>
+            In alle saldi hieronder is het aandeel in de app fee
+            (€{{ "%.2f"|format(app_fee_per_person) }} per persoon) al verrekend.
+        </p>
+    {% endif %}
+
+   
+    <div class="card">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Naam</th>
+                    <th>Saldo</th>
+                    <th>App-fee</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for b in balances %}
+                <tr>
+                    <td>{{ b.name }}</td>
+                    <td>€{{ "%.2f"|format(b.saldo) }}</td>
+                    <td>€{{ "%.2f"|format(b.app_fee) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+
+{% endblock %}

@@ -1,20 +1,50 @@
-<!DOCTYPE html>
-<html>
-<head><title>Mijn groepen</title></head>
-<body>
-  <h2>Welkom, {{ session.username }}</h2>
-  <p><a href="{{ url_for('groups_create') }}">Nieuwe groep aanmaken</a> | <a href="{{ url_for('logout') }}">Uitloggen</a></p>
+{% extends "base.html" %}
+{% block title %}Groepen{% endblock %}
+{% block body_class %}bg-app{% endblock %}
 
-  <h3>Jouw groepen</h3>
-  <ul>
-    {% for g in groups %}
-      <li>
-        <a href="{{ url_for('group_detail', group_id=g.group_id) }}">{{ g.name }}</a>
-        ({{ g.start_date }} – {{ g.end_date }})
-      </li>
+{% block content %}
+<header class="top-header">
+    <div class="avatar-circle">
+        {{ session.get("username", "L")[0] | upper }}
+    </div>
+    <div>
+        <div class="subtitle">Welkom terug</div>
+        <div class="username">{{ session.get("username", "") }}</div>
+    </div>
+</header>
+
+<main class="page">
+    <div class="page-header-row">
+        <h2 class="page-title">Groepen</h2>
+    </div>
+
+    {% if not groups %}
+        <div class="card big-card center-card">
+            <div class="icon-large">👥</div>
+            <p class="muted">Je zit nog in geen enkele groep</p>
+            <a href="{{ url_for('groups_create') }}" class="btn btn-primary">Maak je eerste groep</a>
+        </div>
     {% else %}
-      <li>Je zit nog in geen enkele groep.</li>
-    {% endfor %}
-  </ul>
-</body>
-</html>
+        <div class="group-list">
+            {% for g in groups %}
+            <a href="{{ url_for('group_detail', group_id=g.group_id) }}" class="group-card">
+                <div class="group-left">
+                    <!-- 🔥 hier komt nu de emoji van de groep -->
+                    <div class="group-icon-emoji">
+                        {{ g.icon or "👥" }}
+                    </div>
+                    <div>
+                        <div class="group-name">{{ g.name }}</div>
+                        <div class="group-date">{{ g.start_date }}</div>
+                        <span class="badge badge-light">Je bent quitte</span>
+                    </div>
+                </div>
+                <div class="group-amount">
+                    €{{ "%.2f"|format(g.total_balance or 0) if g.total_balance is defined else "0.00" }}
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    {% endif %}
+</main>
+{% endblock %}
