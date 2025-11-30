@@ -77,8 +77,34 @@ def logout():
 @app.route("/groups")
 @login_required
 def groups_list():
-    groups = get_user_groups(session["user_id"])
-    return render_template("groups_list.html", groups=groups, group=None)
+    user_id = session["user_id"]
+    groups_raw = get_user_groups(user_id)
+
+    groups = []
+
+    for g in groups_raw:
+        group_id = g["group_id"]
+
+        # balans per user ophalen
+        balances = get_balances_for_group(group_id)
+
+        # saldo van ingelogde gebruiker zoeken
+        my_balance = 0.0
+        for b in balances:
+            if b["user_id"] == user_id:
+                my_balance = b["saldo"]
+                break
+
+        groups.append({
+            "group_id": g["group_id"],
+            "name": g["name"],
+            "start_date": g.get("start_date"),
+            "end_date": g.get("end_date"),
+            "my_balance": round(my_balance, 2)
+        })
+
+    return render_template("groups_list.html", groups=groups)
+
 
 @app.route("/groups/create", methods=["GET", "POST"])
 @login_required

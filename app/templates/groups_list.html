@@ -29,18 +29,32 @@
             {% for g in groups %}
             <a href="{{ url_for('group_detail', group_id=g.group_id) }}" class="group-card">
                 <div class="group-left">
-                    <!-- 🔥 hier komt nu de emoji van de groep -->
+
                     <div class="group-icon-emoji">
                         {{ g.icon or "👥" }}
                     </div>
+
                     <div>
                         <div class="group-name">{{ g.name }}</div>
                         <div class="group-date">{{ g.start_date }}</div>
-                        <span class="badge badge-light">Je bent quitte</span>
+
+                        {% if g.my_balance < 0 %}
+                            <span class="badge badge-danger">
+                                Je schuld: €{{ "%.2f"|format(-g.my_balance) }}
+                            </span>
+                        {% elif g.my_balance > 0 %}
+                            <span class="badge badge-success">
+                                Je krijgt: €{{ "%.2f"|format(g.my_balance) }}
+                            </span>
+                        {% else %}
+                            <span class="badge badge-light">Je bent quitte</span>
+                        {% endif %}
                     </div>
+
                 </div>
+
                 <div class="group-amount">
-                    €{{ "%.2f"|format(g.total_balance or 0) if g.total_balance is defined else "0.00" }}
+                    €{{ "%.2f"|format(g.my_balance) }}
                 </div>
             </a>
             {% endfor %}
