@@ -1,36 +1,34 @@
-HEAD
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - FairSplit+</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=2">
-</head>
-<body>
-  <div class="brand-logo">FairSplit+</div>
-  <div class="main-content">
-    <div class="login-container">
-      <h2>Login</h2>
-      <form method="post">
-        <div>
-          <label for="username">Gebruikersnaam:</label>
-          <input id="username" type="text" name="username" required>
-        </div>
-        <button type="submit">Login</button>
-      </form>
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block body_class %}bg-app{% endblock %}
 
-    {# Flash-berichten tonen, bv. "Je moet eerst inloggen." #}
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul class="flash-messages">
-          {% for msg in messages %}
-            <li>{{ msg }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
-  </div>
-</body>
-</html>
+{# Geen bottom navbar op loginpagina #}
+{% block bottom_nav %}{% endblock %}
 
+{# Geen modal op loginpagina #}
+{% block expense_modal %}{% endblock %}
+
+{% block content %}
+<div class="full-center">
+    <div class="card login-card">
+        <h1 class="card-title">Login</h1>
+
+        <form method="post" class="form">
+            <label class="label" for="username">Gebruikersnaam:</label>
+
+            <input
+                type="text"
+                name="username"
+                id="username"
+                class="input"
+                placeholder="Voer je naam in..."
+                autocomplete="off"
+            >
+
+            <button type="submit" class="btn btn-primary btn-full">
+                Inloggen
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
