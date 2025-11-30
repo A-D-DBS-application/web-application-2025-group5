@@ -1,605 +1,1301 @@
-/* =======================================
-   FairSplit+ — GLOBALE BASISSTYLING
-   ======================================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+body {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-html {
-  font-family: 'Poppins', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* ===== Basis ===== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
 }
 
 body {
-  color: #1F2428;
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #111827;
+    background-color: #e6e2dd;
 }
 
-/* =======================================
-   LOGIN PAGINA
-   ======================================= */
-
-body.login-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #ede8e2;
-  padding: 20px;
+.bg-app {
+    background-color: #e6e2dd;
 }
 
-.login-container {
-  background: #FFFBF4;
-  padding: 36px;
-  border-radius: 16px;
-  box-shadow: 0 8px 28px rgba(0,0,0,0.12);
-  width: 100%;
-  max-width: 400px;
+a {
+    text-decoration: none;
+    color: inherit;
 }
 
-.login-container h2 {
-  font-size: 30px;
-  font-weight: 700;
-  color: #1F2428;
-  text-align: center;
-  margin-bottom: 24px;
+.full-center {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-label {
-  display: block;
-  text-align: left;
-  font-size: 15px;
-  font-weight: 600;
-  margin-bottom: 6px;
+/* ===== Flash messages ===== */
+.flash-container {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
 }
 
-input[type="text"] {
-  width: 100%;
-  padding: 14px 16px;
-  background: #edf3ff;
-  border-radius: 10px;
-  border: 1px solid #d5d7da;
-  font-size: 16px;
-  color: #1F2428;
-  transition: 0.25s;
+.flash {
+    padding: 10px 16px;
+    border-radius: 999px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    background-color: #111827;
+    color: #fff;
 }
 
-input[type="text"]:focus {
-  outline: none;
-  border-color: #2F4F3A;
-  box-shadow: 0 0 0 3px rgba(47, 79, 58, 0.25);
+.flash-error {
+    background-color: #b91c1c;
+}
+.flash-success {
+    background-color: #065f46;
 }
 
-button {
-  width: 100%;
-  padding: 14px;
-  background: #2F4F3A;
-  border: none;
-  border-radius: 10px;
-  font-size: 17px;
-  font-weight: 700;
-  color: white;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: background 0.2s, transform 0.06s;
+/* ===== Cards ===== */
+.card {
+    background-color: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 24px 40px rgba(15, 23, 42, 0.18);
+    padding: 24px;
 }
 
-button:hover {
-  background: #263F2F;
+.login-card {
+    width: 360px;
+    text-align: left;
 }
 
-button:active {
-  transform: translateY(1px);
+.big-card {
+    padding: 40px 32px;
 }
 
-/* =======================================
-   NA LOGIN — ALGEMENE APP LAYOUT
-   ======================================= */
-
-body.app-layout {
-  background: #F9F5F0;
-  min-height: 100vh;
-  padding: 20px;
+.form-card {
+    max-width: 480px;
+    margin: 0 auto;
 }
 
-/* =======================================
-   TOPBAR
-   ======================================= */
-
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
+/* ===== Typography ===== */
+.card-title {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 24px;
 }
 
-.topbar-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.subtitle {
+    font-size: 14px;
+    color: #6b7280;
 }
 
-.app-logo-circle {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: #2F4F3A;
-  color: white;
-  font-size: 18px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.username {
+    font-size: 20px;
+    font-weight: 700;
 }
 
-.app-name {
-  font-size: 18px;
-  font-weight: 700;
-  color: #2F4F3A;
+.page {
+    padding: 24px 24px 96px;
+    max-width: 960px;
+    margin: 0 auto;
 }
 
-.app-subtitle {
-  font-size: 13px;
-  color: #6C6C6C;
+.page-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
 }
 
-.topbar-right {
-  display: flex;
-  gap: 8px;
+.page-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
 }
 
-/* =======================================
-   KNOPPEN
-   ======================================= */
+.section-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 16px;
+}
+
+.muted {
+    color: #6b7280;
+}
+
+.small {
+    font-size: 13px;
+}
+
+/* ===== Inputs & buttons ===== */
+.label {
+    font-size: 14px;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.label-small {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.input {
+    width: 100%;
+    border-radius: 14px;
+    border: none;
+    padding: 10px 14px;
+    background-color: #edf0f7;
+    font-size: 14px;
+    outline: none;
+    margin-bottom: 16px;
+}
+
+.input:focus {
+    box-shadow: 0 0 0 2px #1f6a3b33;
+}
+
+.input-small {
+    max-width: 110px;
+    text-align: right;
+}
 
 .btn {
-  padding: 10px 14px;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+    border-radius: 999px;
+    border: none;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: filter 0.15s ease;
 }
 
 .btn-primary {
-  background: #2F4F3A;
-  color: white;
-  box-shadow: 0 3px 10px rgba(47, 79, 58, 0.15);
+    background-color: #286238;
+    color: #ffffff;
 }
 
 .btn-primary:hover {
-  background: #263F2F;
+    filter: brightness(1.05);
 }
 
-.btn-ghost {
-  border: 1px solid rgba(47,79,58,0.3);
-  background: transparent;
-  color: #2F4F3A;
+.btn-full {
+    width: 100%;
 }
 
-.btn-ghost:hover {
-  background: rgba(47,79,58,0.08);
-}
-
-/* =======================================
-   PAGINA HEADER
-   ======================================= */
-
-.page-content {
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
-.page-title {
-  font-size: 26px;
-  font-weight: 700;
-  color: #2F4F3A;
-  margin-bottom: 6px;
-}
-
-.page-intro {
-  font-size: 14px;
-  color: #6C6C6C;
-  margin-bottom: 20px;
-}
-
-/* =======================================
-   GROUPS — CARD VIEW
-   ======================================= */
-
-.groups-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px;
-}
-
-.group-card {
-  background: white;
-  padding: 16px;
-  border-radius: 16px;
-  text-decoration: none;
-  color: inherit;
-  border: 1px solid rgba(47,79,58,0.1);
-  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-  transition: 0.2s;
-}
-
-.group-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(0,0,0,0.12);
-}
-
-.group-name {
-  font-size: 18px;
-  font-weight: 600;
-  color: #2F4F3A;
-  margin-bottom: 4px;
-}
-
-.group-dates {
-  font-size: 13px;
-  color: #8A8A8A;
-  margin-bottom: 10px;
-}
-
-.group-meta {
-  font-size: 13px;
-  color: #6C6C6C;
-  margin-bottom: 12px;
-}
-
-.group-card-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: #2F4F3A;
-}
-
-.group-chevron {
-  font-size: 20px;
-  opacity: 0.7;
-}
-
-/* =======================================
-   RESPONSIVE GRID
-   ======================================= */
-
-@media (min-width: 600px) {
-  .groups-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 900px) {
-  .groups-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-/* =======================================
-   Verbeterde uitlijning "Jouw groepen"
-   ======================================= */
-
-.page-header {
-    text-align: center;        /* alles centreren */
-    margin-top: 20px;
-    margin-bottom: 28px;
-}
-
-.page-title {
-    font-size: 28px;
-}
-
-.page-intro {
-    font-size: 15px;
-    max-width: 600px;          /* zodat de tekst niet te breed wordt */
-    margin: 0 auto;            /* centreren */
-    line-height: 1.5;
-}
-
-/* tekst onder de intro (geen groepen) */
-.no-groups-text {
-    font-size: 16px;
-    text-align: center;
-    margin-top: 20px;
-}
-
-.no-groups-text a {
-    display: inline-block;
-    margin-top: 6px;           /* link mooi eronder */
-    font-size: 16px;
-}
-/* =======================================
-   Form card (groepen aanmaken)
-   ======================================= */
-
-.form-card {
-    background: white;
-    padding: 24px;
-    border-radius: 16px;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
-    border: 1px solid rgba(47, 79, 58, 0.08);
-    max-width: 600px;
-    margin: 0 auto 40px auto;
-}
-
-.form-layout {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.form-group label {
+.link-primary {
+    font-size: 14px;
+    color: #286238;
     font-weight: 600;
-    font-size: 15px;
-    color: #2F4F3A;
 }
 
-.form-group input {
-    padding: 12px 14px;
-    border-radius: 10px;
-    border: 1px solid #D9D3CA;
-    font-size: 15px;
-    background: #FFFBF4;
-    transition: 0.25s ease;
+.link-danger {
+    color: #b91c1c;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
 }
 
-.form-group input:focus {
-    border-color: #2F4F3A;
-    box-shadow: 0 0 0 3px rgba(47, 79, 58, 0.25);
+.link-danger.small {
+    font-size: 12px;
 }
 
-.form-two-columns {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
+/* ===== Icons / avatar ===== */
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    background-color: #1f2937;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    font-weight: 600;
 }
 
-/* Mobile */
-@media (max-width: 600px) {
-    .form-two-columns {
-        grid-template-columns: 1fr;
-    }
-}
-/* =======================================
-   Details van de groep stijlen
-   ======================================= */
-
-.detail-card {
-    background: white;
-    padding: 20px 24px;
-    border-radius: 16px;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
-    border: 1px solid rgba(47,79,58,0.1);
-    margin-bottom: 26px;
-}
-
-.card-title {
-    font-size: 22px;
-    font-weight: 700;
-    color: #2F4F3A;
+.icon-large {
+    font-size: 32px;
     margin-bottom: 12px;
 }
 
-.subsection-title {
-    font-size: 18px;
-    margin-top: 16px;
-    margin-bottom: 6px;
-    font-weight: 600;
-    color: #2F4F3A;
-}
-
-.styled-list {
-    list-style: none;
-    padding-left: 0;
-}
-
-.styled-list li {
-    padding: 6px 0;
-    border-bottom: 1px solid rgba(0,0,0,0.08);
-}
-
-.small-meta {
-    font-size: 13px;
-    color: #777;
-    margin-left: 4px;
-}
-
-.empty-text {
-    color: #6C6C6C;
-    font-style: italic;
-}
-/* =======================================
-   Lid toevoegen stijlen
-   ======================================= */
-
-.page-title {
-    font-size: 28px;
-}
-
-.page-intro {
-    font-size: 16px;
-    max-width: 600px;
-    margin: 0 auto;
-    color: #6C6C6C;
-}
-
-.form-card input[type="text"] {
-    background: #FFFBF4;
-    border: 1px solid #D9D3CA;
-    padding: 12px 14px;
-    border-radius: 10px;
-    font-size: 15px;
-    transition: 0.25s ease;
-}
-
-.form-card input[type="text"]:focus {
-    border-color: #2F4F3A;
-    box-shadow: 0 0 0 3px rgba(47,79,58,0.25);
-}
-.topbar-wrap {
+.icon-round {
+    width: 44px;
+    height: 44px;
+    border-radius: 16px;
+    background-color: #e1efe6;
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    margin-right: 16px;
+}
+
+.icon-square {
+    width: 72px;
+    height: 72px;
+    border-radius: 24px;
+    background-color: #e1efe6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 32px;
+}
+
+/* ===== Top header ===== */
+.top-header {
+    padding: 24px 24px 8px;
+    display: flex;
+    align-items: center;
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+/* ===== Green header (detail/create) ===== */
+.header-green {
+    background-color: #286238;
+    color: #ffffff;
+    padding: 20px 24px 72px;
+    border-bottom-left-radius: 32px;
+    border-bottom-right-radius: 32px;
+}
+
+.header-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.header-inner.space-between {
+    justify-content: space-between;
+}
+
+.header-title {
+    font-size: 26px;
+    margin: 0 0 4px;
+}
+
+.header-subtitle {
+    font-size: 14px;
+    margin: 0;
+    opacity: 0.9;
+}
+
+.back-link {
+    font-size: 22px;
+    color: #ffffff;
+    margin-right: 12px;
+}
+
+.top-overlap {
+    margin-top: -40px;
+}
+
+/* Center card helper */
+.center-card {
+    text-align: center;
+}
+
+/* ===== Group list ===== */
+.group-list {
+    display: flex;
+    flex-direction: column;
     gap: 12px;
 }
 
-.topbar-right {
+.group-card {
+    background-color: #ffffff;
+    border-radius: 22px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 18px 30px rgba(15, 23, 42, 0.10);
+}
+
+.group-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.group-name {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.group-date {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 4px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.badge-light {
+    background-color: #e5e7eb;
+    color: #374151;
+}
+
+.group-amount {
+    font-weight: 700;
+    font-size: 16px;
+}
+
+/* ===== Stats ===== */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.stat-card {
+    padding: 16px 18px;
+}
+
+.stat-label {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 4px;
+}
+
+.stat-amount {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.small-card {
+    max-width: 360px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ===== Members chips ===== */
+.members-row {
+    margin-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.members-title {
+    font-weight: 600;
+}
+
+.chip-list {
+    margin-top: 12px;
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
 }
 
-/* Balans tabel */
-.styled-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-    font-size: 15px;
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    background-color: #f3f4f6;
+    border-radius: 999px;
+    font-size: 13px;
 }
 
-.styled-table th, .styled-table td {
-    padding: 12px;
-    border-bottom: 1px solid #e6e1da;
-}
-
-.styled-table th {
-    text-align: left;
-    background: #f5f1eb;
-    font-weight: 600;
-    color: #2F4F3A;
-}
-
-.saldo-plus {
-    color: #2F7A40;
-    font-weight: 600;
-}
-
-.saldo-min {
-    color: #C0392B;
-    font-weight: 600;
-}
-
-.saldo-zero {
-    color: #777;
-}
-/* Grotere checkboxes */
-.form-group input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-    margin-right: 8px;
-}
-.checkbox-label {
+.chip-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    background-color: #1f2937;
+    color: #fff;
     display: flex;
     align-items: center;
-    font-size: 1.1rem;
+    justify-content: center;
+    font-size: 12px;
+}
+
+.chip-amount {
     font-weight: 600;
+}
+
+/* ===== Split ===== */
+.split-row {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.split-buttons {
+    display: inline-flex;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.pill {
+    border-radius: 999px;
+    padding: 6px 10px;
+    background-color: #edf0f7;
+    font-size: 13px;
+}
+
+.pill input {
+    display: none;
+}
+
+.pill-active {
+    background-color: #286238;
+    color: #ffffff;
+}
+
+.members-split {
+    margin-top: 12px;
+}
+
+.split-row-member {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+}
+
+/* ===== Expenses ===== */
+.expenses-section {
+    margin-top: 24px;
+}
+
+.expense-card {
+    background-color: #e9f9ed;
+    border-radius: 18px;
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.expense-left {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.expense-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
+    background-color: #d1fae5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.expense-title {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 2px;
+}
+
+.expense-sub {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.expense-note {
+    font-size: 13px;
+    color: #059669;
+    margin-top: 4px;
+}
+
+.expense-amount {
+    text-align: right;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+/* ===== Table (balances) ===== */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.table th,
+.table td {
+    padding: 10px 6px;
+    text-align: left;
+}
+
+.table th {
+    border-bottom: 1px solid #e5e7eb;
+    color: #6b7280;
+}
+
+/* ===== Utilities ===== */
+.mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }
+.mt-32 { margin-top: 32px; }
+
+/* ===== Responsief ===== */
+@media (max-width: 640px) {
+    .page, .top-header, .header-inner {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .header-green {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+}
+
+/* ===== Huisje rechtsboven (SVG) ===== */
+.top-home-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 48px;
+    height: 48px;
+    border-radius: 18px;
+    background: #286238;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+    z-index: 999;
+}
+
+.top-home-btn svg {
+    width: 24px;
+    height: 24px;
+    stroke: #ffffff;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* ===== Celebration ===== */
+.celebration-box {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #ffffff;
+    padding: 18px 26px;
+    border-radius: 20px;
+    font-size: 22px;
+    font-weight: 700;
+    color: #286238;
+    box-shadow: 0 14px 40px rgba(0,0,0,0.18);
+    z-index: 99999;
+    animation: fadeInScale 0.3s ease-out;
+}
+
+@keyframes fadeInScale {
+    from { transform: translate(-50%, -50%) scale(0.7); opacity: 0; }
+    to   { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+/* ===== Group detail headings ===== */
+.group-detail-name {
+    font-size: 26px;
+    font-weight: 700;
+    color: #ffffff;
     margin-bottom: 6px;
 }
 
-.checkbox-help {
-    font-size: 0.95rem;
-    margin-bottom: 12px;
-    color: #4A4A4A;
+.group-detail-dates {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    margin-top: 2px;
+    color: #f9fafb;
 }
-/* stijl voor pdf */
-.pdf-btn {
-    display: inline-block;
-    padding: 10px 16px;
-    background-color: #4A90E2;
-    color: white;
-    border-radius: 8px;
+
+/* ===== Leden + Toevoegen knop ===== */
+.member-add-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background-color: #166534;
+    color: #ffffff;
+    font-size: 14px;
     text-decoration: none;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    transition: 0.2s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 
-.pdf-btn:hover {
-    background-color: #357ABD;
-}
-/* ============================================================
-   OPTIMALE AFBETALINGEN – Styling
-   ============================================================ */
-
-.detail-card {
-    background: #FFFBF4;
-    padding: 24px;
-    margin-bottom: 20px;
-    border-radius: 14px;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+.member-add-btn:hover {
+    background-color: #14532d;
 }
 
-.card-title {
-    font-size: 1.35em;
-    font-weight: 600;
-    margin-bottom: 12px;
-    color: #1F2428;
+.member-add-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    border: 2px solid #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    line-height: 1;
 }
 
-.card-description {
-    font-size: 0.95em;
-    color: #555;
-    margin-bottom: 16px;
+/* ===== Stat cards kleuren ===== */
+.stat-label-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-/* Tabel styling voor balans én optimale betalingen */
-.styled-table {
-    width: 100%;
-    border-collapse: collapse;
+.stat-icon {
+    font-size: 16px;
+}
+
+/* Pastel rood */
+.stat-card-debt {
+    background: #ffecec !important;
+    border: 1px solid #fecaca !important;
+}
+
+.stat-card-debt .stat-amount {
+    color: #b91c1c;
+}
+
+/* Pastel groen */
+.stat-card-credit {
+    background: #ecfdf3 !important;
+    border: 1px solid #bbf7d0 !important;
+}
+
+.stat-card-credit .stat-amount {
+    color: #047857;
+}
+
+/* MIDDENKAART extra */
+.midcard-green {
+    background: #ecfdf3 !important;
+    border: 1px solid #bbf7d0 !important;
+}
+
+.midcard-green .stat-amount {
+    color: #047857 !important;
+}
+
+.midcard-red {
+    background: #ffecec !important;
+    border: 1px solid #fecaca !important;
+}
+
+.midcard-red .stat-amount {
+    color: #b91c1c !important;
+}
+
+/* ===== Share popover ===== */
+.share-wrapper {
+    position: relative;
+}
+
+.share-popover {
+    position: absolute;
+    bottom: 54px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ffffff;
+    border-radius: 999px;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.25);
+    padding: 6px 8px;
+    display: none;
+    gap: 4px;
+    z-index: 40;
+}
+
+.share-popover.is-visible {
+    display: flex;
+}
+
+.share-popover-item {
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+    text-decoration: none;
+    color: #111827;
+    background: #f3f4f6;
+}
+
+.share-popover-item:hover {
+    background: #e5e7eb;
+}
+
+.share-popover-disabled {
+    cursor: default;
+}
+
+/* ===== Bottom nav – stijl zoals voorbeeld ===== */
+.bottom-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #34363c;  /* donkerblauw-zwart */
+    padding: 10px 24px 24px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: flex-end;
+    z-index: 30;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+}
+
+.bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    text-decoration: none;
+}
+
+.nav-icon-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    display: flex;
+}
+
+/* linker & rechter iconen: grijs, geen achtergrond */
+.nav-icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    color: #9ca3af;  /* grijs */
+    font-size: 20px;
+}
+
+.nav-icon-box svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* midden: grote groene plus */
+.nav-icon-box-main {
+    width: 64px;
+    height: 64px;
+    border-radius: 24px;
+    background: #286238;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 30px;
+    box-shadow: 0 0 0 4px #34363c;
+}
+
+.nav-label {
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+/* ===== GLOBAL SPACING FIXES ===== */
+
+/* Meer binnenruimte rond ALLE pagina’s */
+.page {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+    padding-bottom: 140px !important; /* ruimte boven bottom nav */
+}
+
+/* Header-spacing groter */
+.header-green,
+.top-header {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+}
+
+/* Floating cards onder de header */
+.top-overlap {
+    margin-top: -20px !important; /* was -40 → dichter maar niet geplakt */
+}
+
+/* ===== NAVIGATION BAR SPACING ===== */
+
+.bottom-nav {
+    padding: 14px 20px 28px !important;  /* meer lucht */
+}
+
+/* Icoontjes dichter bij elkaar: */
+.bottom-nav-item {
+    margin: 0 6px !important;
+}
+
+.nav-icon-box {
+    width: 42px !important;
+    height: 42px !important;
+}
+
+.nav-label {
+    margin-top: 2px !important;
+    font-size: 12px !important;
+}
+
+/* ===== SHARE POPOVER POSITIE AANPASSEN ===== */
+
+.share-popover {
+    bottom: 64px !important; /* iets hoger zodat het niet tegen nav kleeft */
+}
+
+/* ===== CARDS BREEDTE FIX ===== */
+
+.card {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 92%; /* niet tegen de zijkanten plakken */
+}
+
+/* “Uitgave toevoegen” balk in het midden, niet vol tegen edge */
+button.btn-add,
+.add-expense-btn,
+#add-expense {
+    margin-left: 12px !important;
+    margin-right: 12px !important;
+}
+
+/* ===== MEMBERS / EXPENSE SPACING ===== */
+
+.members-row,
+.expenses-section {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+}
+
+/* ===== INPUT FIELDS ===== */
+
+.input {
+    margin-bottom: 18px !important;
+}
+
+/* ===== EXPENSE LIST FIX: CENTRALE KOLOM ===== */
+
+.expenses-section {
+    max-width: 800px;        /* mooie breedte zoals Splitwise */
+    margin: 0 auto;          /* centreren */
+    padding: 0 12px;         /* lucht links/rechts */
+}
+
+.expense-card {
+    max-width: 800px;        /* kaart zelf ook max 800px */
+    margin: 10px auto !important;  /* centreren en afstand */
+    border-radius: 20px;     /* iets mooier afgerond */
+    padding: 16px 20px !important;
+}
+
+/* ===== Leden in een kaart + mooie "Lid toevoegen" knop ===== */
+
+.members-card {
+    margin-top: 24px;
+    margin-bottom: 8px;
+    padding: 18px 20px;
+}
+
+.members-card .members-row {
+    align-items: flex-start;
+}
+
+.members-card .chip-list {
     margin-top: 10px;
 }
 
-.styled-table thead {
-    background-color: #f3ece4;
+/* ===== Centrale "+ Uitgave toevoegen" knop ===== */
+
+.add-expense-wrapper {
+    margin: 18px 0 24px;
+    display: flex;
+    justify-content: center;
 }
 
-.styled-table th {
-    text-align: left;
-    padding: 10px 12px;
+.add-expense-pill {
+    background: #286238;
+    color: #ffffff;
+    border: none;
+    padding: 10px 28px;
+    border-radius: 999px;
+    font-size: 14px;
     font-weight: 600;
-    color: #1F2428;
-    border-bottom: 2px solid #e0d8cf;
+    cursor: pointer;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+    transition: transform 0.1s ease, filter 0.1s ease;
 }
 
-.styled-table td {
-    padding: 10px 12px;
-    border-bottom: 1px solid #eee5da;
-    font-size: 0.95em;
+.add-expense-pill:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
 }
 
-.styled-table tbody tr:hover {
-    background: #f9f4ee;
+/* ===== MODAL OVERLAY ===== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(3px);
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.25s ease;
+    z-index: 999;
 }
 
-/* Saldi kleuren */
-.saldo-plus {
-    color: #0c7b31;
+/* ===== BOTTOM SHEET ===== */
+.modal-sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: -100%;
+    margin: 0 auto;
+    max-width: 600px;
+    background: white;
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 -4px 30px rgba(0,0,0,0.2);
+    padding: 20px;
+    z-index: 1000;
+    height: 70vh;
+    display: flex;
+    flex-direction: column;
+    transition: bottom 0.3s ease;
+}
+
+/* ===== VISIBLE STATE ===== */
+.modal-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.modal-sheet.active {
+    bottom: 0;
+}
+
+/* ===== HEADER ===== */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-close-btn {
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.modal-content {
+    margin-top: 10px;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+
+.expense-card {
+    background: #ffffff;
+    border-radius: 26px;
+    padding: 18px 22px;
+    margin-bottom: 16px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+}
+/* ==== Ronde groene vinkjes in de uitgave-modal ==== */
+.modal-content input[type="checkbox"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    border: 2px solid #286238;
+    background: #ffffff;
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.modal-content input[type="checkbox"]:checked {
+    background: #286238;
+}
+
+.modal-content input[type="checkbox"]:checked::after {
+    content: "✓";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -58%);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+}
+/* ==== Inputs in de uitgave-modal: altijd full width ==== */
+.modal-content .input {
+    width: 100%;
+    display: block;
+}
+
+/* ===== MEMBERS CARD (mooie stijl volgens screenshot) ===== */
+
+.members-card {
+    background: #ffffff;
+    border-radius: 26px;
+    padding: 22px 26px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.07);
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.member-count {
+    background: #286238;
+    color: #ffffff;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    margin-left: 8px;
+}
+
+.members-list {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.member-item {
+    background: #edf0f7;
+    border-radius: 22px;
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.member-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.member-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 20px;
+    background: #286238;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.member-name {
+    font-size: 18px;
     font-weight: 600;
 }
 
-.saldo-min {
-    color: #b00020;
+.member-status {
+    background: #dfe3e9;
+    color: #374151;
+    padding: 10px 28px;
+    border-radius: 30px;
+    font-size: 15px;
     font-weight: 600;
 }
 
-.saldo-zero {
-    color: #444;
+/* ==== LEDEN BLOK – COMPACT EN MOOI ==== */
+
+.members-card {
+    padding: 1rem 1.25rem;
 }
 
-/* Extra spacing tussen meerdere cards */
-.detail-card + .detail-card {
-    margin-top: 28px;
+.members-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.members-title-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.members-title {
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.member-count {
+    background: #184e2e;
+    color: #fff;
+    font-size: 0.75rem;
+    padding: 0.1rem 0.6rem;
+    border-radius: 999px;
+}
+
+.members-actions {
+    display: flex;
+    flex-direction: column;   /* onder elkaar aan de zijkant */
+    gap: 0.35rem;
+    align-items: flex-end;
+}
+
+.chip-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.chip-primary {
+    background: #184e2e;
+    color: #fff;
+}
+
+.chip-secondary {
+    background: #eef1f7;
+    color: #364152;
+    border-color: #d5d9e4;
+}
+
+.chip-icon {
+    font-size: 0.8rem;
+}
+
+/* leden kleiner maken */
+
+.members-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.member-item {
+    display: flex;
+    align-items: center;
+    padding: 0.55rem 0.8rem;      /* kleiner dan eerst */
+    border-radius: 1rem;
+    background: #f3f5fb;
+}
+
+.member-left {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.member-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background: #184e2e;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.member-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #121826;
+}
+
+.nav-disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+.nav-disabled .nav-icon-box {
+    pointer-events: none;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+
+
+.logout-btn {
+    position: absolute;
+    top: 32px;                /* zodat hij mooi gecentreerd zit */
+    right: 22px;
+    background: #b91c1c;      /* rood */
+    color: #ffffff;
+    padding: 10px 16px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;                 /* ruimte tussen icoon en tekst */
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.25);
+    z-index: 999;
+}
+
+.logout-btn svg {
+    width: 20px;             /* kleiner icoontje */
+    height: 20px;
+    stroke: #ffffff;
+    stroke-width: 2.5;
+    fill: none;
+}
+
+.header-green {
+    position: relative;       /* nodig voor absolute positionering */
+}
+.group-icon-emoji {
+    width: 60px;
+    height: 60px;
+    border-radius: 20px;
+    background: #e8f3ed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    flex-shrink: 0;
 }

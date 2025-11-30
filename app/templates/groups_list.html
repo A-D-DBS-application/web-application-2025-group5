@@ -1,76 +1,50 @@
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mijn groepen - FairSplit+</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=2">
-</head>
-<body class="app-layout">
-  <header class="topbar">
-    <div class="topbar-left">
-      <div class="app-logo-circle">F</div>
-      <div>
-        <div class="app-name">FairSplit+</div>
-        <div class="app-subtitle">Welkom, {{ session.username }}</div>
-      </div>
+{% extends "base.html" %}
+{% block title %}Groepen{% endblock %}
+{% block body_class %}bg-app{% endblock %}
+
+{% block content %}
+<header class="top-header">
+    <div class="avatar-circle">
+        {{ session.get("username", "L")[0] | upper }}
+    </div>
+    <div>
+        <div class="subtitle">Welkom terug</div>
+        <div class="username">{{ session.get("username", "") }}</div>
+    </div>
+</header>
+
+<main class="page">
+    <div class="page-header-row">
+        <h2 class="page-title">Groepen</h2>
     </div>
 
-    <div class="topbar-right">
-      <a href="{{ url_for('groups_create') }}" class="btn btn-primary">+ Nieuwe groep</a>
-      <a href="{{ url_for('logout') }}" class="btn btn-ghost">Uitloggen</a>
-    </div>
-  </header>
-
-  <main class="page-content">
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul class="flash-messages">
-          {% for msg in messages %}
-            <li>{{ msg }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
-
-    <section class="page-header">
-      <h1 class="page-title">Jouw groepen</h1>
-      <p class="page-intro">
-        Overzicht van alle groepen waarin jij zit. Tik op een groep om de details en uitgaven te bekijken.
-      </p>
-    </section>
-
-    {% if groups %}
-      <section class="groups-grid">
-        {% for g in groups %}
-          <a href="{{ url_for('group_detail', group_id=g.group_id) }}" class="group-card">
-            <div class="group-card-header">
-              <h2 class="group-name">{{ g.name }}</h2>
-              <span class="group-dates">
-                {{ g.start_date }} – {{ g.end_date }}
-              </span>
-            </div>
-
-            <div class="group-card-body">
-              <p class="group-meta">
-                Groep ID: {{ g.group_id }}
-              </p>
-            </div>
-
-            <div class="group-card-footer">
-              <span class="group-link-text">Open groep</span>
-              <span class="group-chevron">›</span>
-            </div>
-          </a>
-        {% endfor %}
-      </section>
+    {% if not groups %}
+        <div class="card big-card center-card">
+            <div class="icon-large">👥</div>
+            <p class="muted">Je zit nog in geen enkele groep</p>
+            <a href="{{ url_for('groups_create') }}" class="btn btn-primary">Maak je eerste groep</a>
+        </div>
     {% else %}
-      <p class="no-groups-text">
-    Je zit nog in geen enkele groep.<br>
-    <a href="{{ url_for('groups_create') }}">Maak je eerste groep aan.</a>
-</p>
-
+        <div class="group-list">
+            {% for g in groups %}
+            <a href="{{ url_for('group_detail', group_id=g.group_id) }}" class="group-card">
+                <div class="group-left">
+                    <!-- 🔥 hier komt nu de emoji van de groep -->
+                    <div class="group-icon-emoji">
+                        {{ g.icon or "👥" }}
+                    </div>
+                    <div>
+                        <div class="group-name">{{ g.name }}</div>
+                        <div class="group-date">{{ g.start_date }}</div>
+                        <span class="badge badge-light">Je bent quitte</span>
+                    </div>
+                </div>
+                <div class="group-amount">
+                    €{{ "%.2f"|format(g.total_balance or 0) if g.total_balance is defined else "0.00" }}
+                </div>
+            </a>
+            {% endfor %}
+        </div>
     {% endif %}
-  </main>
-</body>
-</html>
+</main>
+{% endblock %}

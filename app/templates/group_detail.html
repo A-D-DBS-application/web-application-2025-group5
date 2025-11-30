@@ -1,198 +1,195 @@
-<!DOCTYPE html>
-<html lang="nl">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ group.name }} - FairSplit+</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=2">
-</head>
+{% block title %}{{ group.name }}{% endblock %}
+{% block body_class %}bg-app{% endblock %}
 
-<body class="app-layout">
+{% block content %}
+<div class="header-green">
+    <div class="header-inner">
+        <a href="{{ url_for('groups_list') }}" class="back-link">←</a>
+        <div>
+            <h1 class="header-title group-detail-name">{{ group.name }}</h1>
+            <p class="group-detail-dates">
+                {{ start_date_fmt }} – {{ end_date_fmt }}
+            </p>
+        </div>
+    </div>
+</div>
 
-    <header class="topbar topbar-wrap">
-        <div class="topbar-left">
-            <div class="app-logo-circle">F</div>
-            <div>
-                <div class="app-name">FairSplit+</div>
-                <div class="app-subtitle">Groep: {{ group.name }}</div>
+<main class="page top-overlap">
+
+    <!-- OVERZICHTSKAARTJES -->
+    <section class="stats-row">
+        <div class="card stat-card stat-card-debt">
+            <div class="stat-label-row">
+                <span class="stat-icon">⬇️</span>
+                <span class="stat-label">Je schuld</span>
+            </div>
+            <div class="stat-amount">€{{ "%.2f"|format(je_schuld) }}</div>
+        </div>
+
+        <div class="card stat-card midcard-{% if netto > 0 %}green{% elif netto < 0 %}red{% else %}neutral{% endif %}">
+            <div class="stat-label-row">
+                <span class="stat-icon">⚖️</span>
+                <span class="stat-label">Netto positie</span>
+            </div>
+            <div class="stat-amount">€{{ "%.2f"|format(netto) }}</div>
+        </div>
+
+        <div class="card stat-card stat-card-credit">
+            <div class="stat-label-row">
+                <span class="stat-icon">⬆️</span>
+                <span class="stat-label">Krijg je</span>
+            </div>
+            <div class="stat-amount">€{{ "%.2f"|format(krijg_je) }}</div>
+        </div>
+    </section>
+
+      <!-- LEDEN -->
+    <section class="card members-card">
+        <div class="members-card-header">
+            <div class="members-title-row">
+                <span class="members-title">Leden</span>
+                <span class="member-count">{{ members|length }}</span>
+            </div>
+
+            <div class="members-actions">
+                <!-- Lid toevoegen (normaal toevoegen in de app) -->
+                <a href="{{ url_for('add_member', group_id=group.group_id) }}" 
+                   class="chip-button chip-primary">
+                    <span class="chip-icon">＋</span>
+                    <span>Lid toevoegen</span>
+                </a>
+
+                <!-- Lid uitnodigen (WhatsApp link) -->
+                <a href="{{ url_for('share_group', group_id=group.group_id) }}" 
+                   class="chip-button chip-secondary"
+                   target="_blank" rel="noopener">
+                    <span class="chip-icon">📲</span>
+                    <span>Lid uitnodigen</span>
+                </a>
             </div>
         </div>
 
-        <div class="topbar-right">
-            <a href="{{ url_for('share_group', group_id=group.group_id) }}" class="btn btn-secondary">
-                Deel via WhatsApp
-            </a>
-
-            <a href="{{ url_for('add_member', group_id=group.group_id) }}" class="btn btn-primary">
-                + Lid toevoegen
-            </a>
-
-            <a href="{{ url_for('balances_route', group_id=group.group_id) }}" class="btn btn-ghost">
-                Balans
-            </a>
-
-            <a href="{{ url_for('groups_list') }}" class="btn btn-ghost">
-                Terug
-            </a>
-        </div>
-    </header>
-
-    <main class="page-content">
-
-        <!-- Flash messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <ul class="flash-messages">
-            {% for category, msg in messages %}
-            <li class="flash-{{ category }}">{{ msg }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% endwith %}
-
-        <section class="page-header">
-            <h1 class="page-title">{{ group.name }}</h1>
-            <p class="page-intro">Overzicht van leden, uitgaven en saldo’s</p>
-        </section>
-
-        <!-- Leden card -->
-        <div class="detail-card">
-            <h2 class="card-title">Leden</h2>
-            <ul class="styled-list">
-                {% for member in members %}
-                <li>{{ member.users.name }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-
-        <!-- Nieuwe uitgave toevoegen -->
-        <div class="detail-card">
-            <h2 class="card-title">Nieuwe uitgave toevoegen</h2>
-
-            <form method="post" class="form-layout">
-
-                <div class="form-group">
-                    <label>Beschrijving</label>
-                    <input type="text" name="description" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Totaal bedrag (€)</label>
-                    <input type="number" step="0.01" name="total_amount" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Betaald door</label>
-                    <select name="paid_by">
-                        {% for member in members %}
-                        {% set uid = member.users.user_id %}
-                        <option value="{{ uid }}">
-                            {{ member.users.name }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Hoe verdelen?</label>
-                    <div class="radio-group">
-                        <label>
-                            <input type="radio" name="split_type" value="equal" checked>
-                            Gelijk verdelen over geselecteerde leden
-                        </label>
-                        <label>
-                            <input type="radio" name="split_type" value="manual">
-                            Handmatig bedrag per persoon
-                        </label>
+        <div class="members-list">
+            {% for m in members %}
+            <div class="member-item">
+                <div class="member-left">
+                    <div class="member-avatar">
+                        {{ m.users.name[0] | upper }}
+                    </div>
+                    <div class="member-name">
+                        {{ m.users.name }}
                     </div>
                 </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
 
-                <h3 class="subsection-title">Leden & bedragen</h3>
-                <p class="checkbox-help">Selecteer de leden die meebetalen aan deze uitgave:</p>
 
-                {% for member in members %}
-                {% set uid = member.users.user_id %}
-                <div class="form-group member-row">
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="members" value="{{ uid }}" checked>
-                        {{ member.users.name }}
-                    </label>
 
-                    <!-- Dit veld wordt gebruikt bij "handmatig" verdelen -->
-                    <input type="number" step="0.01" name="amount_{{ uid }}" class="manual-amount"
-                        placeholder="Bedrag voor {{ member.users.name }}">
+            
+    <!-- UITGAVENLIJST -->
+    {% if expenses %}
+        <section class="expenses-section">
+            <h3 class="section-title">Uitgaven</h3>
+
+            {% for e in expenses %}
+            <div class="expense-card">
+                <div class="expense-left">
+                    <div class="expense-icon">🧾</div>
+                    <div>
+                        <div class="expense-title">{{ e.description }}</div>
+                        <div class="expense-sub">
+                            Betaald door {{ uid_naam[e.paid_by] }}
+                        </div>
+                    </div>
                 </div>
-                {% endfor %}
-
-                <button type="submit" class="btn btn-primary">Uitgave toevoegen</button>
-
-            </form>
-        </div>
-
-        <!-- Alle uitgaven -->
-        <div class="detail-card">
-            <h2 class="card-title">Alle uitgaven</h2>
-
-            {% if expenses %}
-            <ul class="styled-list">
-                {% for expense in expenses %}
-                <li>
-                    <strong>{{ expense.description }}</strong>
-                    – €{{ '%.2f' % expense.total_amount }}
-                    <span class="small-meta">
-                        (door {{ uid_naam.get(expense.paid_by | int, 'onbekend') }})
-                    </span>
-
-                    <!-- Delete-knop -->
-                    <form method="post" action="{{ url_for('delete_expense', expense_id=expense.expense_id) }}"
-                        class="inline-form"
-                        onsubmit="return confirm('Ben je zeker dat je deze uitgave wilt verwijderen?');">
-                        <button type="submit" class="btn btn-ghost btn-small">Verwijderen</button>
+                <div class="expense-amount">
+                    €{{ "%.2f"|format(e.total_amount) }}
+                    <form method="post" action="{{ url_for('delete_expense', expense_id=e.expense_id) }}">
+                        <button class="link-danger small">Verwijder</button>
                     </form>
-                </li>
-                {% endfor %}
-            </ul>
-            {% else %}
-            <p class="empty-text">Nog geen uitgaven toegevoegd.</p>
-            {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </section>
+    {% else %}
+        <p class="muted mt-16">Nog geen uitgaven toegevoegd</p>
+    {% endif %}
+
+</main>
+{% endblock %}
+
+{# ===== FORMULIER ALLEEN VOOR DE POP-UP ===== #}
+{% block expense_modal %}
+    <div class="icon-square">🧾</div>
+
+    <form method="post" class="form" data-expense-form="1">
+
+        <label class="label" for="description">Beschrijving</label>
+        <input
+            type="text"
+            id="description"
+            name="description"
+            class="input"
+            placeholder="Bijv. Boodschappen, Restaurant, etc."
+        >
+
+        <label class="label" for="total_amount">Totaal bedrag</label>
+        <input
+            type="number"
+            step="0.01"
+            id="total_amount"
+            name="total_amount"
+            class="input"
+            value="0.00"
+        >
+
+        <label class="label" for="paid_by">Betaald door</label>
+        <select id="paid_by" name="paid_by" class="input">
+            {% for m in members %}
+                <option value="{{ m.users.user_id }}">{{ m.users.name }}</option>
+            {% endfor %}
+        </select>
+
+        <div class="split-row">
+            <span class="label-small">Verdeling</span>
+            <div class="split-buttons">
+                <label class="pill pill-active">
+                    <input type="radio" name="split_type" value="equal" checked> Gelijk verdelen
+                </label>
+                <label class="pill">
+                    <input type="radio" name="split_type" value="manual"> Aangepast
+                </label>
+            </div>
         </div>
 
-        <!-- Samenvatting -->
-        <div class="detail-card">
-            <h2 class="card-title">Samenvatting</h2>
-
-            <p><strong>Totaal uitgaven:</strong> €{{ '%.2f' % total }}</p>
-
-            <h3 class="subsection-title">Totaal betaald per persoon</h3>
-            <ul class="styled-list">
-                {% for member in members %}
-                <li>{{ member.users.name }}: €{{ '%.2f' % paid[member.users.user_id] }}</li>
-                {% endfor %}
-            </ul>
-
-            <h3 class="subsection-title">Saldo per persoon</h3>
-            <ul class="styled-list">
-                {% for member in members %}
-                <li>
-                    <strong>{{ member.users.name }}:</strong>
-                    {% if saldo[member.users.user_id] > 0 %}
-                    krijgt €{{ '%.2f' % saldo[member.users.user_id] }} terug
-                    {% elif saldo[member.users.user_id] < 0 %} moet €{{ '%.2f' % (-saldo[member.users.user_id]) }}
-                        betalen {% else %} is quitte {% endif %} </li>
-                        {% endfor %}
-            </ul>
-
-            <h3 class="subsection-title">Wie moet aan wie betalen</h3>
-            <ul class="styled-list">
-                {% for betaling in settlements %}
-                <li>{{ betaling.from }} moet €{{ '%.2f' % betaling.amount }} betalen aan {{ betaling.to }}</li>
-                {% endfor %}
-            </ul>
+        <div class="members-split">
+            <span class="label-small">Verdeel het bedrag over de leden</span>
+            {% for m in members %}
+                <div class="split-row-member">
+                    <label>
+                        <input type="checkbox" name="members"
+                               value="{{ m.users.user_id }}" checked>
+                        {{ m.users.name }}
+                    </label>
+                    <input
+                        type="number"
+                        step="0.01"
+                        name="amount_{{ m.users.user_id }}"
+                        class="input input-small"
+                        value="0.00"
+                    >
+                </div>
+            {% endfor %}
         </div>
 
-    </main>
+        <button type="submit" class="btn btn-primary btn-full mt-16">
+            Uitgave toevoegen
+        </button>
 
-</body>
+    </form>
+{% endblock %}
 
-</html>

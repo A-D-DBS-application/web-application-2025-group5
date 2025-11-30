@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}App{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="{% block body_class %}{% endblock %}">
+    {# Huisje rechtsboven: op alle pagina's behalve login + groepen (home) #}
+    {% if session.get("user_id") and request.endpoint not in ['login', 'groups_list'] %}
+    <a href="{{ url_for('logout') }}" class="logout-btn">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 4v16c0 1.1.9 2 2 2h6" />
+            <path d="M10 12h10" />
+            <path d="M16 8l4 4-4 4" />
+        </svg>
+        <span class="logout-text">Log out</span>
+    </a>
+{% endif %}
+
+
+
+        {# Terug-knop linksboven op alle pagina's behalve login + groepenlijst #}
+    {% if session.get("user_id") and request.endpoint not in ['login', 'groups_list'] %}
+        <button type="button"
+                class="top-back-btn"
+                onclick="window.history.back()"
+                aria-label="Ga terug">
+            ←
+        </button>
+    {% endif %}
+
+
+    {# Flash messages #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="flash-container">
+            {% for category, message in messages %}
+
+                {# GEEN groene flash voor expense_success (alleen confetti) #}
+                {% if category != 'expense_success' %}
+                    <div class="flash flash-{{ category }}">{{ message }}</div>
+                {% endif %}
+
+                {% if category == 'expense_success' %}
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            showCelebration();
+                        });
+                    </script>
+                {% endif %}
+
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+{# ===== ONDERSTE MENU ===== #}
+{% block bottom_nav %}
+{% if session.get("user_id") %}
+<nav class="bottom-nav">
+
+    {# 1. LINKS: BALANS #}
+    {% if group is defined and group %}
+        <a href="{{ url_for('balances_route', group_id=group.group_id) }}" class="bottom-nav-item">
+            <div class="nav-icon-box">
+                ⚖️
+            </div>
+            <div class="nav-label">Balans</div>
+        </a>
+    {% else %}
+    <a href="javascript:void(0)"
+       class="bottom-nav-item nav-disabled"
+       onclick="alert('Selecteer eerst een groep');">
+        <div class="nav-icon-box">
+            ⚖️
+        </div>
+        <div class="nav-label">Balans</div>
+    </a>
+{% endif %}
+
+
+    {# 2. MIDDEN: PLUS – afhankelijk van of we in een groep zitten #}
+    {% if group is defined and group %}
+        <a href="javascript:void(0)"
+           class="bottom-nav-item"
+           onclick="openExpenseModal()">
+            <div class="nav-icon-box-main">
+                <span>+</span>
+            </div>
+            <div class="nav-label">Uitgave</div>
+        </a>
+    {% else %}
+        <a href="{{ url_for('groups_create') }}" class="bottom-nav-item">
+            <div class="nav-icon-box-main">
+                <span>+</span>
+            </div>
+            <div class="nav-label">Nieuwe groep</div>
+        </a>
+    {% endif %}
+
+    {# 3. RECHTS: Profiel #}
+    <a href="#" class="bottom-nav-item">
+        <div class="nav-icon-box">
+            <span>👤</span>
+        </div>
+        <div class="nav-label">Profiel</div>
+    </a>
+
+</nav>
+{% endif %}
+{% endblock %}
+
+
+    <!-- ====== CELEBRATIE CONFETTI BIJ UITGAVE TOEVOEGEN ====== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+    <script>
+    function showCelebration() {
+        confetti({
+            particleCount: 200,
+            spread: 75,
+            startVelocity: 45,
+            origin: { x: 0.5, y: 0.5 }
+        });
+
+        const box = document.createElement("div");
+        box.className = "celebration-box";
+        box.innerText = "Expense shared! 🎉";
+
+        document.body.appendChild(box);
+
+        setTimeout(() => {
+            box.remove();
+        }, 2000);
+    }
+    </script>
+
+    <!-- ====== POP-UP UITGAVE TOEVOEGEN ====== -->
+
+{% if session.get("user_id") and request.endpoint != 'login' %}
+<div id="expenseModalOverlay" class="modal-overlay"></div>
+
+<div id="expenseModal" class="modal-sheet">
+    <div class="modal-header">
+        <h3>Uitgave toevoegen</h3>
+        <button id="closeExpenseModal" class="modal-close-btn">×</button>
+    </div>
+
+    <div class="modal-content">
+        {% block expense_modal %}{% endblock %}
+    </div>
+</div>
+{% endif %}
+
+
+<script>
+function openExpenseModal() {
+    document.getElementById("expenseModal").classList.add("active");
+    document.getElementById("expenseModalOverlay").classList.add("active");
+}
+
+document.getElementById("closeExpenseModal").onclick = function() {
+    document.getElementById("expenseModal").classList.remove("active");
+    document.getElementById("expenseModalOverlay").classList.remove("active");
+};
+
+document.getElementById("expenseModalOverlay").onclick = function() {
+    document.getElementById("expenseModal").classList.remove("active");
+    document.getElementById("expenseModalOverlay").classList.remove("active");
+};
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const modal  = document.getElementById("expenseModal");
+    const overlay = document.getElementById("expenseModalOverlay");
+    const closeBtn = document.getElementById("closeExpenseModal");
+
+    function openModal() {
+        if (!modal || !overlay) return;
+        modal.classList.add("active");
+        overlay.classList.add("active");
+    }
+
+    function closeModal() {
+        if (!modal || !overlay) return;
+        modal.classList.remove("active");
+        overlay.classList.remove("active");
+    }
+
+    // Globale functie voor de plus-knop
+    window.openExpenseModal = openModal;
+
+    if (closeBtn) closeBtn.addEventListener("click", closeModal);
+    if (overlay) overlay.addEventListener("click", closeModal);
+
+    // ====== LOGICA VOOR GELIJK VERDELEN ======
+    const form = document.querySelector("[data-expense-form]");
+    if (!form) return;
+
+    const totalInput   = form.querySelector("#total_amount");
+    const equalRadio   = form.querySelector("input[name='split_type'][value='equal']");
+    const manualRadio  = form.querySelector("input[name='split_type'][value='manual']");
+    const memberChecks = form.querySelectorAll("input[name='members']");
+
+    function applyEqualSplit() {
+        const totalStr = (totalInput.value || "0").replace(",", ".");
+        const total = parseFloat(totalStr);
+        const checked = Array.from(memberChecks).filter(cb => cb.checked);
+
+        if (!total || checked.length === 0) return;
+
+        let cents = Math.round(total * 100);
+        const base = Math.floor(cents / checked.length);
+        let rest  = cents % checked.length;
+
+        checked.forEach((cb, index) => {
+            const uid = cb.value;
+            let amountCents = base + (index < rest ? 1 : 0);
+            const amount = (amountCents / 100).toFixed(2);
+            const field = form.querySelector(`input[name="amount_${uid}"]`);
+            if (field) field.value = amount;
+        });
+    }
+
+    // pill-active styling wisselen
+    const pillLabels = form.querySelectorAll(".split-buttons .pill");
+    pillLabels.forEach(label => {
+        const input = label.querySelector("input[type='radio']");
+        if (!input) return;
+        input.addEventListener("change", function () {
+            pillLabels.forEach(l => l.classList.remove("pill-active"));
+            if (this.checked) label.classList.add("pill-active");
+        });
+    });
+
+    if (equalRadio) {
+        equalRadio.addEventListener("change", function () {
+            if (this.checked) applyEqualSplit();
+        });
+    }
+
+    if (totalInput && equalRadio) {
+        totalInput.addEventListener("change", function () {
+            if (equalRadio.checked) applyEqualSplit();
+        });
+    }
+});
+</script>
+
+</body>
+</html>
