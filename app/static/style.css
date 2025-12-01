@@ -65,6 +65,9 @@ a {
     border-radius: 24px;
     box-shadow: 0 24px 40px rgba(15, 23, 42, 0.18);
     padding: 24px;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 92%;
 }
 
 .login-card {
@@ -100,7 +103,7 @@ a {
 }
 
 .page {
-    padding: 24px 24px 96px;
+    padding: 24px 24px 140px; /* extra ruimte voor bottom-nav */
     max-width: 960px;
     margin: 0 auto;
 }
@@ -154,7 +157,7 @@ a {
     background-color: #edf0f7;
     font-size: 14px;
     outline: none;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
 }
 
 .input:focus {
@@ -190,6 +193,11 @@ a {
 
 .btn-full {
     width: 100%;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 13px;
 }
 
 .link-primary {
@@ -252,7 +260,7 @@ a {
     font-size: 32px;
 }
 
-/* ===== Top header ===== */
+/* ===== Top header (groepenlijst) ===== */
 .top-header {
     padding: 24px 24px 8px;
     display: flex;
@@ -261,13 +269,14 @@ a {
     margin: 0 auto;
 }
 
-/* ===== Green header (detail/create) ===== */
+/* ===== Green header (detail/balances) ===== */
 .header-green {
-    background-color: #286238;
+    background-color: #1d5c35;
     color: #ffffff;
-    padding: 20px 24px 72px;
+    padding: 16px 24px 56px; /* iets slanker dan origineel */
     border-bottom-left-radius: 32px;
     border-bottom-right-radius: 32px;
+    position: relative;
 }
 
 .header-inner {
@@ -276,6 +285,7 @@ a {
     display: flex;
     align-items: center;
     gap: 16px;
+    position: relative;
 }
 
 .header-inner.space-between {
@@ -293,14 +303,40 @@ a {
     opacity: 0.9;
 }
 
+/* oude simpele tekst-link (wordt nog gebruikt op sommige plekken) */
 .back-link {
     font-size: 22px;
     color: #ffffff;
     margin-right: 12px;
 }
 
+/* nieuwe mooie back-knop in de header */
+.header-back-btn {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-back-btn svg {
+    width: 22px;
+    height: 22px;
+    stroke: #ffffff;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
 .top-overlap {
-    margin-top: -40px;
+    margin-top: -32px; /* kaartjes overlappen de header een beetje */
 }
 
 /* Center card helper */
@@ -364,23 +400,38 @@ a {
 /* ===== Stats ===== */
 .stats-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(3, minmax(0, 1fr)); /* altijd 3 naast elkaar */
+    gap: 12px;
     margin-bottom: 16px;
 }
 
 .stat-card {
-    padding: 16px 18px;
+    padding: 12px 10px;
+    border-radius: 18px;
+    text-align: center;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+}
+
+.stat-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 
 .stat-label {
     font-size: 13px;
     color: #6b7280;
-    margin-bottom: 4px;
+    margin-bottom: 0;
+}
+
+.stat-icon {
+    font-size: 16px;
 }
 
 .stat-amount {
-    font-size: 22px;
+    margin-top: 6px;
+    font-size: 20px;
     font-weight: 700;
 }
 
@@ -390,7 +441,40 @@ a {
     margin-right: auto;
 }
 
-/* ===== Members chips ===== */
+/* Stat card kleuren */
+.stat-card-debt {
+    background: #ffecec;
+    border: 1px solid #fecaca;
+}
+.stat-card-debt .stat-amount {
+    color: #b91c1c;
+}
+
+.stat-card-credit {
+    background: #ecfdf3;
+    border: 1px solid #bbf7d0;
+}
+.stat-card-credit .stat-amount {
+    color: #047857;
+}
+
+.midcard-green {
+    background: #ecfdf3;
+    border: 1px solid #bbf7d0;
+}
+.midcard-green .stat-amount {
+    color: #047857;
+}
+
+.midcard-red {
+    background: #ffecec;
+    border: 1px solid #fecaca;
+}
+.midcard-red .stat-amount {
+    color: #b91c1c;
+}
+
+/* ===== Members chips / lijst ===== */
 .members-row {
     margin-top: 24px;
     display: flex;
@@ -435,6 +519,119 @@ a {
     font-weight: 600;
 }
 
+/* ==== Leden-kaart ===== */
+.members-card {
+    background: #ffffff;
+    border-radius: 26px;
+    padding: 1rem 1.25rem;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.07);
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.members-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.members-title-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.members-title {
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.member-count {
+    background: #184e2e;
+    color: #fff;
+    font-size: 0.75rem;
+    padding: 0.1rem 0.6rem;
+    border-radius: 999px;
+}
+
+.members-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    align-items: flex-end;
+}
+
+.chip-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.chip-primary {
+    background: #184e2e;
+    color: #fff;
+}
+
+.chip-secondary {
+    background: #eef1f7;
+    color: #364152;
+    border-color: #d5d9e4;
+}
+
+.chip-icon {
+    font-size: 0.8rem;
+}
+
+/* leden kleiner maken */
+.members-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.member-item {
+    display: flex;
+    align-items: center;
+    padding: 0.55rem 0.8rem;
+    border-radius: 1rem;
+    background: #f3f5fb;
+}
+
+.member-left {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.member-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background: #184e2e;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.member-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #121826;
+}
+
 /* ===== Split ===== */
 .split-row {
     margin-top: 8px;
@@ -477,16 +674,21 @@ a {
 /* ===== Expenses ===== */
 .expenses-section {
     margin-top: 24px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 12px;
 }
 
 .expense-card {
-    background-color: #e9f9ed;
-    border-radius: 18px;
-    padding: 14px 18px;
+    background: #ffffff;
+    border-radius: 26px;
+    padding: 18px 22px;
+    margin: 10px auto 16px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
 }
 
 .expense-left {
@@ -551,20 +753,7 @@ a {
 .mt-24 { margin-top: 24px; }
 .mt-32 { margin-top: 32px; }
 
-/* ===== Responsief ===== */
-@media (max-width: 640px) {
-    .page, .top-header, .header-inner {
-        padding-left: 16px;
-        padding-right: 16px;
-    }
-
-    .header-green {
-        padding-left: 16px;
-        padding-right: 16px;
-    }
-}
-
-/* ===== Huisje rechtsboven (SVG) ===== */
+/* ===== Huisje rechtsboven (fixed SVG) ===== */
 .top-home-btn {
     position: fixed;
     top: 20px;
@@ -590,6 +779,17 @@ a {
     stroke-linejoin: round;
 }
 
+/* iets compacter op kleine schermen */
+@media (max-width: 430px) {
+    .top-home-btn {
+        top: 18px;
+        right: 14px;
+        width: 44px;
+        height: 44px;
+        border-radius: 16px;
+    }
+}
+
 /* ===== Celebration ===== */
 .celebration-box {
     position: fixed;
@@ -612,23 +812,7 @@ a {
     to   { transform: translate(-50%, -50%) scale(1); opacity: 1; }
 }
 
-/* ===== Group detail headings ===== */
-.group-detail-name {
-    font-size: 26px;
-    font-weight: 700;
-    color: #ffffff;
-    margin-bottom: 6px;
-}
-
-.group-detail-dates {
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    margin-top: 2px;
-    color: #f9fafb;
-}
-
-/* ===== Leden + Toevoegen knop ===== */
+/* ===== Leden + Toevoegen knop (oude stijl, nog gebruikt?) ===== */
 .member-add-btn {
     display: inline-flex;
     align-items: center;
@@ -658,56 +842,6 @@ a {
     line-height: 1;
 }
 
-/* ===== Stat cards kleuren ===== */
-.stat-label-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.stat-icon {
-    font-size: 16px;
-}
-
-/* Pastel rood */
-.stat-card-debt {
-    background: #ffecec !important;
-    border: 1px solid #fecaca !important;
-}
-
-.stat-card-debt .stat-amount {
-    color: #b91c1c;
-}
-
-/* Pastel groen */
-.stat-card-credit {
-    background: #ecfdf3 !important;
-    border: 1px solid #bbf7d0 !important;
-}
-
-.stat-card-credit .stat-amount {
-    color: #047857;
-}
-
-/* MIDDENKAART extra */
-.midcard-green {
-    background: #ecfdf3 !important;
-    border: 1px solid #bbf7d0 !important;
-}
-
-.midcard-green .stat-amount {
-    color: #047857 !important;
-}
-
-.midcard-red {
-    background: #ffecec !important;
-    border: 1px solid #fecaca !important;
-}
-
-.midcard-red .stat-amount {
-    color: #b91c1c !important;
-}
-
 /* ===== Share popover ===== */
 .share-wrapper {
     position: relative;
@@ -715,7 +849,7 @@ a {
 
 .share-popover {
     position: absolute;
-    bottom: 54px;
+    bottom: 64px;
     left: 50%;
     transform: translateX(-50%);
     background: #ffffff;
@@ -749,14 +883,14 @@ a {
     cursor: default;
 }
 
-/* ===== Bottom nav – stijl zoals voorbeeld ===== */
+/* ===== Bottom nav ===== */
 .bottom-nav {
     position: fixed;
     left: 0;
     right: 0;
     bottom: 0;
-    background: #34363c;  /* donkerblauw-zwart */
-    padding: 10px 24px 24px;
+    background: #34363c;
+    padding: 14px 20px 28px;
     display: flex;
     justify-content: space-evenly;
     align-items: flex-end;
@@ -771,6 +905,7 @@ a {
     align-items: center;
     gap: 4px;
     text-decoration: none;
+    margin: 0 6px;
 }
 
 .nav-icon-btn {
@@ -782,16 +917,16 @@ a {
     display: flex;
 }
 
-/* linker & rechter iconen: grijs, geen achtergrond */
+/* linker & rechter iconen */
 .nav-icon-box {
-    width: 44px;
-    height: 44px;
+    width: 42px;
+    height: 42px;
     border-radius: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: transparent;
-    color: #9ca3af;  /* grijs */
+    color: #9ca3af;
     font-size: 20px;
 }
 
@@ -820,146 +955,51 @@ a {
 }
 
 .nav-label {
-    font-size: 11px;
+    font-size: 12px;
     color: #9ca3af;
+    margin-top: 2px;
 }
 
-/* ===== GLOBAL SPACING FIXES ===== */
-
-/* Meer binnenruimte rond ALLE pagina’s */
-.page {
-    padding-left: 24px !important;
-    padding-right: 24px !important;
-    padding-bottom: 140px !important; /* ruimte boven bottom nav */
+.nav-disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+.nav-disabled .nav-icon-box {
+    pointer-events: none;
 }
 
-/* Header-spacing groter */
-.header-green,
-.top-header {
-    padding-left: 24px !important;
-    padding-right: 24px !important;
+/* DESKTOP: nav iets compacter */
+@media (min-width: 768px) {
+    .bottom-nav {
+        padding: 8px 24px 16px;
+        height: auto;
+    }
+
+    .bottom-nav-item {
+        margin: 0 10px;
+    }
+
+    .nav-icon-box {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+    }
+
+    .nav-icon-box-main {
+        width: 54px;
+        height: 54px;
+        font-size: 26px;
+        border-radius: 18px;
+        box-shadow: 0 0 0 3px #34363c;
+    }
+
+    .nav-label {
+        font-size: 11px;
+        margin-top: 0;
+    }
 }
 
-/* Floating cards onder de header */
-.top-overlap {
-    margin-top: -20px !important; /* was -40 → dichter maar niet geplakt */
-}
-
-/* ===== NAVIGATION BAR SPACING ===== */
-
-.bottom-nav {
-    padding: 14px 20px 28px !important;  /* meer lucht */
-}
-
-/* Icoontjes dichter bij elkaar: */
-.bottom-nav-item {
-    margin: 0 6px !important;
-}
-
-.nav-icon-box {
-    width: 42px !important;
-    height: 42px !important;
-}
-
-.nav-label {
-    margin-top: 2px !important;
-    font-size: 12px !important;
-}
-
-/* ===== SHARE POPOVER POSITIE AANPASSEN ===== */
-
-.share-popover {
-    bottom: 64px !important; /* iets hoger zodat het niet tegen nav kleeft */
-}
-
-/* ===== CARDS BREEDTE FIX ===== */
-
-.card {
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 92%; /* niet tegen de zijkanten plakken */
-}
-
-/* “Uitgave toevoegen” balk in het midden, niet vol tegen edge */
-button.btn-add,
-.add-expense-btn,
-#add-expense {
-    margin-left: 12px !important;
-    margin-right: 12px !important;
-}
-
-/* ===== MEMBERS / EXPENSE SPACING ===== */
-
-.members-row,
-.expenses-section {
-    padding-left: 8px !important;
-    padding-right: 8px !important;
-}
-
-/* ===== INPUT FIELDS ===== */
-
-.input {
-    margin-bottom: 18px !important;
-}
-
-/* ===== EXPENSE LIST FIX: CENTRALE KOLOM ===== */
-
-.expenses-section {
-    max-width: 800px;        /* mooie breedte zoals Splitwise */
-    margin: 0 auto;          /* centreren */
-    padding: 0 12px;         /* lucht links/rechts */
-}
-
-.expense-card {
-    max-width: 800px;        /* kaart zelf ook max 800px */
-    margin: 10px auto !important;  /* centreren en afstand */
-    border-radius: 20px;     /* iets mooier afgerond */
-    padding: 16px 20px !important;
-}
-
-/* ===== Leden in een kaart + mooie "Lid toevoegen" knop ===== */
-
-.members-card {
-    margin-top: 24px;
-    margin-bottom: 8px;
-    padding: 18px 20px;
-}
-
-.members-card .members-row {
-    align-items: flex-start;
-}
-
-.members-card .chip-list {
-    margin-top: 10px;
-}
-
-/* ===== Centrale "+ Uitgave toevoegen" knop ===== */
-
-.add-expense-wrapper {
-    margin: 18px 0 24px;
-    display: flex;
-    justify-content: center;
-}
-
-.add-expense-pill {
-    background: #286238;
-    color: #ffffff;
-    border: none;
-    padding: 10px 28px;
-    border-radius: 999px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
-    transition: transform 0.1s ease, filter 0.1s ease;
-}
-
-.add-expense-pill:hover {
-    filter: brightness(1.05);
-    transform: translateY(-1px);
-}
-
-/* ===== MODAL OVERLAY ===== */
+/* ===== MODAL ===== */
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -971,7 +1011,6 @@ button.btn-add,
     z-index: 999;
 }
 
-/* ===== BOTTOM SHEET ===== */
 .modal-sheet {
     position: fixed;
     left: 0;
@@ -990,7 +1029,6 @@ button.btn-add,
     transition: bottom 0.3s ease;
 }
 
-/* ===== VISIBLE STATE ===== */
 .modal-overlay.active {
     opacity: 1;
     pointer-events: all;
@@ -1000,7 +1038,6 @@ button.btn-add,
     bottom: 0;
 }
 
-/* ===== HEADER ===== */
 .modal-header {
     display: flex;
     justify-content: space-between;
@@ -1021,15 +1058,7 @@ button.btn-add,
     padding-right: 6px;
 }
 
-
-.expense-card {
-    background: #ffffff;
-    border-radius: 26px;
-    padding: 18px 22px;
-    margin-bottom: 16px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
-}
-/* ==== Ronde groene vinkjes in de uitgave-modal ==== */
+/* ronde checkboxes in modal */
 .modal-content input[type="checkbox"] {
     -webkit-appearance: none;
     appearance: none;
@@ -1059,217 +1088,25 @@ button.btn-add,
     font-size: 12px;
     font-weight: 700;
 }
-/* ==== Inputs in de uitgave-modal: altijd full width ==== */
+
+/* modal inputs altijd full width */
 .modal-content .input {
     width: 100%;
     display: block;
 }
 
-/* ===== MEMBERS CARD (mooie stijl volgens screenshot) ===== */
-
-.members-card {
-    background: #ffffff;
-    border-radius: 26px;
-    padding: 22px 26px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.07);
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
-
-.member-count {
-    background: #286238;
-    color: #ffffff;
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-size: 13px;
-    margin-left: 8px;
-}
-
-.members-list {
-    margin-top: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.member-item {
-    background: #edf0f7;
-    border-radius: 22px;
-    padding: 18px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.member-left {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.member-avatar {
-    width: 60px;
-    height: 60px;
-    border-radius: 20px;
-    background: #286238;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #ffffff;
-    font-size: 20px;
-    font-weight: 700;
-}
-
-.member-name {
-    font-size: 18px;
-    font-weight: 600;
-}
-
-.member-status {
-    background: #dfe3e9;
-    color: #374151;
-    padding: 10px 28px;
-    border-radius: 30px;
-    font-size: 15px;
-    font-weight: 600;
-}
-
-/* ==== LEDEN BLOK – COMPACT EN MOOI ==== */
-
-.members-card {
-    padding: 1rem 1.25rem;
-}
-
-.members-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 0.75rem;
-}
-
-.members-title-row {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.members-title {
-    font-weight: 700;
-    font-size: 1rem;
-}
-
-.member-count {
-    background: #184e2e;
-    color: #fff;
-    font-size: 0.75rem;
-    padding: 0.1rem 0.6rem;
-    border-radius: 999px;
-}
-
-.members-actions {
-    display: flex;
-    flex-direction: column;   /* onder elkaar aan de zijkant */
-    gap: 0.35rem;
-    align-items: flex-end;
-}
-
-.chip-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    padding: 0.25rem 0.7rem;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-decoration: none;
-    border: 1px solid transparent;
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-.chip-primary {
-    background: #184e2e;
-    color: #fff;
-}
-
-.chip-secondary {
-    background: #eef1f7;
-    color: #364152;
-    border-color: #d5d9e4;
-}
-
-.chip-icon {
-    font-size: 0.8rem;
-}
-
-/* leden kleiner maken */
-
-.members-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.member-item {
-    display: flex;
-    align-items: center;
-    padding: 0.55rem 0.8rem;      /* kleiner dan eerst */
-    border-radius: 1rem;
-    background: #f3f5fb;
-}
-
-.member-left {
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
-}
-
-.member-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 12px;
-    background: #184e2e;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    flex-shrink: 0;
-}
-
-.member-name {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #121826;
-}
-
-.nav-disabled {
-    opacity: 0.5;
-    cursor: default;
-}
-.nav-disabled .nav-icon-box {
-    pointer-events: none;
-}
-
-.btn-sm {
-    padding: 6px 12px;
-    font-size: 13px;
-}
-
-
-
+/* ===== Logout knop (groepenlijst) ===== */
 .logout-btn {
     position: absolute;
-    top: 32px;                /* zodat hij mooi gecentreerd zit */
+    top: 32px;
     right: 22px;
-    background: #b91c1c;      /* rood */
+    background: #b91c1c;
     color: #ffffff;
     padding: 10px 16px;
     border-radius: 14px;
     display: flex;
     align-items: center;
-    gap: 8px;                 /* ruimte tussen icoon en tekst */
+    gap: 8px;
     text-decoration: none;
     font-size: 14px;
     font-weight: 600;
@@ -1278,91 +1115,107 @@ button.btn-add,
 }
 
 .logout-btn svg {
-    width: 20px;             /* kleiner icoontje */
+    width: 20px;
     height: 20px;
     stroke: #ffffff;
     stroke-width: 2.5;
     fill: none;
 }
 
+/* ===== Responsief algemene padding ===== */
+@media (max-width: 640px) {
+    .page,
+    .top-header,
+    .header-inner {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .header-green {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+}
+
+/* ===== iPhone extra tweaks ===== */
+@media (max-width: 420px) {
+    .header-title {
+        font-size: 20px;
+    }
+    .group-detail-dates,
+    .header-subtitle {
+        font-size: 13px;
+    }
+    .stats-row {
+        gap: 10px;
+        margin-top: -4px;
+    }
+    .stat-amount {
+        font-size: 18px;
+    }
+}
+/* ==== FIX: groene header dunner + ruimte tot stat cards ==== */
+
 .header-green {
-    position: relative;       /* nodig voor absolute positionering */
-}
-.group-icon-emoji {
-    width: 60px;
-    height: 60px;
-    border-radius: 20px;
-    background: #e8f3ed;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 30px;
-    flex-shrink: 0;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;  /* dunne, mooie header */
 }
 
-  /* DESKTOP FIX: Bottom navigation compacter */
-
-@media (min-width: 768px) {
-
-    .bottom-nav {
-        padding: 8px 24px 16px !important;
-        height: auto !important;
-    }
-
-    .nav-icon-box {
-        width: 36px !important;
-        height: 36px !important;
-        font-size: 18px !important;
-    }
-
-    .nav-icon-box-main {
-        width: 54px !important;
-        height: 54px !important;
-        font-size: 26px !important;
-        border-radius: 18px !important;
-        box-shadow: 0 0 0 3px #34363c !important;
-    }
-
-    .nav-label {
-        font-size: 11px !important;
-        margin-top: 0 !important;
-    }
-
-    .bottom-nav-item {
-        margin: 0 10px !important;
-    }
+/* stat cards lager zodat ze niet raken */
+.stats-row {
+    margin-top: 22px !important;   /* altijd veilige ruimte */
 }
+/* === PDF-KNOP FIX — nu iets dichter bij het huisje === */
 
-/* Groene header minder hoog maken */
-.header-green {
-    padding: 20px 16px;   
-    min-height: 120px;    
-}
-
-.header-inner {
-    padding-top: 0;       
-    padding-bottom: 0;
-}
-
-/* Mooie terug-knop in groene header */
-.header-back-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
+.pdf-btn-top {
     position: absolute;
-    left: 16px;
+    right: 25px;                    /* WAS 70px → nu dichter bij home */
     top: 50%;
     transform: translateY(-50%);
+    background: #184e2e;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    white-space: nowrap;
+    z-index: 998;
 }
 
-.header-back-btn svg {
-    width: 26px;
-    height: 26px;
-    stroke: white;
-    fill: none;
-    stroke-width: 2.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+/* iPhone fix (home-knop staat relatief groter → meer margin vereist) */
+@media (max-width: 430px) {
+    .pdf-btn-top {
+        right: 78px !important;     /* WAS 100px → dichter maar nog veilig */
+        padding: 5px 12px !important;
+        font-size: 12px !important;
+    }
+}
+
+/* === TITEL CENTREREN TUSSEN BACK & PDF === */
+
+.header-title-wrapper {
+    margin-left: 70px !important;    /* laat ruimte voor back-knop */
+    margin-right: 110px !important;  /* WAS 90px → meer ruimte rechts door verschuiving PDF */
+    text-align: left;
+}
+
+/* Belangrijk voor correcte uitlijning */
+.header-inner {
+    justify-content: center !important;
+}
+/* ==== GROUP DETAIL: Titel verder naar links van het huisje ==== */
+.header-green .header-inner h1.header-title {
+    margin-right: 40px !important;   /* duwt titel naar links */
+}
+
+/* iPhone extra ruimte */
+@media (max-width: 430px) {
+    .header-green .header-inner h1.header-title {
+        margin-right: 55px !important;
+    }
 }

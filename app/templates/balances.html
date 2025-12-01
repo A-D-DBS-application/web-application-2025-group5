@@ -5,22 +5,25 @@
 {% block content %}
 
 <div class="header-green">
-    <div class="header-inner space-between">
+    <div class="header-inner">
 
-        <!-- Mooie back-knop -->
-        <a href="{{ url_for('group_detail', group_id=group.group_id) }}" class="header-back-btn">
+        <!-- Back-knop -->
+        <a href="{{ url_for('group_detail', group_id=group.group_id) }}"
+           class="header-back-btn">
             <svg viewBox="0 0 24 24">
                 <path d="M15 18l-6-6 6-6"/>
             </svg>
         </a>
 
-        <div style="margin-left: 56px;">
+        <!-- Titel + subtitel -->
+        <div class="header-title-wrapper">
             <h1 class="header-title">Balans</h1>
             <p class="header-subtitle">{{ group.name }}</p>
         </div>
 
+        <!-- PDF-knop -->
         <a href="{{ url_for('download_pdf', group_id=group.group_id) }}"
-           class="btn btn-primary btn-sm">
+           class="pdf-btn-top">
             PDF ↓
         </a>
 
