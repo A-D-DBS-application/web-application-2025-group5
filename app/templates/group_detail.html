@@ -6,13 +6,21 @@
 {% block content %}
 <div class="header-green">
     <div class="header-inner">
-        <a href="{{ url_for('groups_list') }}" class="back-link">←</a>
-        <div>
+
+        <!-- Mooie back-knop -->
+        <a href="{{ url_for('groups_list') }}" class="header-back-btn">
+            <svg viewBox="0 0 24 24">
+                <path d="M15 18l-6-6 6-6"/>
+            </svg>
+        </a>
+
+        <div style="margin-left: 56px;">
             <h1 class="header-title group-detail-name">{{ group.name }}</h1>
             <p class="group-detail-dates">
                 {{ start_date_fmt }} – {{ end_date_fmt }}
             </p>
         </div>
+
     </div>
 </div>
 
@@ -45,7 +53,7 @@
         </div>
     </section>
 
-      <!-- LEDEN -->
+    <!-- LEDEN -->
     <section class="card members-card">
         <div class="members-card-header">
             <div class="members-title-row">
@@ -54,14 +62,12 @@
             </div>
 
             <div class="members-actions">
-                <!-- Lid toevoegen (normaal toevoegen in de app) -->
                 <a href="{{ url_for('add_member', group_id=group.group_id) }}" 
                    class="chip-button chip-primary">
                     <span class="chip-icon">＋</span>
                     <span>Lid toevoegen</span>
                 </a>
 
-                <!-- Lid uitnodigen (WhatsApp link) -->
                 <a href="{{ url_for('share_group', group_id=group.group_id) }}" 
                    class="chip-button chip-secondary"
                    target="_blank" rel="noopener">
@@ -87,9 +93,6 @@
         </div>
     </section>
 
-
-
-            
     <!-- UITGAVENLIJST -->
     {% if expenses %}
         <section class="expenses-section">
@@ -122,8 +125,8 @@
 </main>
 {% endblock %}
 
-{# ===== FORMULIER ALLEEN VOOR DE POP-UP ===== #}
 {% block expense_modal %}
+
     <div class="icon-square">🧾</div>
 
     <form method="post" class="form" data-expense-form="1">
@@ -171,8 +174,7 @@
             {% for m in members %}
                 <div class="split-row-member">
                     <label>
-                        <input type="checkbox" name="members"
-                               value="{{ m.users.user_id }}" checked>
+                        <input type="checkbox" name="members" value="{{ m.users.user_id }}" checked>
                         {{ m.users.name }}
                     </label>
                     <input
@@ -192,4 +194,3 @@
 
     </form>
 {% endblock %}
-

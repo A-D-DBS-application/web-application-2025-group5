@@ -7,12 +7,18 @@
 <div class="header-green">
     <div class="header-inner space-between">
 
-        <div>
+        <!-- Mooie back-knop -->
+        <a href="{{ url_for('group_detail', group_id=group.group_id) }}" class="header-back-btn">
+            <svg viewBox="0 0 24 24">
+                <path d="M15 18l-6-6 6-6"/>
+            </svg>
+        </a>
+
+        <div style="margin-left: 56px;">
             <h1 class="header-title">Balans</h1>
             <p class="header-subtitle">{{ group.name }}</p>
         </div>
 
-        <!-- Download PDF knop -->
         <a href="{{ url_for('download_pdf', group_id=group.group_id) }}"
            class="btn btn-primary btn-sm">
             PDF ↓
@@ -32,7 +38,6 @@
         </p>
     {% endif %}
 
-   
     <div class="card">
         <table class="table">
             <thead>
@@ -53,6 +58,7 @@
             </tbody>
         </table>
     </div>
+
 </main>
 
 {% endblock %}

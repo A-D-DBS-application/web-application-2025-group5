@@ -1299,3 +1299,70 @@ button.btn-add,
     font-size: 30px;
     flex-shrink: 0;
 }
+
+  /* DESKTOP FIX: Bottom navigation compacter */
+
+@media (min-width: 768px) {
+
+    .bottom-nav {
+        padding: 8px 24px 16px !important;
+        height: auto !important;
+    }
+
+    .nav-icon-box {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 18px !important;
+    }
+
+    .nav-icon-box-main {
+        width: 54px !important;
+        height: 54px !important;
+        font-size: 26px !important;
+        border-radius: 18px !important;
+        box-shadow: 0 0 0 3px #34363c !important;
+    }
+
+    .nav-label {
+        font-size: 11px !important;
+        margin-top: 0 !important;
+    }
+
+    .bottom-nav-item {
+        margin: 0 10px !important;
+    }
+}
+
+/* Groene header minder hoog maken */
+.header-green {
+    padding: 20px 16px;   
+    min-height: 120px;    
+}
+
+.header-inner {
+    padding-top: 0;       
+    padding-bottom: 0;
+}
+
+/* Mooie terug-knop in groene header */
+.header-back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.header-back-btn svg {
+    width: 26px;
+    height: 26px;
+    stroke: white;
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
