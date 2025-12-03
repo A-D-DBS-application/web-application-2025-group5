@@ -26,6 +26,7 @@ from reportlab.lib import colors
 from reportlab.lib.units import cm
 
 
+
 # ============================================================
 # 1. LOGIN REQUIRED DECORATOR
 # ============================================================
@@ -407,9 +408,45 @@ def delete_expense(expense_id):
 def index():
     return redirect(url_for("login"))
 
+# ============================================================
+# 10. PROFIEL
+# ============================================================
+
+@app.route("/profile", methods=["GET", "POST"])
+@login_required
+def profile():
+    user_id = session["user_id"]
+
+    # Huidige gegevens ophalen
+    result = supabase.table("users").select("*").eq("user_id", user_id).execute()
+    user = result.data[0] if result.data else None
+
+    if request.method == "POST":
+        phone = request.form.get("phone", "").strip()
+        iban = request.form.get("iban", "").strip()
+
+        if not phone or not iban:
+            flash("Vul zowel je telefoonnummer als je bankrekeningnummer (IBAN) in.", "error")
+            return redirect(url_for("profile"))
+
+        # LET OP:
+        # - Hier gebruik ik 'payment_method' om het IBAN in op te slaan.
+        # - Als je in je database een kolom 'iban' hebt, vervang dan
+        #   'payment_method' door 'iban' hieronder.
+        supabase.table("users").update({
+            "phone_number": phone,
+            "payment_method": iban
+        }).eq("user_id", user_id).execute()
+
+        flash("Je profiel is bijgewerkt.", "success")
+        return redirect(url_for("profile"))
+
+    return render_template("profile.html", user=user)
+
+
 
 # ============================================================
-# 10. PDF DOWNLOAD (MET OPTIMALE BETALINGEN!)
+# 11. PDF DOWNLOAD (MET OPTIMALE BETALINGEN!)
 # ============================================================
 
 @app.route('/group/<int:group_id>/download_pdf')

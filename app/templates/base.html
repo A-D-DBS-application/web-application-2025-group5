@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="nl">
+
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}App{% endblock %}</title>
@@ -11,57 +12,54 @@
 
     {# ===== LOGOUT: alleen op groepenlijst ===== #}
     {% if session.get("user_id") and request.endpoint == 'groups_list' %}
-        <a href="{{ url_for('logout') }}" class="logout-btn">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M3 4v16c0 1.1.9 2 2 2h6" />
-                <path d="M10 12h10" />
-                <path d="M16 8l4 4-4 4" />
-            </svg>
-            <span class="logout-text">Log out</span>
-        </a>
+    <a href="{{ url_for('logout') }}" class="logout-btn">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 4v16c0 1.1.9 2 2 2h6" />
+            <path d="M10 12h10" />
+            <path d="M16 8l4 4-4 4" />
+        </svg>
+        <span class="logout-text">Log out</span>
+    </a>
     {% endif %}
 
     {# ===== HOME KNOP (rechtsboven) ===== #}
     {% if session.get("user_id") and request.endpoint not in ['login', 'groups_list'] %}
-        <a href="{{ url_for('groups_list') }}" class="top-home-btn" aria-label="Home">
-            <svg viewBox="0 0 24 24">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                <path d="M9 22V12h6v10"/>
-            </svg>
-        </a>
+    <a href="{{ url_for('groups_list') }}" class="top-home-btn" aria-label="Home">
+        <svg viewBox="0 0 24 24">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <path d="M9 22V12h6v10" />
+        </svg>
+    </a>
     {% endif %}
 
     {# ===== GENERIC TERUGKNOP: niet tonen op pages met eigen header ===== #}
-    {% if session.get("user_id") 
-       and request.endpoint not in ['login', 'groups_list', 'group_detail', 'balances_route'] %}
-        <button type="button"
-                class="top-back-btn"
-                onclick="window.history.back()"
-                aria-label="Ga terug">
-            ←
-        </button>
+    {% if session.get("user_id")
+    and request.endpoint not in ['login', 'groups_list', 'group_detail', 'balances_route'] %}
+    <button type="button" class="top-back-btn" onclick="window.history.back()" aria-label="Ga terug">
+        ←
+    </button>
     {% endif %}
 
     {# ===== FLASH MESSAGES ===== #}
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-        <div class="flash-container">
-            {% for category, message in messages %}
+    <div class="flash-container">
+        {% for category, message in messages %}
 
-                {% if category != 'expense_success' %}
-                    <div class="flash flash-{{ category }}">{{ message }}</div>
-                {% endif %}
+        {% if category != 'expense_success' %}
+        <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endif %}
 
-                {% if category == 'expense_success' %}
-                    <script>
-                        document.addEventListener("DOMContentLoaded", function () {
-                            showCelebration();
-                        });
-                    </script>
-                {% endif %}
+        {% if category == 'expense_success' %}
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                showCelebration();
+            });
+        </script>
+        {% endif %}
 
-            {% endfor %}
-        </div>
+        {% endfor %}
+    </div>
     {% endif %}
     {% endwith %}
 
@@ -74,36 +72,36 @@
 
         {# LINKS: Balans #}
         {% if group is defined and group %}
-            <a href="{{ url_for('balances_route', group_id=group.group_id) }}" class="bottom-nav-item">
-                <div class="nav-icon-box">⚖️</div>
-                <div class="nav-label">Balans</div>
-            </a>
+        <a href="{{ url_for('balances_route', group_id=group.group_id) }}" class="bottom-nav-item">
+            <div class="nav-icon-box">⚖️</div>
+            <div class="nav-label">Balans</div>
+        </a>
         {% else %}
-            <a href="javascript:void(0)" class="bottom-nav-item nav-disabled"
-               onclick="alert('Selecteer eerst een groep');">
-                <div class="nav-icon-box">⚖️</div>
-                <div class="nav-label">Balans</div>
-            </a>
+        <a href="javascript:void(0)" class="bottom-nav-item nav-disabled" onclick="alert('Selecteer eerst een groep');">
+            <div class="nav-icon-box">⚖️</div>
+            <div class="nav-label">Balans</div>
+        </a>
         {% endif %}
 
         {# MIDDEN: PLUS #}
         {% if group is defined and group %}
-            <a href="javascript:void(0)" class="bottom-nav-item" onclick="openExpenseModal()">
-                <div class="nav-icon-box-main"><span>+</span></div>
-                <div class="nav-label">Uitgave</div>
-            </a>
+        <a href="javascript:void(0)" class="bottom-nav-item" onclick="openExpenseModal()">
+            <div class="nav-icon-box-main"><span>+</span></div>
+            <div class="nav-label">Uitgave</div>
+        </a>
         {% else %}
-            <a href="{{ url_for('groups_create') }}" class="bottom-nav-item">
-                <div class="nav-icon-box-main"><span>+</span></div>
-                <div class="nav-label">Nieuwe groep</div>
-            </a>
+        <a href="{{ url_for('groups_create') }}" class="bottom-nav-item">
+            <div class="nav-icon-box-main"><span>+</span></div>
+            <div class="nav-label">Nieuwe groep</div>
+        </a>
         {% endif %}
 
         {# RECHTS: Profiel #}
-        <a href="#" class="bottom-nav-item">
+        <a href="{{ url_for('profile') }}" class="bottom-nav-item">
             <div class="nav-icon-box"><span>👤</span></div>
             <div class="nav-label">Profiel</div>
         </a>
+
 
     </nav>
     {% endif %}
@@ -113,24 +111,24 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
     <script>
-    function showCelebration() {
-        confetti({
-            particleCount: 200,
-            spread: 75,
-            startVelocity: 45,
-            origin: { x: 0.5, y: 0.5 }
-        });
+        function showCelebration() {
+            confetti({
+                particleCount: 200,
+                spread: 75,
+                startVelocity: 45,
+                origin: { x: 0.5, y: 0.5 }
+            });
 
-        const box = document.createElement("div");
-        box.className = "celebration-box";
-        box.innerText = "Expense shared! 🎉";
+            const box = document.createElement("div");
+            box.className = "celebration-box";
+            box.innerText = "Expense shared! 🎉";
 
-        document.body.appendChild(box);
+            document.body.appendChild(box);
 
-        setTimeout(() => {
-            box.remove();
-        }, 2000);
-    }
+            setTimeout(() => {
+                box.remove();
+            }, 2000);
+        }
     </script>
 
     <!-- ===== MODAL STRUCTURE ===== -->
@@ -150,65 +148,66 @@
     {% endif %}
 
     <script>
-    function openExpenseModal() {
-        document.getElementById("expenseModal").classList.add("active");
-        document.getElementById("expenseModalOverlay").classList.add("active");
-    }
+        function openExpenseModal() {
+            document.getElementById("expenseModal").classList.add("active");
+            document.getElementById("expenseModalOverlay").classList.add("active");
+        }
 
-    document.getElementById("closeExpenseModal")?.addEventListener("click", () => {
-        expenseModal.classList.remove("active");
-        expenseModalOverlay.classList.remove("active");
-    });
+        document.getElementById("closeExpenseModal")?.addEventListener("click", () => {
+            expenseModal.classList.remove("active");
+            expenseModalOverlay.classList.remove("active");
+        });
 
-    document.getElementById("expenseModalOverlay")?.addEventListener("click", () => {
-        expenseModal.classList.remove("active");
-        expenseModalOverlay.classList.remove("active");
-    });
+        document.getElementById("expenseModalOverlay")?.addEventListener("click", () => {
+            expenseModal.classList.remove("active");
+            expenseModalOverlay.classList.remove("active");
+        });
     </script>
 
     <!-- ===== SPLIT LOGIC ===== -->
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const form = document.querySelector("[data-expense-form]");
-        if (!form) return;
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.querySelector("[data-expense-form]");
+            if (!form) return;
 
-        const totalInput   = form.querySelector("#total_amount");
-        const equalRadio   = form.querySelector("input[name='split_type'][value='equal']");
-        const memberChecks = form.querySelectorAll("input[name='members']");
+            const totalInput = form.querySelector("#total_amount");
+            const equalRadio = form.querySelector("input[name='split_type'][value='equal']");
+            const memberChecks = form.querySelectorAll("input[name='members']");
 
-        function applyEqualSplit() {
-            const totalStr = (totalInput.value || "0").replace(",", ".");
-            const total = parseFloat(totalStr);
-            const checked = Array.from(memberChecks).filter(cb => cb.checked);
+            function applyEqualSplit() {
+                const totalStr = (totalInput.value || "0").replace(",", ".");
+                const total = parseFloat(totalStr);
+                const checked = Array.from(memberChecks).filter(cb => cb.checked);
 
-            if (!total || checked.length === 0) return;
+                if (!total || checked.length === 0) return;
 
-            let cents = Math.round(total * 100);
-            const base = Math.floor(cents / checked.length);
-            let rest  = cents % checked.length;
+                let cents = Math.round(total * 100);
+                const base = Math.floor(cents / checked.length);
+                let rest = cents % checked.length;
 
-            checked.forEach((cb, index) => {
-                const uid = cb.value;
-                const amount = ((base + (index < rest ? 1 : 0)) / 100).toFixed(2);
-                const field = form.querySelector(`input[name="amount_${uid}"]`);
-                if (field) field.value = amount;
+                checked.forEach((cb, index) => {
+                    const uid = cb.value;
+                    const amount = ((base + (index < rest ? 1 : 0)) / 100).toFixed(2);
+                    const field = form.querySelector(`input[name="amount_${uid}"]`);
+                    if (field) field.value = amount;
+                });
+            }
+
+            form.querySelectorAll(".split-buttons .pill").forEach(label => {
+                const input = label.querySelector("input[type='radio']");
+                if (!input) return;
+
+                input.addEventListener("change", () => {
+                    form.querySelectorAll(".pill").forEach(l => l.classList.remove("pill-active"));
+                    label.classList.add("pill-active");
+                });
             });
-        }
 
-        form.querySelectorAll(".split-buttons .pill").forEach(label => {
-            const input = label.querySelector("input[type='radio']");
-            if (!input) return;
-
-            input.addEventListener("change", () => {
-                form.querySelectorAll(".pill").forEach(l => l.classList.remove("pill-active"));
-                label.classList.add("pill-active");
-            });
+            equalRadio?.addEventListener("change", () => equalRadio.checked && applyEqualSplit());
+            totalInput?.addEventListener("change", () => equalRadio?.checked && applyEqualSplit());
         });
-
-        equalRadio?.addEventListener("change", () => equalRadio.checked && applyEqualSplit());
-        totalInput?.addEventListener("change", () => equalRadio?.checked && applyEqualSplit());
-    });
     </script>
 
 </body>
+
 </html>

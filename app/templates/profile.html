@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Profiel{% endblock %}
+{% block body_class %}bg-app{% endblock %}
+
+{% block content %}
+<div class="header-green">
+    <div class="header-inner">
+        <div>
+            <h1 class="header-title">Profiel</h1>
+            <p class="header-subtitle">Beheer je contact- en betaalgegevens</p>
+        </div>
+    </div>
+</div>
+
+<main class="page">
+    <div class="card">
+        <h2 class="card-title">Jouw gegevens</h2>
+
+        <form method="post" class="form">
+
+            <label class="label">Naam</label>
+            <input type="text" class="input" value="{{ session.get('username') }}" disabled>
+
+            <label class="label" for="phone">Telefoonnummer</label>
+            <input type="tel" id="phone" name="phone" class="input" placeholder="bv. 0470 12 34 56"
+                value="{{ user.phone_number or '' }}">
+
+            <label class="label" for="iban">Bankrekeningnummer (IBAN)</label>
+            <input type="text" id="iban" name="iban" class="input" placeholder="bv. BE12 3456 7890 1234"
+                value="{{ user.payment_method or '' }}">
+
+            <button type="submit" class="btn btn-primary btn-full mt-16">
+                Gegevens opslaan
+            </button>
+        </form>
+    </div>
+</main>
+{% endblock %}
