@@ -333,10 +333,48 @@ def group_detail(group_id):
 
 @app.route("/group/<int:group_id>/share")
 def share_group(group_id):
-    invite_url = url_for("group_detail", group_id=group_id, _external=True)
+    invite_url = url_for("join_group", group_id=group_id, _external=True)
     text = f"Join mijn FairSplit groep: {invite_url}"
     encoded = urllib.parse.quote(text)
     return redirect(f"https://wa.me/?text={encoded}")
+@app.route("/group/<int:group_id>/join", methods=["GET", "POST"])
+def join_group(group_id):
+    # Haal groep + huidige leden op
+    group, members = get_group_detail(group_id)
+    if not group:
+        flash("Groep niet gevonden.", "error")
+        return redirect(url_for("groups_list"))
+
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        if not username:
+            flash("Geef een naam in.", "error")
+            return redirect(url_for("join_group", group_id=group_id))
+
+        # Bestaat deze user al?
+        existing = get_user_by_name(username)
+        user = existing[0] if existing else create_user(username)
+        user_id = user["user_id"]
+
+        # Zit deze user al in de groep?
+        already_member = any(m["users"]["user_id"] == user_id for m in members)
+        if not already_member:
+            supabase.table("group_members").insert({
+                "group_id": group_id,
+                "user_id": user_id,
+                "role": "member"
+            }).execute()
+
+        # Log de user direct in
+        session["user_id"] = user_id
+        session["username"] = user["name"]
+
+        flash("Welkom in de groep!", "success")
+        return redirect(url_for("group_detail", group_id=group_id))
+
+    # GET: toon de join-pagina
+    return render_template("join_group.html", group=group)
+
 
 
 # ============================================================
