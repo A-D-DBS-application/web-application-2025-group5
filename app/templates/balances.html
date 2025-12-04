@@ -76,7 +76,12 @@
                     <span>&nbsp;betaalt&nbsp;</span>
                     <span class="amount">€{{ "%.2f"|format(t.amount) }}</span>
                     <span>&nbsp;aan&nbsp;</span>
-                    <strong class="receive-name">{{ t.to_name }}</strong>
+                    <strong class="receive-name">
+                        {{ t.to_name }}
+                        {% if t.to_iban %}
+                            ({{ t.to_iban }})
+                        {% endif %}
+                    </strong>
                 </li>
             {% endfor %}
             </ul>

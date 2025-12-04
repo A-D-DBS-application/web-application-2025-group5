@@ -104,9 +104,11 @@ def get_balances_for_group(group_id):
     # leden ophalen
     members = supabase.table("group_members").select("user_id").eq("group_id", group_id).execute().data
 
-    # Alle gebruikers opvragen (naam mapping)
-    users = supabase.table("users").select("user_id, name").execute().data
-    user_dict = {u["user_id"]: u["name"] for u in users}
+    # Alle gebruikers opvragen (naam + IBAN/payment_method)
+    users = supabase.table("users").select("user_id, name, payment_method").execute().data
+    user_name_dict = {u["user_id"]: u["name"] for u in users}
+    user_iban_dict = {u["user_id"]: u.get("payment_method") for u in users}
+
 
     # Alle expenses ophalen
     expenses = supabase.table("expenses").select("*").eq("group_id", group_id).execute().data or []
@@ -148,10 +150,12 @@ def get_balances_for_group(group_id):
         saldo = round(paid[uid] - owed[uid] - fee_per_person, 2)
         balances.append({
             "user_id": uid,
-            "name": user_dict.get(uid, "Onbekend"),
+            "name": user_name_dict.get(uid, "Onbekend"),
+            "iban": user_iban_dict.get(uid),  # kan None zijn
             "saldo": saldo,
-            "app_fee": fee_per_person  # Zo kun je direct op je balances.html laten zien: "Min app fee: € fee_per_person"
+            "app_fee": fee_per_person
         })
+
 
     return balances
 
@@ -172,6 +176,7 @@ def compute_optimal_transactions(balances):
             debtors.append({
                 "user_id": bal.get("user_id"),
                 "name": bal.get("name"),
+                "iban": bal.get("iban"),      # <-- IBAN meenemen
                 # positief maken: dit is wat ze verschuldigd zijn
                 "amount": -amount,
             })
@@ -179,6 +184,7 @@ def compute_optimal_transactions(balances):
             creditors.append({
                 "user_id": bal.get("user_id"),
                 "name": bal.get("name"),
+                "iban": bal.get("iban"),      # <-- IBAN meenemen
                 "amount": amount,
             })
 
@@ -208,6 +214,7 @@ def compute_optimal_transactions(balances):
                 "from_name": d["name"],
                 "to_user_id": c["user_id"],
                 "to_name": c["name"],
+                "to_iban": c.get("iban"),   # <-- IBAN van ontvanger
                 "amount": round(amount, 2),
             })
 
@@ -224,3 +231,4 @@ def compute_optimal_transactions(balances):
             j += 1
 
     return transactions
+

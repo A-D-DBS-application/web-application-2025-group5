@@ -18,6 +18,7 @@ from datetime import datetime
 import urllib.parse
 from io import BytesIO
 
+
 # PDF libraries
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -26,10 +27,10 @@ from reportlab.lib import colors
 from reportlab.lib.units import cm
 
 
-
 # ============================================================
 # 1. LOGIN REQUIRED DECORATOR
 # ============================================================
+
 
 def login_required(route_function):
     def wrapper(*args, **kwargs):
@@ -45,6 +46,7 @@ def login_required(route_function):
 # ============================================================
 # 2. LOGIN / LOGOUT
 # ============================================================
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -74,6 +76,7 @@ def logout():
 # ============================================================
 # 3. GROUP LIST & CREATE
 # ============================================================
+
 
 @app.route("/groups")
 @login_required
@@ -142,6 +145,7 @@ def groups_create():
 # 4. GROUP DETAIL + EXPENSES
 # ============================================================
 
+
 @app.route("/groups/<int:group_id>", methods=["GET", "POST"])
 @login_required
 def group_detail(group_id):
@@ -149,7 +153,7 @@ def group_detail(group_id):
     if not group:
         flash("Groep niet gevonden.", "error")
         return redirect(url_for("groups_list"))
-    
+
     def fmt(d):
         # Supabase geeft meestal '2025-11-29' terug
         if isinstance(d, str):
@@ -326,10 +330,10 @@ def group_detail(group_id):
     )
 
 
-
 # ============================================================
 # 5. WHATSAPP SHARE LINK
 # ============================================================
+
 
 @app.route("/group/<int:group_id>/share")
 def share_group(group_id):
@@ -337,6 +341,8 @@ def share_group(group_id):
     text = f"Join mijn FairSplit groep: {invite_url}"
     encoded = urllib.parse.quote(text)
     return redirect(f"https://wa.me/?text={encoded}")
+
+
 @app.route("/group/<int:group_id>/join", methods=["GET", "POST"])
 def join_group(group_id):
     # Haal groep + huidige leden op
@@ -376,10 +382,10 @@ def join_group(group_id):
     return render_template("join_group.html", group=group)
 
 
-
 # ============================================================
 # 6. BALANS OVERZICHT (NIEUW ALGORITME)
 # ============================================================
+
 
 @app.route("/groups/<int:group_id>/balances")
 @login_required
@@ -400,6 +406,7 @@ def balances_route(group_id):
 # ============================================================
 # 7. ADD MEMBER
 # ============================================================
+
 
 @app.route("/groups/<int:group_id>/add_member", methods=["GET", "POST"])
 @login_required
@@ -430,6 +437,7 @@ def add_member(group_id):
 # 8. DELETE EXPENSE
 # ============================================================
 
+
 @app.post("/expenses/<int:expense_id>/delete")
 @login_required
 def delete_expense(expense_id):
@@ -442,13 +450,16 @@ def delete_expense(expense_id):
 # 9. INDEX
 # ============================================================
 
+
 @app.route("/")
 def index():
     return redirect(url_for("login"))
 
+
 # ============================================================
 # 10. PROFIEL
 # ============================================================
+
 
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
@@ -467,10 +478,6 @@ def profile():
             flash("Vul zowel je telefoonnummer als je bankrekeningnummer (IBAN) in.", "error")
             return redirect(url_for("profile"))
 
-        # LET OP:
-        # - Hier gebruik ik 'payment_method' om het IBAN in op te slaan.
-        # - Als je in je database een kolom 'iban' hebt, vervang dan
-        #   'payment_method' door 'iban' hieronder.
         supabase.table("users").update({
             "phone_number": phone,
             "payment_method": iban
@@ -482,10 +489,10 @@ def profile():
     return render_template("profile.html", user=user)
 
 
-
 # ============================================================
 # 11. PDF DOWNLOAD (MET OPTIMALE BETALINGEN!)
 # ============================================================
+
 
 @app.route('/group/<int:group_id>/download_pdf')
 def download_pdf(group_id):
@@ -510,7 +517,7 @@ def download_pdf(group_id):
     users = supabase.table("users").select("user_id, name").execute().data
     user_dict = {u["user_id"]: u["name"] for u in users}
 
-    # 👉 NIEUWE: optimale betalingen
+    # 👉 optimale betalingen (met to_iban, als je compute_optimal_transactions zo hebt aangepast)
     optimal_transactions = compute_optimal_transactions(balances)
 
     # PDF setup
@@ -577,6 +584,7 @@ def download_pdf(group_id):
     ]))
 
     content.append(tb)
+
     # CONDITIONELE KLEUREN VOOR SALDO'S
     for row_idx, b in enumerate(balances, start=1):
         saldo = b['saldo']
@@ -590,22 +598,30 @@ def download_pdf(group_id):
         tb.setStyle(TableStyle([
             ("TEXTCOLOR", (1, row_idx), (1, row_idx), color)
         ]))
+
     # -------------------------
     # OPTIMALE BETALINGEN
     # -------------------------
     content.append(Paragraph("Optimale afbetalingen", section_title))
 
     if optimal_transactions:
+        # kolommen: Betaler | Ontvanger (IBAN) | Bedrag
         opt_table = [["Betaler", "Ontvanger", "Bedrag"]]
 
         for tdata in optimal_transactions:
+            # ontvanger + eventueel IBAN tussen haakjes
+            if tdata.get("to_iban"):
+                ontvanger = f"{tdata['to_name']} ({tdata['to_iban']})"
+            else:
+                ontvanger = tdata["to_name"]
+
             opt_table.append([
                 tdata["from_name"],
-                tdata["to_name"],
+                ontvanger,
                 f"€{tdata['amount']:.2f}",
             ])
 
-        tx = Table(opt_table, colWidths=[6*cm, 6*cm, 3*cm])
+        tx = Table(opt_table, colWidths=[6*cm, 8*cm, 2*cm])
         tx.setStyle(TableStyle([
             ("GRID", (0,0), (-1,-1), 0.5, colors.grey),
             ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#f0ffe8")),
