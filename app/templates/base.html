@@ -34,7 +34,7 @@
 
     {# ===== GENERIC TERUGKNOP: niet tonen op pages met eigen header ===== #}
     {% if session.get("user_id")
-    and request.endpoint not in ['login', 'groups_list', 'group_detail', 'balances_route'] %}
+    and request.endpoint not in ['login', 'groups_list', 'group_detail', 'balances_route','groups_create','profile'] %}
     <button type="button" class="top-back-btn" onclick="window.history.back()" aria-label="Ga terug">
         ←
     </button>

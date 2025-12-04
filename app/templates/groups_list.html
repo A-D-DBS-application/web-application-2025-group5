@@ -53,9 +53,11 @@
 
                 </div>
 
-                <div class="group-amount">
+                <div class="group-amount
+                    {% if g.my_balance < 0 %}text-red{% elif g.my_balance > 0 %}text-green{% else %}text-neutral{% endif %}">
                     €{{ "%.2f"|format(g.my_balance) }}
                 </div>
+
             </a>
             {% endfor %}
         </div>

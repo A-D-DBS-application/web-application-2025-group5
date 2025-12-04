@@ -6,13 +6,19 @@
 
 {% block content %}
 <div class="header-green">
-    <div class="header-inner">
-        <a href="{{ url_for('groups_list') }}" class="back-link">←</a>
-        <div>
-            <h1 class="header-title">Nieuwe groep</h1>
-            <p class="header-subtitle">Maak een nieuwe groep aan om uitgaven te delen</p>
-        </div>
+   <div class="header-inner">
+    <!-- Mooie terug-knop -->
+    <a href="{{ url_for('groups_list') }}" class="header-back-btn">
+        <svg viewBox="0 0 24 24">
+            <path d="M15 18l-6-6 6-6"/>
+        </svg>
+    </a>
+
+    <div style="margin-left: 56px;">
+        <h1 class="header-title">Nieuwe groep</h1>
+        <p class="header-subtitle">Maak een nieuwe groep aan om<br>uitgaven te delen</p>
     </div>
+   </div>
 </div>
 
 <main class="page top-overlap">
@@ -24,8 +30,8 @@
              {% for emoji in ["🏖️","🍽️","🎉","🚗","🏕️","🛒","💼","🏡","✈️"] %}
             <label class="icon-option">
               <input type="radio" name="icon" value="{{ emoji }}" required>
-                 <span class="icon-emoji">{{ emoji }}</span>
-                    </label>
+              <span class="icon-emoji">{{ emoji }}</span>
+            </label>
             {% endfor %}
         </div>
 

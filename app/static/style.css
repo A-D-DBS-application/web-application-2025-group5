@@ -286,6 +286,8 @@ a {
     align-items: center;
     gap: 16px;
     position: relative;
+    text-align:center;
+    flex-direction: column;
 }
 
 .header-inner.space-between {
@@ -295,12 +297,16 @@ a {
 .header-title {
     font-size: 26px;
     margin: 0 0 4px;
+    text-align:center;
+    width:100%;
 }
 
 .header-subtitle {
     font-size: 14px;
-    margin: 0;
+    margin: 4px 0 0;
     opacity: 0.9;
+    text-align: center;
+    width:100%
 }
 
 /* oude simpele tekst-link (wordt nog gebruikt op sommige plekken) */
@@ -396,6 +402,12 @@ a {
     font-weight: 700;
     font-size: 16px;
 }
+/*voor balans kleuren en opmaal*/
+.text-red { color: red; }
+.text-green { color: green; }
+.text-neutral { color: black; }
+
+
 
 /* ===== Stats ===== */
 .stats-row {
@@ -680,37 +692,45 @@ a {
     padding: 0 12px;
 }
 
+/* Basis layout */
 .expense-card {
-    background: #ffffff;
-    border-radius: 26px;
-    padding: 18px 22px;
-    margin: 10px auto 16px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
     display: flex;
+    flex-wrap: wrap;               /* laat content wrappen op smalle schermen */
     justify-content: space-between;
     align-items: center;
+    gap: 8px;                     /* ruimte tussen icon, tekst en bedrag */
+    padding: 10px 12px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+    margin-bottom: 12px;
 }
 
+/* Linkerkant: icon + tekst */
 .expense-left {
     display: flex;
-    gap: 12px;
+    flex: 1 1 180px;               /* minimale breedte, wrappen indien nodig */
+    gap: 8px;
     align-items: flex-start;
 }
 
+/* Icon */
 .expense-icon {
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     border-radius: 12px;
     background-color: #d1fae5;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
 }
 
+/* Titel + subtekst */
 .expense-title {
     font-weight: 600;
     font-size: 14px;
-    margin-bottom: 2px;
 }
 
 .expense-sub {
@@ -718,17 +738,57 @@ a {
     color: #6b7280;
 }
 
-.expense-note {
-    font-size: 13px;
-    color: #059669;
-    margin-top: 4px;
-}
-
+/* Bedrag + verwijderknop */
 .expense-amount {
+    flex: 0 0 auto;                /* blijft zijn breedte behouden */
+    min-width: 80px;
     text-align: right;
     font-weight: 700;
-    font-size: 14px;
 }
+
+/* Compact info voor huidige gebruiker */
+.expense-user-info {
+    width: 100%;
+    font-size: 13px;
+    font-weight:600;
+    color: #666;
+    margin-top: 4px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+/* Bedrag kleuren */
+.amount-positive { color: #0c7b31; } /* groen */
+.amount-negative { color: #b91c1c; } /* rood */
+.amount-neutral  { color: #666; }    /* neutraal */
+
+/* Mobiele weergave */
+@media (max-width: 430px) {
+    .expense-card {
+        padding: 8px 10px;
+        gap: 6px;
+    }
+    .expense-icon {
+        width: 24px;
+        height: 24px;
+        font-size: 14px;
+    }
+    .expense-title {
+        font-size: 12px;
+    }
+    .expense-sub {
+        font-size: 11px;
+    }
+    .expense-amount {
+        font-size: 14px;
+        min-width: 50px;
+        margin-top: 6px;
+    }
+    .expense-left {
+        gap: 6px;
+    }
+}
+
 
 /* ===== Table (balances) ===== */
 .table {
@@ -746,6 +806,60 @@ a {
 .table th {
     border-bottom: 1px solid #e5e7eb;
     color: #6b7280;
+}
+/*extra voor overzicht balans*/
+.payment-list {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 12px;
+}
+
+.payment-list li {
+  font-size: 15px;
+  margin-bottom: 8px;
+  color: #333;
+  display: flex;
+  align-items: center;
+}
+
+.payment-list .pay-icon {
+  margin-right: 8px;
+  font-size: 18px;
+}
+
+.payment-list .amount {
+  color: #0c7b31; /* groen accent voor bedrag */
+  font-weight: 600;
+  margin: 0 6px;
+}
+
+.payment-list .pay-name {
+  color: #b00020; /* rood accent voor betaler */
+}
+
+.payment-list .receive-name {
+  color: #0c7b31; /* groen accent voor ontvanger */
+}
+
+/* Maak tabel horizontaal scrollbaar op kleine schermen */
+.table-responsive {
+    overflow-x: auto;
+}
+
+/* Mobiele aanpassingen */
+@media (max-width: 430px) {
+    .table th, .table td {
+        padding: 8px 4px;
+        font-size: 13px;
+    }
+
+    .payment-list li {
+        flex-wrap: wrap; /* lange teksten netjes opbreken */
+    }
+
+    .card {
+        padding: 16px; /* minder padding voor mobiel */
+    }
 }
 
 /* ===== Utilities ===== */
@@ -1154,6 +1268,54 @@ a {
         font-size: 18px;
     }
 }
+    /* Header titel netjes centreren tussen back-knop en schermrand */
+.header-title-wrapper {
+    margin-left: 56px;
+    margin-right: 16px;
+    text-align: left;
+}
+
+/* Kleine schermen: compacte margins en font-sizes */
+@media (max-width: 430px) {
+    .header-title-wrapper {
+        margin-left: 48px;
+        margin-right: 12px;
+        text-align: center;
+    }
+    .header-title {
+        font-size: 20px;
+    }
+    .header-subtitle {
+        font-size: 13px;
+    }
+
+    .stats-row {
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .stat-card {
+        flex: 1 1 100%;
+        margin-bottom: 12px;
+    }
+
+    .members-card, .expense-card {
+        padding: 16px;
+    }
+
+    .members-actions {
+        flex-direction: column;
+        gap: 6px;
+        align-items: stretch;
+    }
+
+    .expense-amount {
+        margin-top: 8px;
+        text-align: right;
+    }
+}
+
+
 /* ==== FIX: groene header dunner + ruimte tot stat cards ==== */
 
 .header-green {
@@ -1219,3 +1381,127 @@ a {
         margin-right: 55px !important;
     }
 }
+/*===PER EXPENSE SALDO===*/
+.expense-user-info {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+.expense-user-info span {
+  margin-right: 8px;
+}
+/*new/*
+/* ===== HEADER TITEL PERFECT GECENTREERD (DESKTOP + GSM) ===== */
+
+.header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    text-align: center;
+}
+
+/* Wrapper rond titel + subtitle */
+.header-title-wrapper {
+    width: 100%;
+    max-width: 70%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* Back-knop links laten staan */
+.header-back-btn {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* PDF-knop rechts laten staan */
+.pdf-btn-top {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Extra veilige centering op GSM */
+/* ===== HEADER TITEL PERFECT GECENTREERD (DESKTOP + GSM) ===== */
+
+.header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    text-align: center;
+}
+
+/* Wrapper rond titel + subtitle */
+.header-title-wrapper {
+    width: 100%;
+    max-width: 70%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* Back-knop links laten staan */
+.header-back-btn {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* PDF-knop rechts laten staan */
+.pdf-btn-top {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Extra veilige centering op GSM */
+/* ===== HEADER TITEL PERFECT GECENTREERD (DESKTOP + GSM) ===== */
+
+.header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    text-align: center;
+}
+
+/* Wrapper rond titel + subtitle */
+.header-title-wrapper {
+    width: 100%;
+    max-width: 70%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* Back-knop links laten staan */
+.header-back-btn {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* PDF-knop rechts laten staan */
+.pdf-btn-top {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Extra veilige centering op GSM */
+@media (max-width: 430px) {
+    .header-title-wrapper {
+        max-width: 90%;
+    }
+}
+
+
+
+

@@ -5,12 +5,19 @@
 {% block content %}
 <div class="header-green">
     <div class="header-inner">
-        <div>
-            <h1 class="header-title">Profiel</h1>
-            <p class="header-subtitle">Beheer je contact- en betaalgegevens</p>
-        </div>
+    <!-- Mooie terug-knop -->
+    <a href="{{ url_for('groups_list') }}" class="header-back-btn">
+        <svg viewBox="0 0 24 24">
+            <path d="M15 18l-6-6 6-6"/>
+        </svg>
+    </a>
+
+    <div class="header-title-wrapper">
+        <h1 class="header-title">Profiel</h1>
+        <p class="header-subtitle">Beheer je contact- en betaalgegevens</p>
     </div>
 </div>
+
 
 <main class="page">
     <div class="card">

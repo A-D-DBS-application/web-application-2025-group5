@@ -14,7 +14,7 @@
             </svg>
         </a>
 
-        <div style="margin-left: 56px;">
+        <div class="header-title-wrapper">
             <h1 class="header-title group-detail-name">{{ group.name }}</h1>
             <p class="group-detail-dates">
                 {{ start_date_fmt }} – {{ end_date_fmt }}
@@ -115,6 +115,25 @@
                         <button class="link-danger small">Verwijder</button>
                     </form>
                 </div>
+
+                <!-- Extra info voor huidige gebruiker -->
+                <div class="expense-user-info small muted mt-4">
+    {% set my_uid = session["user_id"] %}
+    {% if my_uid in e.shares and e.paid_by != my_uid %}
+        <span class="amount-negative">
+            Verschuldigd: €{{ "%.2f"|format(e.shares[my_uid]) }}
+        </span>
+    {% elif e.paid_by == my_uid %}
+        <span class="amount-positive">
+            Te goed: €{{ "%.2f"|format(e.total_amount - e.shares.get(my_uid, 0)) }}
+        </span>
+    {% else %}
+        <span class="amount-neutral">
+            Niet betrokken bij deze uitgave
+        </span>
+    {% endif %}
+</div>
+
             </div>
             {% endfor %}
         </section>
