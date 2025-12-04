@@ -37,10 +37,9 @@ def create_group(name, start_date, end_date, organizer_id):
         "start_date": start_date,
         "end_date": end_date,
         "organizer_id": organizer_id,
-        "app_fee": 3.00  # <- Hier voeg je de fee direct toe
+        "app_fee": 3.00  # <- TOTALE FEE PER GROEP
     }).execute().data[0]
 
-    # Organizer automatisch als lid toevoegen
     supabase.table("group_members").insert({
         "group_id": group["group_id"],
         "user_id": organizer_id,
@@ -48,7 +47,6 @@ def create_group(name, start_date, end_date, organizer_id):
     }).execute()
 
     return group
-
 
 
 def get_group_members(group_id):
@@ -68,7 +66,6 @@ def get_group_detail(group_id):
 # ============================
 
 def add_expense(group_id, paid_by, description, total_amount, shares_dict):
-    # 1. Expense aanmaken
     result = supabase.table("expenses").insert({
         "group_id": group_id,
         "paid_by": paid_by,
@@ -82,7 +79,6 @@ def add_expense(group_id, paid_by, description, total_amount, shares_dict):
     expense = result.data[0]
     expense_id = expense["expense_id"]
 
-    # 2. Shares wegschrijven (zonder item_id!)
     for user_id, amount in shares_dict.items():
         supabase.table("expense_shares").insert({
             "expense_id": expense_id,
@@ -93,57 +89,44 @@ def add_expense(group_id, paid_by, description, total_amount, shares_dict):
     return expense
 
 
-
 # ============================
-# BALANCES
+# BALANCES (VOOR UI)
 # ============================
 
 def get_balances_for_group(group_id):
     """Bereken balans per persoon voor de balanspagina en toon de app-fee."""
 
-    # leden ophalen
     members = supabase.table("group_members").select("user_id").eq("group_id", group_id).execute().data
-
-    # Alle gebruikers opvragen (naam + IBAN/payment_method)
     users = supabase.table("users").select("user_id, name, payment_method").execute().data
+
     user_name_dict = {u["user_id"]: u["name"] for u in users}
     user_iban_dict = {u["user_id"]: u.get("payment_method") for u in users}
 
-
-    # Alle expenses ophalen
     expenses = supabase.table("expenses").select("*").eq("group_id", group_id).execute().data or []
-    expense_ids = [e["expense_id"] for e in expenses]
+    expense_ids = [e["expense_id"] for e in expenses] or [-1]
 
-    if not expense_ids:
-        expense_ids = [-1]
-
-    # Alle shares ophalen voor deze expenses
     shares = supabase.table("expense_shares") \
         .select("*") \
         .in_("expense_id", expense_ids) \
         .execute().data or []
 
-    # App fee ophalen uit de groups-tabel
     group_list = supabase.table("groups").select("app_fee").eq("group_id", group_id).execute().data
-    app_fee = float(group_list[0]["app_fee"]) if group_list and "app_fee" in group_list[0] else 0.0
+    total_fee = float(group_list[0]["app_fee"]) if group_list else 0.0
 
     n_members = len(members)
-    # Fee per persoon berekenen
-    fee_per_person = round(app_fee / n_members, 2) if (app_fee > 0 and n_members > 0) else 0.0
+    fee_per_person = round(total_fee / n_members, 2) if n_members else 0.0
 
-    # Totaal betaald per persoon
     paid = {m["user_id"]: 0.0 for m in members}
+    owed = {m["user_id"]: 0.0 for m in members}
+
     for exp in expenses:
         if exp["paid_by"] in paid:
             paid[exp["paid_by"]] += float(exp["total_amount"])
 
-    # Totaal verschuldigd per persoon
-    owed = {m["user_id"]: 0.0 for m in members}
     for share in shares:
         if share["user_id"] in owed:
             owed[share["user_id"]] += float(share["amount"])
 
-    # Balansen berekenen (en fee direct tonen in het resultaat)
     balances = []
     for m in members:
         uid = m["user_id"]
@@ -151,84 +134,105 @@ def get_balances_for_group(group_id):
         balances.append({
             "user_id": uid,
             "name": user_name_dict.get(uid, "Onbekend"),
-            "iban": user_iban_dict.get(uid),  # kan None zijn
+            "iban": user_iban_dict.get(uid),
             "saldo": saldo,
             "app_fee": fee_per_person
         })
 
-
     return balances
 
-#ons "slim" algoritme dat aantal betalingen minimaliseert
-def compute_optimal_transactions(balances):
-    # Kleine marge om afrondingsfouten op te vangen
+
+
+# ============================================================
+# ONS "SLIM" ALGORITME VOOR OPTIMALE BETALINGEN
+# ============================================================
+
+def compute_optimal_transactions(ui_balances):
+    """
+    SLIM ALGORITME:
+    - Werkt op UI-saldi (inclusief fee)
+    - Lost eerst ALLE interne schulden op
+    - Combineert daarna ALLE resterende debiteuren
+    - De grootste debiteur betaalt ALTIJD de volledige fee (€3)
+    - Minimaliseert het aantal transacties (zoals Splitwise)
+    """
+
     EPS = 0.005
 
-    # 1. Opsplitsen in debiteuren (negatief) en crediteuren (positief)
+    # 1. Netto UI-saldi
+    members = [{
+        "user_id": bal["user_id"],
+        "name": bal["name"],
+        "iban": bal["iban"],
+        "amount": bal["saldo"]
+    } for bal in ui_balances]
+
+    # 2. Fee toevoegen als creditor
+    fee_amount = 3.00 if len(ui_balances) else 0.0
+
+    members.append({
+        "user_id": "fairsplit",
+        "name": "FairSplit+",
+        "iban": None,
+        "amount": fee_amount
+    })
+
+    # 3. Split
     debtors = []
     creditors = []
 
-    for bal in balances:
-        # Zorg dat we altijd een float hebben
-        amount = float(bal.get("saldo", 0))
+    for m in members:
+        if m["amount"] < -EPS:
+            debtors.append({**m, "amount": -m["amount"]})
+        elif m["amount"] > EPS:
+            creditors.append(m)
 
-        if amount < -EPS:
-            debtors.append({
-                "user_id": bal.get("user_id"),
-                "name": bal.get("name"),
-                "iban": bal.get("iban"),      # <-- IBAN meenemen
-                # positief maken: dit is wat ze verschuldigd zijn
-                "amount": -amount,
-            })
-        elif amount > EPS:
-            creditors.append({
-                "user_id": bal.get("user_id"),
-                "name": bal.get("name"),
-                "iban": bal.get("iban"),      # <-- IBAN meenemen
-                "amount": amount,
-            })
-
-    # Als er niemand moet betalen of ontvangen: geen transacties
-    if not debtors or not creditors:
-        return []
-
-    # 2. Sorteer: grootste schuld / grootste tegoed eerst
     debtors.sort(key=lambda x: x["amount"], reverse=True)
     creditors.sort(key=lambda x: x["amount"], reverse=True)
 
     transactions = []
-    i = 0  # index in debtors
-    j = 0  # index in creditors
 
-    # 3. Greedy matching
+    # 4. Eerst ALLE interne schulden oplossen (behalve FairSplit+)
+    i = j = 0
     while i < len(debtors) and j < len(creditors):
+        if creditors[j]["user_id"] == "fairsplit":
+            break
+
         d = debtors[i]
         c = creditors[j]
 
         amount = min(d["amount"], c["amount"])
 
-        # Alleen een transactie toevoegen als het effectief iets is
-        if amount > EPS:
-            transactions.append({
-                "from_user_id": d["user_id"],
-                "from_name": d["name"],
-                "to_user_id": c["user_id"],
-                "to_name": c["name"],
-                "to_iban": c.get("iban"),   # <-- IBAN van ontvanger
-                "amount": round(amount, 2),
-            })
+        transactions.append({
+            "from_user_id": d["user_id"],
+            "from_name": d["name"],
+            "to_user_id": c["user_id"],
+            "to_name": c["name"],
+            "to_iban": c["iban"],
+            "amount": round(amount, 2)
+        })
 
-        # Update resterende bedragen
         d["amount"] -= amount
         c["amount"] -= amount
 
-        # Als de debiteur "klaar" is, ga naar de volgende
         if d["amount"] <= EPS:
             i += 1
-
-        # Als de crediteur "volledig betaald" is, ga naar de volgende
         if c["amount"] <= EPS:
             j += 1
 
-    return transactions
+    # 5. Resterende debiteuren = enkel voor de fee
+    remaining = [d for d in debtors[i:] if d["amount"] > EPS]
 
+    if remaining:
+        largest = max(remaining, key=lambda x: x["amount"])
+
+        transactions.append({
+            "from_user_id": largest["user_id"],
+            "from_name": largest["name"],
+            "to_user_id": "fairsplit",
+            "to_name": "FairSplit+",
+            "to_iban": None,
+            "amount": round(fee_amount, 2)
+        })
+
+    return transactions
