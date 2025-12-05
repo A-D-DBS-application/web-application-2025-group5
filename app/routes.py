@@ -13,11 +13,11 @@ from app.models import (
     get_balances_for_group,
     compute_optimal_transactions,
     supabase,
+    add_payment,
 )
 from datetime import datetime
 import urllib.parse
 from io import BytesIO
-
 
 # PDF libraries
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
@@ -30,7 +30,6 @@ from reportlab.lib.units import cm
 # ============================================================
 # 1. LOGIN REQUIRED DECORATOR
 # ============================================================
-
 
 def login_required(route_function):
     def wrapper(*args, **kwargs):
@@ -46,7 +45,6 @@ def login_required(route_function):
 # ============================================================
 # 2. LOGIN / LOGOUT
 # ============================================================
-
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -76,7 +74,6 @@ def logout():
 # ============================================================
 # 3. GROUP LIST & CREATE
 # ============================================================
-
 
 @app.route("/groups")
 @login_required
@@ -142,9 +139,8 @@ def groups_create():
 
 
 # ============================================================
-# 4. GROUP DETAIL + EXPENSES
+# 4. GROUP DETAIL + EXPENSES + PAYMENTS
 # ============================================================
-
 
 @app.route("/groups/<int:group_id>", methods=["GET", "POST"])
 @login_required
@@ -154,8 +150,12 @@ def group_detail(group_id):
         flash("Groep niet gevonden.", "error")
         return redirect(url_for("groups_list"))
 
+    # 👉 dezelfde balanslogica als op /balances
+    balances = get_balances_for_group(group_id)
+    current_user_id = session["user_id"]
+    my_balance = next((b for b in balances if b["user_id"] == current_user_id), None)
+
     def fmt(d):
-        # Supabase geeft meestal '2025-11-29' terug
         if isinstance(d, str):
             try:
                 dt = datetime.fromisoformat(d)
@@ -163,7 +163,7 @@ def group_detail(group_id):
                 return d
         else:
             dt = d
-        return dt.strftime("%d-%m-%Y")   # bv. 29-11-2025
+        return dt.strftime("%d-%m-%Y")
 
     start_date_fmt = fmt(group["start_date"])
     end_date_fmt = fmt(group["end_date"])
@@ -195,7 +195,6 @@ def group_detail(group_id):
 
             shares = {}
 
-            # Equal split
             if split_type == "equal":
                 n = len(member_ids)
                 total_cents = int(round(total_amount * 100))
@@ -205,7 +204,6 @@ def group_detail(group_id):
                 for i, uid in enumerate(member_ids):
                     shares[uid] = (base + (1 if i < remainder else 0)) / 100.0
 
-            # Manual split
             else:
                 for m in members:
                     uid = m["users"]["user_id"]
@@ -257,7 +255,7 @@ def group_detail(group_id):
 
     total = sum(float(e["total_amount"]) for e in expenses)
 
-    # totals per user
+    # totals per user (alleen nog voor settlement/overzicht)
     paid = {m["users"]["user_id"]: 0.0 for m in members}
     for e in expenses:
         paid[e["paid_by"]] += float(e["total_amount"])
@@ -269,13 +267,16 @@ def group_detail(group_id):
 
     saldo = {uid: paid[uid] - verschuldigd[uid] for uid in paid}
 
-    current_user_id = session["user_id"]
-    user_balance = saldo.get(current_user_id, 0.0)
-    je_schuld = round(-user_balance, 2) if user_balance < 0 else 0.0
-    krijg_je = round(user_balance, 2) if user_balance > 0 else 0.0
-    netto = round(user_balance, 2)
+    # 👉 nieuwe je_schuld / krijg_je / netto op basis van balances
+    if my_balance:
+        netto = round(my_balance["saldo"], 2)
+        je_schuld = round(-netto, 2) if netto < 0 else 0.0
+        krijg_je = round(netto, 2) if netto > 0 else 0.0
+    else:
+        netto = 0.0
+        je_schuld = 0.0
+        krijg_je = 0.0
 
-    # settlement voor deze pagina (oude systeem)
     uid_naam = {m["users"]["user_id"]: m["users"]["name"] for m in members}
 
     saldo_lijst = [
@@ -311,6 +312,17 @@ def group_detail(group_id):
         if creditor["bedrag"] <= 0.01:
             j += 1
 
+    # payments voor verrichtingen
+    payments = (
+        supabase.table("payments")
+        .select("payment_id, from_user, to_user, amount, payment_date, status")
+        .eq("group_id", group_id)
+        .execute()
+        .data or []
+    )
+
+    user_map = {m["users"]["user_id"]: m["users"]["name"] for m in members}
+
     return render_template(
         "group_detail.html",
         group=group,
@@ -327,13 +339,15 @@ def group_detail(group_id):
         je_schuld=je_schuld,
         krijg_je=krijg_je,
         netto=netto,
+        payments=payments,
+        user_map=user_map,
     )
+
 
 
 # ============================================================
 # 5. WHATSAPP SHARE LINK
 # ============================================================
-
 
 @app.route("/group/<int:group_id>/share")
 def share_group(group_id):
@@ -386,27 +400,93 @@ def join_group(group_id):
 # 6. BALANS OVERZICHT (NIEUW ALGORITME)
 # ============================================================
 
-
 @app.route("/groups/<int:group_id>/balances")
 @login_required
 def balances_route(group_id):
     group, _ = get_group_detail(group_id)
     balances = get_balances_for_group(group_id)
 
+    # 1. normale optimale betalingen tussen personen
     optimal_transactions = compute_optimal_transactions(balances)
+
+    # 2. extra FairSplit-transactie toevoegen zolang de app-fee nog niet als betaald gemarkeerd is
+    app_fee_paid = group.get("app_fee_paid", False)
+    current_user_id = session["user_id"]
+
+    if not app_fee_paid:
+        # fee-betaler = huidige gebruiker
+        me = next((b for b in balances if b["user_id"] == current_user_id), None)
+
+        # fee-ontvanger = organisator van de groep
+        organizer_id = group.get("organizer_id")
+        receiver = next((b for b in balances if b["user_id"] == organizer_id), None)
+
+        # zolang de fee niet betaald is en er zowel een betaler als ontvanger is,
+        # altijd één FairSplit-transactie tonen
+        if me and receiver:
+            fee_amount = 3.00  # vaste app-fee per groep
+
+            optimal_transactions.append({
+                "from_user_id": me["user_id"],
+                "from_name": me["name"],
+                "to_user_id": receiver["user_id"],
+                "to_name": "FairSplit+",
+                "to_iban": receiver["iban"],
+                "amount": round(fee_amount, 2),
+            })
+
+
+
+
+    # alle payments voor deze groep ophalen (voor verrichtingen)
+    payments = (
+        supabase.table("payments")
+        .select("*")
+        .eq("group_id", group_id)
+        .execute()
+        .data or []
+    )
 
     return render_template(
         "balances.html",
         group=group,
         balances=balances,
         optimal_transactions=optimal_transactions,
+        payments=payments,
     )
+
+
+
+# ============================================================
+# 6b. BETALING REGISTREREN ("IK HEB BETAALD")
+# ============================================================
+
+@app.post("/groups/<int:group_id>/pay")
+@login_required
+def mark_payment(group_id):
+    from_user_id = session["user_id"]
+    to_user_id = int(request.form["to_user_id"])
+    amount = float(request.form["amount"])
+    is_fee = request.form.get("is_fee", "0")
+
+    # Altijd een payment registreren (ook voor de app-fee)
+    add_payment(group_id, from_user_id, to_user_id, amount)
+
+    # Voor de UI onthouden dat de app-fee betaald is
+    if is_fee == "1":
+        supabase.table("groups").update({
+            "app_fee_paid": True
+        }).eq("group_id", group_id).execute()
+        flash("App-fee gemarkeerd als betaald.", "success")
+    else:
+        flash("Betaling geregistreerd.", "success")
+
+    return redirect(url_for("balances_route", group_id=group_id))
 
 
 # ============================================================
 # 7. ADD MEMBER
 # ============================================================
-
 
 @app.route("/groups/<int:group_id>/add_member", methods=["GET", "POST"])
 @login_required
@@ -437,7 +517,6 @@ def add_member(group_id):
 # 8. DELETE EXPENSE
 # ============================================================
 
-
 @app.post("/expenses/<int:expense_id>/delete")
 @login_required
 def delete_expense(expense_id):
@@ -450,7 +529,6 @@ def delete_expense(expense_id):
 # 9. INDEX
 # ============================================================
 
-
 @app.route("/")
 def index():
     return redirect(url_for("login"))
@@ -459,7 +537,6 @@ def index():
 # ============================================================
 # 10. PROFIEL
 # ============================================================
-
 
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
@@ -493,7 +570,6 @@ def profile():
 # 11. PDF DOWNLOAD (MET OPTIMALE BETALINGEN!)
 # ============================================================
 
-
 @app.route('/group/<int:group_id>/download_pdf')
 def download_pdf(group_id):
     balances = get_balances_for_group(group_id)
@@ -517,7 +593,7 @@ def download_pdf(group_id):
     users = supabase.table("users").select("user_id, name").execute().data
     user_dict = {u["user_id"]: u["name"] for u in users}
 
-    # 👉 optimale betalingen (met to_iban, als je compute_optimal_transactions zo hebt aangepast)
+    # 👉 optimale betalingen
     optimal_transactions = compute_optimal_transactions(balances)
 
     # PDF setup
@@ -641,3 +717,4 @@ def download_pdf(group_id):
     response.headers['Content-Disposition'] = f'attachment; filename=balans_{group_id}.pdf'
 
     return response
+

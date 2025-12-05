@@ -1,14 +1,17 @@
 from supabase import create_client
 import os
 
+
 # Supabase client
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+
 # ============================
 # USERS
 # ============================
+
 
 def get_user_by_name(username):
     """Zoek gebruiker op naam."""
@@ -23,6 +26,7 @@ def create_user(username):
 # ============================
 # GROUPS
 # ============================
+
 
 def get_user_groups(user_id):
     """Gebruik Supabase RPC om groepen van user op te halen."""
@@ -57,13 +61,20 @@ def get_group_members(group_id):
 def get_group_detail(group_id):
     """Groep + alle leden mét user info ophalen."""
     group = supabase.table("groups").select("*").eq("group_id", group_id).execute().data
-    members = supabase.table("group_members").select("*, users(*)").eq("group_id", group_id).execute().data
+    members = (
+        supabase.table("group_members")
+        .select("*, users(*)")
+        .eq("group_id", group_id)
+        .execute()
+        .data
+    )
     return (group[0] if group else None), members
 
 
 # ============================
 # EXPENSES
 # ============================
+
 
 def add_expense(group_id, paid_by, description, total_amount, shares_dict):
     result = supabase.table("expenses").insert({
@@ -90,27 +101,67 @@ def add_expense(group_id, paid_by, description, total_amount, shares_dict):
 
 
 # ============================
+# PAYMENTS
+# ============================
+
+
+def add_payment(group_id, from_user_id, to_user_id, amount, method="bank", reference=None):
+    """Registreer een betaling tussen twee users in een groep."""
+    return supabase.table("payments").insert({
+        "from_user": from_user_id,
+        "to_user": to_user_id,
+        "group_id": group_id,
+        "amount": amount,
+        "method": method,
+        "status": "completed",   # direct voltooid
+        "reference": reference,
+    }).execute()
+
+
+# ============================
 # BALANCES (VOOR UI)
 # ============================
+
 
 def get_balances_for_group(group_id):
     """Bereken balans per persoon voor de balanspagina en toon de app-fee."""
 
-    members = supabase.table("group_members").select("user_id").eq("group_id", group_id).execute().data
+    members = (
+        supabase.table("group_members")
+        .select("user_id")
+        .eq("group_id", group_id)
+        .execute()
+        .data
+    )
     users = supabase.table("users").select("user_id, name, payment_method").execute().data
 
     user_name_dict = {u["user_id"]: u["name"] for u in users}
     user_iban_dict = {u["user_id"]: u.get("payment_method") for u in users}
 
-    expenses = supabase.table("expenses").select("*").eq("group_id", group_id).execute().data or []
+    expenses = (
+        supabase.table("expenses")
+        .select("*")
+        .eq("group_id", group_id)
+        .execute()
+        .data or []
+    )
     expense_ids = [e["expense_id"] for e in expenses] or [-1]
 
-    shares = supabase.table("expense_shares") \
-        .select("*") \
-        .in_("expense_id", expense_ids) \
-        .execute().data or []
+    shares = (
+        supabase.table("expense_shares")
+        .select("*")
+        .in_("expense_id", expense_ids)
+        .execute()
+        .data or []
+    )
 
-    group_list = supabase.table("groups").select("app_fee").eq("group_id", group_id).execute().data
+    group_list = (
+        supabase.table("groups")
+        .select("app_fee")
+        .eq("group_id", group_id)
+        .execute()
+        .data
+    )
     total_fee = float(group_list[0]["app_fee"]) if group_list else 0.0
 
     n_members = len(members)
@@ -119,6 +170,7 @@ def get_balances_for_group(group_id):
     paid = {m["user_id"]: 0.0 for m in members}
     owed = {m["user_id"]: 0.0 for m in members}
 
+    # uitgaven meenemen
     for exp in expenses:
         if exp["paid_by"] in paid:
             paid[exp["paid_by"]] += float(exp["total_amount"])
@@ -126,6 +178,31 @@ def get_balances_for_group(group_id):
     for share in shares:
         if share["user_id"] in owed:
             owed[share["user_id"]] += float(share["amount"])
+
+    # payments meenemen (status completed)
+    payments = (
+        supabase.table("payments")
+        .select("*")
+        .eq("group_id", group_id)
+        .eq("status", "completed")
+        .execute()
+        .data or []
+    )
+
+    for p in payments:
+        from_id = p["from_user"]
+        to_id = p["to_user"]
+        amt = float(p["amount"])
+
+        # betaler heeft effectief meer betaald
+        if from_id in paid:
+            paid[from_id] += amt
+
+        # ontvanger heeft minder voorgeschoten (zijn tegoed daalt),
+        # MAAR niet als from_id == to_id (zoals bij de app-fee die je aan jezelf markeert)
+        if to_id in paid and to_id != from_id:
+            paid[to_id] -= amt
+
 
     balances = []
     for m in members:
@@ -142,19 +219,22 @@ def get_balances_for_group(group_id):
     return balances
 
 
-
 # ============================================================
 # ONS "SLIM" ALGORITME VOOR OPTIMALE BETALINGEN
 # ============================================================
 
+
 def compute_optimal_transactions(ui_balances):
     """
-    SLIM ALGORITME:
+    Berekent alleen de optimale betalingen TUSSEN personen.
+    De app-fee-transactie wordt later in balances_route toegevoegd.
+
+    (SLIM ALGORITME:
     - Werkt op UI-saldi (inclusief fee)
     - Lost eerst ALLE interne schulden op
     - Combineert daarna ALLE resterende debiteuren
     - De grootste debiteur betaalt ALTIJD de volledige fee (€3)
-    - Minimaliseert het aantal transacties (zoals Splitwise)
+    - Minimaliseert het aantal transacties (zoals Splitwise))
     """
 
     EPS = 0.005
@@ -167,17 +247,7 @@ def compute_optimal_transactions(ui_balances):
         "amount": bal["saldo"]
     } for bal in ui_balances]
 
-    # 2. Fee toevoegen als creditor
-    fee_amount = 3.00 if len(ui_balances) else 0.0
-
-    members.append({
-        "user_id": "fairsplit",
-        "name": "FairSplit+",
-        "iban": None,
-        "amount": fee_amount
-    })
-
-    # 3. Split
+    # 2. Split in debiteuren en crediteuren
     debtors = []
     creditors = []
 
@@ -187,17 +257,14 @@ def compute_optimal_transactions(ui_balances):
         elif m["amount"] > EPS:
             creditors.append(m)
 
-    debtors.sort(key=lambda x: x["amount"], reverse=True)
-    creditors.sort(key=lambda x: x["amount"], reverse=True)
+    debtors.sort(key=lambda x: x["amount"], reverse=True)   # grootste schuld eerst
+    creditors.sort(key=lambda x: x["amount"], reverse=True) # grootste tegoed eerst
 
     transactions = []
 
-    # 4. Eerst ALLE interne schulden oplossen (behalve FairSplit+)
+    # 3. Optimaliseren: zo weinig mogelijk betalingen
     i = j = 0
     while i < len(debtors) and j < len(creditors):
-        if creditors[j]["user_id"] == "fairsplit":
-            break
-
         d = debtors[i]
         c = creditors[j]
 
@@ -219,20 +286,5 @@ def compute_optimal_transactions(ui_balances):
             i += 1
         if c["amount"] <= EPS:
             j += 1
-
-    # 5. Resterende debiteuren = enkel voor de fee
-    remaining = [d for d in debtors[i:] if d["amount"] > EPS]
-
-    if remaining:
-        largest = max(remaining, key=lambda x: x["amount"])
-
-        transactions.append({
-            "from_user_id": largest["user_id"],
-            "from_name": largest["name"],
-            "to_user_id": "fairsplit",
-            "to_name": "FairSplit+",
-            "to_iban": None,
-            "amount": round(fee_amount, 2)
-        })
 
     return transactions

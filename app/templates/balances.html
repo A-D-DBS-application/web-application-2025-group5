@@ -64,31 +64,53 @@
         </div>
     </div>
 
+    {# zichtbare transacties: als app_fee_paid true is, niets extra filteren;
+    we vertrouwen gewoon op optimale transacties #}
+    {% set visible_tx = optimal_transactions or [] %}
+
+
+    {% if visible_tx %}
     <div class="card mt-24">
         <h2 class="card-title">Optimale afbetalingen</h2>
 
-        {% if optimal_transactions %}
-            <ul class="payment-list">
-            {% for t in optimal_transactions %}
-                <li>
-                    <span class="pay-icon">💸</span>
-                    <strong class="pay-name">{{ t.from_name }}</strong>
-                    <span>&nbsp;betaalt&nbsp;</span>
-                    <span class="amount">€{{ "%.2f"|format(t.amount) }}</span>
-                    <span>&nbsp;aan&nbsp;</span>
-                    <strong class="receive-name">
-                        {{ t.to_name }}
-                        {% if t.to_iban %}
-                            ({{ t.to_iban }})
-                        {% endif %}
-                    </strong>
-                </li>
-            {% endfor %}
-            </ul>
-        {% else %}
-            <p class="muted">Iedereen staat op €0 — er zijn geen betalingen nodig.</p>
-        {% endif %}
+        <ul class="payment-list">
+        {% for t in visible_tx %}
+            <li>
+                <span class="pay-icon">💸</span>
+                <strong class="pay-name">{{ t.from_name }}</strong>
+                <span>&nbsp;betaalt&nbsp;</span>
+                <span class="amount">€{{ "%.2f"|format(t.amount) }}</span>
+                <span>&nbsp;aan&nbsp;</span>
+                <strong class="receive-name">
+                    {{ t.to_name }}
+                    {% if t.to_iban %}
+                        ({{ t.to_iban }})
+                    {% endif %}
+                </strong>
+
+                {% if t.from_user_id == session["user_id"] %}
+                    <form action="{{ url_for('mark_payment', group_id=group.group_id) }}"
+                          method="post"
+                          style="display:inline-block; margin-left:12px;">
+                        <input type="hidden" name="to_user_id" value="{{ t.to_user_id }}">
+                        <input type="hidden" name="amount" value="{{ t.amount }}">
+                        <input type="hidden" name="is_fee" value="{% if t.to_name == 'FairSplit+' %}1{% else %}0{% endif %}">
+
+                        <button type="submit" class="btn btn-xs btn-secondary">
+                            Ik heb betaald
+                        </button>
+                    </form>
+                {% endif %}
+            </li>
+        {% endfor %}
+        </ul>
     </div>
+    {% else %}
+    <div class="card mt-24">
+        <h2 class="card-title">Optimale afbetalingen</h2>
+        <p class="muted">Alle kosten zijn vereffend — er zijn geen betalingen meer nodig.</p>
+    </div>
+    {% endif %}
 
 </main>
 

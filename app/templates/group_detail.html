@@ -118,21 +118,21 @@
 
                 <!-- Extra info voor huidige gebruiker -->
                 <div class="expense-user-info small muted mt-4">
-    {% set my_uid = session["user_id"] %}
-    {% if my_uid in e.shares and e.paid_by != my_uid %}
-        <span class="amount-negative">
-            Verschuldigd: €{{ "%.2f"|format(e.shares[my_uid]) }}
-        </span>
-    {% elif e.paid_by == my_uid %}
-        <span class="amount-positive">
-            Te goed: €{{ "%.2f"|format(e.total_amount - e.shares.get(my_uid, 0)) }}
-        </span>
-    {% else %}
-        <span class="amount-neutral">
-            Niet betrokken bij deze uitgave
-        </span>
-    {% endif %}
-</div>
+                    {% set my_uid = session["user_id"] %}
+                    {% if my_uid in e.shares and e.paid_by != my_uid %}
+                        <span class="amount-negative">
+                            Verschuldigd: €{{ "%.2f"|format(e.shares[my_uid]) }}
+                        </span>
+                    {% elif e.paid_by == my_uid %}
+                        <span class="amount-positive">
+                            Te goed: €{{ "%.2f"|format(e.total_amount - e.shares.get(my_uid, 0)) }}
+                        </span>
+                    {% else %}
+                        <span class="amount-neutral">
+                            Niet betrokken bij deze uitgave
+                        </span>
+                    {% endif %}
+                </div>
 
             </div>
             {% endfor %}
@@ -140,6 +140,44 @@
     {% else %}
         <p class="muted mt-16">Nog geen uitgaven toegevoegd</p>
     {% endif %}
+
+    <!-- VERRICHTINGEN (betalingen) -->
+    <section class="card mt-24">
+        <h3 class="section-title">Verrichtingen</h3>
+
+        {% if payments %}
+            <ul class="payment-history">
+            {% for p in payments %}
+                <li>
+                    {% if p.from_user == p.to_user %}
+                        {{ user_map[p.from_user] }} betaalde de app-fee van
+                        €{{ "%.2f"|format(p.amount) }}
+                        {% if p.payment_date %}
+                            {% set d = p.payment_date|string %}
+                            {% set parts = d.split("-") %}
+                            op {{ parts[2] }}/{{ parts[1] }}/{{ parts[0] }}
+                        {% endif %}
+
+
+
+                    {% else %}
+                        {{ user_map[p.from_user] }} betaalde
+                        €{{ "%.2f"|format(p.amount) }}
+                        aan {{ user_map[p.to_user] }}
+                        {% if p.payment_date %}
+                            {% set d = p.payment_date|string %}
+                            {% set parts = d.split("-") %}
+                            op {{ parts[2] }}/{{ parts[1] }}/{{ parts[0] }}
+                        {% endif %}
+
+                    {% endif %}
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p class="muted">Er zijn nog geen verrichtingen geregistreerd.</p>
+        {% endif %}
+    </section>
 
 </main>
 {% endblock %}
