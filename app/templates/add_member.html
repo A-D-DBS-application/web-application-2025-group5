@@ -8,10 +8,19 @@
 {% block content %}
 <div class="header-green">
     <div class="header-inner">
+
+        <!-- Mooie back-knop -->
+        <a href="{{ url_for('group_detail', group_id=group.group_id) }}" class="header-back-btn">
+            <svg viewBox="0 0 24 24">
+                <path d="M15 18l-6-6 6-6"/>
+            </svg>
+        </a>
+
         <div>
             <h1 class="header-title">Lid toevoegen</h1>
             <p class="header-subtitle">Voeg een nieuw lid toe aan {{ group.name }}</p>
         </div>
+
     </div>
 </div>
 
@@ -35,4 +44,3 @@
     </div>
 </main>
 {% endblock %}
-
