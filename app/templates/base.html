@@ -41,33 +41,50 @@
     {% endif %}
 
     {# ===== FLASH MESSAGES ===== #}
-    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
     <div class="flash-container">
         {% for category, message in messages %}
 
-        {% if category != 'expense_success' %}
-        <div class="flash flash-{{ category }}">{{ message }}</div>
-        {% endif %}
+            {% if category not in ['expense_success', 'group_success', 'success-confetti'] %}
+                <div class="flash flash-{{ category }}">{{ message }}</div>
+            {% endif %}
 
-        {% if category == 'expense_success' %}
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                showCelebration();
-            });
-        </script>
-        {% endif %}
+            {% if category in ['expense_success', 'group_success', 'success-confetti'] %}
+               
+    <script>
+
+        window.confettiMessage = "{{ category }}";
+    </script>
+
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const flashes = document.querySelectorAll(".flash");
+    flashes.forEach(flash => {
+        setTimeout(() => {
+            flash.style.opacity = "0";
+            flash.style.transition = "opacity 0.5s ease";
+
+            setTimeout(() => flash.remove(), 500); // echt verwijderen
+        }, 3000); // 3 seconden zichtbaar
+    });
+});
+</script>
+
+{% endif %}
 
         {% endfor %}
     </div>
     {% endif %}
     {% endwith %}
 
+
     {% block content %}{% endblock %}
 
     {# ===== BOTTOM NAV ===== #}
     {% block bottom_nav %}
     {% if session.get("user_id") %}
+
     <nav class="bottom-nav">
 
         {# LINKS: Balans #}
@@ -98,9 +115,15 @@
 
         {# RECHTS: Profiel #}
         <a href="{{ url_for('profile') }}" class="bottom-nav-item">
-            <div class="nav-icon-box"><span>👤</span></div>
+            <div class="nav-icon-box" style="position: relative;">
+                <span>👤</span>
+                {% if profile_incomplete %}
+                    <div class="profile-alert">!</div>
+                {% endif %}
+            </div>
             <div class="nav-label">Profiel</div>
         </a>
+
 
 
     </nav>
@@ -110,26 +133,42 @@
     <!-- ===== CONFETTI ===== -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
-    <script>
-        function showCelebration() {
+        <script>
+        function showCelebration(message) {
             confetti({
-                particleCount: 200,
-                spread: 75,
-                startVelocity: 45,
-                origin: { x: 0.5, y: 0.5 }
+                particleCount: 120,        // kleiner
+                spread: 65,
+                startVelocity: 35,
+                scalar: 0.8,               // kleinere stukjes
+                origin: { x: 0.5, y: 0.4 }
             });
 
             const box = document.createElement("div");
             box.className = "celebration-box";
-            box.innerText = "Expense shared! 🎉";
+            box.innerText = message || "Expense shared! 🎉";
 
             document.body.appendChild(box);
 
             setTimeout(() => {
                 box.remove();
-            }, 2000);
+            }, 1800);
         }
     </script>
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+    if (!window.confettiMessage) return;
+
+    const map = {
+        "group_success": "Nieuwe groep aangemaakt! 🎉",
+        "success-confetti": "Lid toegevoegd! 🎉",
+        "expense_success": "Uitgave toegevoegd! 🎉"
+    };
+
+    showCelebration(map[window.confettiMessage] || "Succes! 🎉");
+});
+</script>
+
+
 
     <!-- ===== MODAL STRUCTURE ===== -->
     {% if session.get("user_id") and request.endpoint != 'login' %}

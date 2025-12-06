@@ -5,36 +5,52 @@
 {% block content %}
 <div class="header-green">
     <div class="header-inner">
-    <!-- Mooie terug-knop -->
-    <a href="{{ url_for('groups_list') }}" class="header-back-btn">
-        <svg viewBox="0 0 24 24">
-            <path d="M15 18l-6-6 6-6"/>
-        </svg>
-    </a>
+        <!-- Terug-knop -->
+        <a href="{{ url_for('groups_list') }}" class="header-back-btn">
+            <svg viewBox="0 0 24 24">
+                <path d="M15 18l-6-6 6-6"/>
+            </svg>
+        </a>
 
-    <div class="header-title-wrapper">
-        <h1 class="header-title">Profiel</h1>
-        <p class="header-subtitle">Beheer je contact- en betaalgegevens</p>
+        <div class="header-title-wrapper">
+            <h1 class="header-title">Profiel</h1>
+            <p class="header-subtitle">Vul je gegevens in zodat anderen je makkelijk kunnen terugbetalen</p>
+        </div>
     </div>
 </div>
-
 
 <main class="page">
     <div class="card">
         <h2 class="card-title">Jouw gegevens</h2>
 
+        <p class="muted small" style="margin-top:-8px; margin-bottom:16px;">
+            Vul hieronder je naam, telefoonnummer en bankrekeningnummer in en klik op
+            <strong>Gegevens opslaan</strong>.
+        </p>
+
         <form method="post" class="form">
 
             <label class="label">Naam</label>
+            <p class="muted small" style="margin-top:-4px; margin-bottom:6px;">
+                Dit is de naam die anderen in je groepen zien.
+            </p>
             <input type="text" class="input" value="{{ session.get('username') }}" disabled>
 
             <label class="label" for="phone">Telefoonnummer</label>
-            <input type="tel" id="phone" name="phone" class="input" placeholder="bv. 0470 12 34 56"
-                value="{{ user.phone_number or '' }}">
+            <p class="muted small" style="margin-top:-4px; margin-bottom:6px;">
+                Handig om elkaar snel te kunnen contacteren over betalingen.
+            </p>
+            <input type="tel" id="phone" name="phone" class="input"
+                   placeholder="bv. 0470 12 34 56"
+                   value="{{ user.phone_number or '' }}">
 
             <label class="label" for="iban">Bankrekeningnummer (IBAN)</label>
-            <input type="text" id="iban" name="iban" class="input" placeholder="bv. BE12 3456 7890 1234"
-                value="{{ user.payment_method or '' }}">
+            <p class="muted small" style="margin-top:-4px; margin-bottom:6px;">
+                Hierop kunnen anderen je terugbetalen (bijv. BE12 3456 7890 1234).
+            </p>
+            <input type="text" id="iban" name="iban" class="input"
+                   placeholder="bv. BE12 3456 7890 1234"
+                   value="{{ user.payment_method or '' }}">
 
             <button type="submit" class="btn btn-primary btn-full mt-16">
                 Gegevens opslaan

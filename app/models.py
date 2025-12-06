@@ -34,14 +34,15 @@ def get_user_groups(user_id):
     return result.data if result.data else []
 
 
-def create_group(name, start_date, end_date, organizer_id):
+def create_group(name, start_date, end_date, organizer_id, icon):
     """Maak groep + voeg organizer toe aan group_members."""
     group = supabase.table("groups").insert({
         "name": name,
         "start_date": start_date,
         "end_date": end_date,
         "organizer_id": organizer_id,
-        "app_fee": 3.00  # <- TOTALE FEE PER GROEP
+        "icon": icon,      # emoji opslaan
+        "app_fee": 3.00    # TOTALE FEE PER GROEP
     }).execute().data[0]
 
     supabase.table("group_members").insert({
@@ -51,6 +52,8 @@ def create_group(name, start_date, end_date, organizer_id):
     }).execute()
 
     return group
+
+
 
 
 def get_group_members(group_id):

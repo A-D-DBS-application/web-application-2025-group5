@@ -16,7 +16,20 @@
 <main class="page">
     <div class="page-header-row">
         <h2 class="page-title">Groepen</h2>
+
+        <div class="group-search-wrapper">
+            <label for="groupSearch" class="subtitle group-search-label">
+                Zoek groep
+            </label>
+            <input
+                id="groupSearch"
+                type="text"
+                class="input group-search-input"
+                placeholder="Typ een naam..."
+            >
+        </div>
     </div>
+
 
     {% if not groups %}
         <div class="card big-card center-card">
@@ -36,7 +49,8 @@
 
                     <div>
                         <div class="group-name">{{ g.name }}</div>
-                        <div class="group-date">{{ g.start_date }}</div>
+                        <div class="group-date">{{ g.start_date_fmt }}</div>
+
 
                         {% if g.my_balance < 0 %}
                             <span class="badge badge-danger">

@@ -15,7 +15,24 @@
         </a>
 
         <div class="header-title-wrapper">
-            <h1 class="header-title group-detail-name">{{ group.name }}</h1>
+           <h1 class="header-title group-detail-name">
+    {{ group.name }}
+    <button type="button" id="editNameBtn" class="edit-name-link">edit</button>
+</h1>
+
+<div id="editNameForm" class="edit-name-form" style="display:none;">
+    <form method="post" action="{{ url_for('group_rename', group_id=group.group_id) }}">
+        <input
+            type="text"
+            name="new_name"
+            class="input edit-name-input"
+            value="{{ group.name }}"
+            required
+        >
+        <button type="submit" class="btn btn-primary btn-small">Opslaan</button>
+    </form>
+</div>
+
             <p class="group-detail-dates">
                 {{ start_date_fmt }} – {{ end_date_fmt }}
             </p>
@@ -31,7 +48,7 @@
         <div class="card stat-card stat-card-debt">
             <div class="stat-label-row">
                 <span class="stat-icon">⬇️</span>
-                <span class="stat-label">Je schuld</span>
+                <span class="stat-label">Verschuldigd</span>
             </div>
             <div class="stat-amount">€{{ "%.2f"|format(je_schuld) }}</div>
         </div>
@@ -47,7 +64,7 @@
         <div class="card stat-card stat-card-credit">
             <div class="stat-label-row">
                 <span class="stat-icon">⬆️</span>
-                <span class="stat-label">Krijg je</span>
+                <span class="stat-label">Te goed</span>
             </div>
             <div class="stat-amount">€{{ "%.2f"|format(krijg_je) }}</div>
         </div>
@@ -250,4 +267,20 @@
         </button>
 
     </form>
+
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const btn = document.getElementById("editNameBtn");
+    const form = document.getElementById("editNameForm");
+    if (!btn || !form) return;
+
+    btn.addEventListener("click", () => {
+        form.style.display = (form.style.display === "none" || form.style.display === "") 
+            ? "block" 
+            : "none";
+    });
+});
+</script>
+
+
 {% endblock %}

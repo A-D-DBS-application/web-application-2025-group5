@@ -758,8 +758,8 @@ a {
     gap: 6px;
 }
 /* Bedrag kleuren */
-.amount-positive { color: #0c7b31; } /* groen */
-.amount-negative { color: #b91c1c; } /* rood */
+.amount-positive { color: #31a056; } /* groen */
+.amount-negative { color: #b64040; } /* rood */
 .amount-neutral  { color: #666; }    /* neutraal */
 
 /* Mobiele weergave */
@@ -907,19 +907,20 @@ a {
 /* ===== Celebration ===== */
 .celebration-box {
     position: fixed;
-    top: 40%;
+    top: 35%;
     left: 50%;
     transform: translate(-50%, -50%);
     background: #ffffff;
-    padding: 18px 26px;
-    border-radius: 20px;
-    font-size: 22px;
-    font-weight: 700;
+    padding: 12px 20px;
+    border-radius: 18px;
+    font-size: 18px;
+    font-weight: 600;
     color: #286238;
-    box-shadow: 0 14px 40px rgba(0,0,0,0.18);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.16);
     z-index: 99999;
-    animation: fadeInScale 0.3s ease-out;
+    animation: fadeInScale 0.25s ease-out;
 }
+
 
 @keyframes fadeInScale {
     from { transform: translate(-50%, -50%) scale(0.7); opacity: 0; }
@@ -1003,14 +1004,15 @@ a {
     left: 0;
     right: 0;
     bottom: 0;
-    background: #34363c;
-    padding: 14px 20px 28px;
+    background: #2f3338;                 /* iets lichter dan bijna zwart */
+    padding: 10px 18px 14px;             /* dunner */
     display: flex;
     justify-content: space-evenly;
-    align-items: flex-end;
+    align-items: center;                  /* alles in het midden */
     z-index: 30;
-    border-top-left-radius: 24px;
-    border-top-right-radius: 24px;
+    border-top: 1px solid #4b5563;       /* fijn randje */
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
 }
 
 .bottom-nav-item {
@@ -1033,16 +1035,16 @@ a {
 
 /* linker & rechter iconen */
 .nav-icon-box {
-    width: 42px;
-    height: 42px;
-    border-radius: 18px;
+    width: 40px;
+    height: 40px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: transparent;
-    color: #9ca3af;
+    color: #e5e7eb;                      /* iets lichter */
     font-size: 20px;
-}
+    }
 
 .nav-icon-box svg {
     width: 24px;
@@ -1056,21 +1058,21 @@ a {
 
 /* midden: grote groene plus */
 .nav-icon-box-main {
-    width: 64px;
-    height: 64px;
-    border-radius: 24px;
+    width: 54px;
+    height: 54px;
+    border-radius: 20px;
     background: #286238;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #ffffff;
-    font-size: 30px;
-    box-shadow: 0 0 0 4px #34363c;
+    font-size: 28px;
+    box-shadow: 0 0 0 3px #2f3338;
 }
 
 .nav-label {
     font-size: 12px;
-    color: #9ca3af;
+    color: #e5e7eb;
     margin-top: 2px;
 }
 
@@ -1210,29 +1212,30 @@ a {
 }
 
 /* ===== Logout knop (groepenlijst) ===== */
+/* ===== Logout knop (groepenlijst) ===== */
 .logout-btn {
     position: absolute;
-    top: 32px;
-    right: 22px;
-    background: #b91c1c;
+    top: 20px;
+    right: 18px;
+    background: #f97373;            /* zachter rood */
     color: #ffffff;
-    padding: 10px 16px;
-    border-radius: 14px;
+    padding: 6px 10px;              /* kleiner */
+    border-radius: 10px;            /* subtieler */
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     text-decoration: none;
-    font-size: 14px;
+    font-size: 12px;                /* kleiner tekst */
     font-weight: 600;
-    box-shadow: 0 8px 22px rgba(0,0,0,0.25);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.18);  /* minder heavy */
     z-index: 999;
 }
 
 .logout-btn svg {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     stroke: #ffffff;
-    stroke-width: 2.5;
+    stroke-width: 2;
     fill: none;
 }
 
@@ -1502,6 +1505,204 @@ a {
     }
 }
 
+/* ===== Icon picker (nieuwe groep) ===== */
+.icon-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
 
+.icon-option {
+    position: relative;
+    cursor: pointer;
+}
 
+.icon-option input[type="radio"] {
+    display: none;
+}
 
+.icon-emoji {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    background: #e1efe6;
+    font-size: 22px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+}
+
+.icon-option input[type="radio"]:checked + .icon-emoji {
+    background: #286238;
+    color: #fff;
+    transform: translateY(-1px) scale(1.03);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+}
+
+/* Rood alert dot bij profiel als onvolledig */
+.profile-alert {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+/* ===== Zoekveld op groepenlijst ===== */
+.group-search-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.group-search-input {
+    max-width: 190px;
+    margin-bottom: 0;   /* geen extra ruimte onderaan */
+    font-size: 14px;
+}
+
+/* op kleine schermen: onder de titel */
+@media (max-width: 480px) {
+    .page-header-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .group-search-wrapper {
+        align-items: flex-start;
+        width: 100%;
+    }
+
+    .group-search-input {
+        width: 100%;
+        max-width: none;
+    }
+}
+.edit-icon {
+    font-size: 18px;
+    margin-left: 8px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.edit-icon:hover {
+    opacity: 1;
+}
+
+/* klein edit-formpje onder de titel */
+.edit-name-form {
+    margin-top: 6px;
+}
+
+.small-input {
+    padding: 6px 10px;
+    font-size: 14px;
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 14px;
+    border-radius: 10px;
+}
+.edit-name-trigger {
+    font-size: 14px;
+    color: #777;
+    margin-top: 4px;
+    cursor: pointer;
+    margin-left: 2px;
+}
+
+.edit-name-trigger:hover {
+    text-decoration: underline;
+}
+
+.edit-name-form {
+    margin-top: 8px;
+}
+
+.small-input {
+    padding: 6px 10px;
+    font-size: 14px;
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 14px;
+    border-radius: 10px;
+}
+
+/* Klein 'edit' naast groepsnaam */
+.edit-name-link {
+    margin-left: 8px;
+    padding: 0;
+    border: none;
+    background: none;
+    font-size: 13px;           /* zelfde grootte als .expense-sub */
+    color: #6b7280;            /* zelfde grijs als 'Betaald door ...' */
+    cursor: pointer;
+}
+
+.edit-name-link:hover {
+    text-decoration: underline;
+}
+
+.edit-name-form {
+    margin-top: 4px;
+}
+
+.edit-name-input {
+    max-width: 260px;
+    padding: 6px 10px;
+    font-size: 14px;
+    margin-bottom: 0;
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: 999px;
+}
+
+.flash {
+    transition: opacity 0.5s ease;
+}
+
+.group-expired {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.group-expired-label {
+    font-size: 12px;
+    color: #6b7280; /* zelfde grijs als andere subtitels */
+}
+
+.group-expired-btn {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #e5e7eb;
+    color: #111827;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.group-expired-btn:hover {
+    background: #d1d5db;
+}

@@ -2,6 +2,7 @@ from flask import (
     render_template, request, redirect,
     url_for, session, flash, make_response
 )
+
 from app import app
 from app.models import (
     get_user_by_name,
@@ -16,6 +17,7 @@ from app.models import (
     add_payment,
 )
 from datetime import datetime
+
 import urllib.parse
 from io import BytesIO
 
@@ -26,6 +28,20 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.units import cm
 
+@app.context_processor
+def inject_profile_status():
+    profile_incomplete = False
+
+    if session.get("user_id"):
+        user_id = session["user_id"]
+        res = supabase.table("users").select("phone_number, payment_method").eq("user_id", user_id).execute()
+        if res.data:
+            u = res.data[0]
+            phone_ok = bool(u.get("phone_number"))
+            iban_ok = bool(u.get("payment_method"))
+            profile_incomplete = not (phone_ok and iban_ok)
+
+    return dict(profile_incomplete=profile_incomplete)
 
 # ============================================================
 # 1. LOGIN REQUIRED DECORATOR
@@ -74,14 +90,41 @@ def logout():
 # ============================================================
 # 3. GROUP LIST & CREATE
 # ============================================================
+@app.route("/groups/<int:group_id>/rename", methods=["POST"])
+@login_required
+def group_rename(group_id):
+    new_name = request.form.get("new_name", "").strip()
+
+    if not new_name:
+        flash("Naam mag niet leeg zijn.", "error")
+        return redirect(url_for("group_detail", group_id=group_id))
+
+    # Naam updaten
+    supabase.table("groups").update({"name": new_name}).eq("group_id", group_id).execute()
+
+    # GEEN enkele melding
+    return redirect(url_for("group_detail", group_id=group_id))
+
+
 
 @app.route("/groups")
 @login_required
 def groups_list():
     user_id = session["user_id"]
     groups_raw = get_user_groups(user_id)
-
     groups = []
+
+    def fmt_date(d):
+        if not d:
+            return ""
+        if isinstance(d, str):
+            try:
+                dt = datetime.fromisoformat(d)
+            except ValueError:
+                return d
+        else:
+            dt = d
+        return dt.strftime("%d-%m-%Y")
 
     for g in groups_raw:
         group_id = g["group_id"]
@@ -97,12 +140,15 @@ def groups_list():
                 break
 
         groups.append({
-            "group_id": g["group_id"],
-            "name": g["name"],
-            "start_date": g.get("start_date"),
-            "end_date": g.get("end_date"),
-            "my_balance": round(my_balance, 2)
-        })
+    "group_id": g["group_id"],
+    "name": g["name"],
+    "start_date": g.get("start_date"),
+    "end_date": g.get("end_date"),
+    "icon": g.get("icon") or "👥",
+    "my_balance": round(my_balance, 2)
+})
+
+
 
     return render_template("groups_list.html", groups=groups)
 
@@ -114,6 +160,7 @@ def groups_create():
         name = request.form["name"].strip()
         start_date = request.form["start_date"]
         end_date = request.form["end_date"]
+        icon = request.form.get("icon", "👥")
         organizer_id = session["user_id"]
 
         if not name:
@@ -131,11 +178,12 @@ def groups_create():
             flash("De einddatum mag niet vóór de startdatum liggen.", "error")
             return redirect(url_for("groups_create"))
 
-        create_group(name, start_date, end_date, organizer_id)
-        flash("Groep aangemaakt.", "success")
+        create_group(name, start_date, end_date, organizer_id, icon)
+        flash("Groep aangemaakt.", "group_success")
         return redirect(url_for("groups_list"))
 
     return render_template("groups_create.html")
+
 
 
 # ============================================================
@@ -507,7 +555,7 @@ def add_member(group_id):
             "user_id": user["user_id"]
         }).execute()
 
-        flash("Lid toegevoegd.", "success")
+        flash("Added! Expenses just got a bit softer.", "success-confetti") 
         return redirect(url_for("group_detail", group_id=group_id))
 
     return render_template("add_member.html", group=group, members=members)
