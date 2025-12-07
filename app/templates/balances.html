@@ -8,7 +8,7 @@
     <div class="header-inner">
 
         <!-- Back-knop -->
-        <a href="{{ url_for('group_detail', group_id=group.group_id) }}"
+        <a href="{{ url_for('group_detail', group_id=group['group_id']) }}"
            class="header-back-btn">
             <svg viewBox="0 0 24 24">
                 <path d="M15 18l-6-6 6-6"/>
@@ -18,11 +18,11 @@
         <!-- Titel + subtitel -->
         <div class="header-title-wrapper">
             <h1 class="header-title">Balans</h1>
-            <p class="header-subtitle">{{ group.name }}</p>
+            <p class="header-subtitle">{{ group['name'] }}</p>
         </div>
 
         <!-- PDF-knop -->
-        <a href="{{ url_for('download_pdf', group_id=group.group_id) }}"
+        <a href="{{ url_for('download_pdf', group_id=group['group_id']) }}"
            class="pdf-btn-top">
             PDF ↓
         </a>
@@ -32,15 +32,7 @@
 
 <main class="page top-overlap">
 
-    {% if balances %}
-        {% set app_fee_per_person = balances[0].app_fee %}
-        <p class="small muted mt-16">
-            <strong>Let op:</strong>
-            In alle saldi hieronder is het aandeel in de app fee
-            (€{{ "%.2f"|format(app_fee_per_person) }} per persoon) al verrekend.
-        </p>
-    {% endif %}
-
+    <!-- 🔹 SALDI TABEL -->
     <div class="card mt-16">
         <div class="table-responsive">
             <table class="table">
@@ -48,15 +40,21 @@
                     <tr>
                         <th>Naam</th>
                         <th>Saldo</th>
-                        <th>App-fee</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for b in balances %}
                     <tr>
                         <td>{{ b.name }}</td>
-                        <td>€{{ "%.2f"|format(b.saldo) }}</td>
-                        <td>€{{ "%.2f"|format(b.app_fee) }}</td>
+                        <td>
+                            {% if b.saldo < 0 %}
+                                <span class="text-red">€{{ "%.2f"|format(b.saldo) }}</span>
+                            {% elif b.saldo > 0 %}
+                                <span class="text-green">€{{ "%.2f"|format(b.saldo) }}</span>
+                            {% else %}
+                                <span class="text-neutral">€0.00</span>
+                            {% endif %}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -64,10 +62,9 @@
         </div>
     </div>
 
-    {# zichtbare transacties: als app_fee_paid true is, niets extra filteren;
-    we vertrouwen gewoon op optimale transacties #}
-    {% set visible_tx = optimal_transactions or [] %}
 
+    <!-- 🔹 OPTIMALE BETALINGEN -->
+    {% set visible_tx = optimal_transactions or [] %}
 
     {% if visible_tx %}
     <div class="card mt-24">
@@ -77,10 +74,13 @@
         {% for t in visible_tx %}
             <li>
                 <span class="pay-icon">💸</span>
+
                 <strong class="pay-name">{{ t.from_name }}</strong>
                 <span>&nbsp;betaalt&nbsp;</span>
+
                 <span class="amount">€{{ "%.2f"|format(t.amount) }}</span>
                 <span>&nbsp;aan&nbsp;</span>
+
                 <strong class="receive-name">
                     {{ t.to_name }}
                     {% if t.to_iban %}
@@ -89,12 +89,12 @@
                 </strong>
 
                 {% if t.from_user_id == session["user_id"] %}
-                    <form action="{{ url_for('mark_payment', group_id=group.group_id) }}"
+                    <form action="{{ url_for('mark_payment', group_id=group['group_id']) }}"
                           method="post"
                           style="display:inline-block; margin-left:12px;">
+
                         <input type="hidden" name="to_user_id" value="{{ t.to_user_id }}">
                         <input type="hidden" name="amount" value="{{ t.amount }}">
-                        <input type="hidden" name="is_fee" value="{% if t.to_name == 'FairSplit+' %}1{% else %}0{% endif %}">
 
                         <button type="submit" class="btn btn-xs btn-secondary">
                             Ik heb betaald
@@ -105,6 +105,7 @@
         {% endfor %}
         </ul>
     </div>
+
     {% else %}
     <div class="card mt-24">
         <h2 class="card-title">Optimale afbetalingen</h2>

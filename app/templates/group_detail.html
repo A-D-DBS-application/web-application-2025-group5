@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}{{ group.name }}{% endblock %}
+{% block title %}{{ group['name'] }}{% endblock %}
 {% block body_class %}bg-app{% endblock %}
 
 {% block content %}
 <div class="header-green">
     <div class="header-inner">
 
-        <!-- Mooie back-knop -->
+        <!-- Back-knop -->
         <a href="{{ url_for('groups_list') }}" class="header-back-btn">
             <svg viewBox="0 0 24 24">
                 <path d="M15 18l-6-6 6-6"/>
@@ -15,27 +15,29 @@
         </a>
 
         <div class="header-title-wrapper">
-           <h1 class="header-title group-detail-name">
-    {{ group.name }}
-    <button type="button" id="editNameBtn" class="edit-name-link">edit</button>
-</h1>
 
-<div id="editNameForm" class="edit-name-form" style="display:none;">
-    <form method="post" action="{{ url_for('group_rename', group_id=group.group_id) }}">
-        <input
-            type="text"
-            name="new_name"
-            class="input edit-name-input"
-            value="{{ group.name }}"
-            required
-        >
-        <button type="submit" class="btn btn-primary btn-small">Opslaan</button>
-    </form>
-</div>
+            <h1 class="header-title group-detail-name">
+                {{ group['name'] }}
+                <button type="button" id="editNameBtn" class="edit-name-link">edit</button>
+            </h1>
 
+            <!-- Groepsnaam wijzigen -->
+            <div id="editNameForm" class="edit-name-form" style="display:none;">
+                <form method="post" action="{{ url_for('group_rename', group_id=group['group_id']) }}">
+                    <input type="text"
+                           name="new_name"
+                           class="input edit-name-input"
+                           value="{{ group['name'] }}"
+                           required>
+                    <button type="submit" class="btn btn-primary btn-small">Opslaan</button>
+                </form>
+            </div>
+
+            <!-- Datums – routes geven geen start_date_fmt / end_date_fmt door -->
             <p class="group-detail-dates">
-                {{ start_date_fmt }} – {{ end_date_fmt }}
+                {{ group['start_date'] }} – {{ group['end_date'] }}
             </p>
+
         </div>
 
     </div>
@@ -70,28 +72,31 @@
         </div>
     </section>
 
+
     <!-- LEDEN -->
     <section class="card members-card">
         <div class="members-card-header">
+
             <div class="members-title-row">
                 <span class="members-title">Leden</span>
                 <span class="member-count">{{ members|length }}</span>
             </div>
 
             <div class="members-actions">
-                <a href="{{ url_for('add_member', group_id=group.group_id) }}" 
+                <a href="{{ url_for('add_member', group_id=group['group_id']) }}"
                    class="chip-button chip-primary">
                     <span class="chip-icon">＋</span>
                     <span>Lid toevoegen</span>
                 </a>
 
-                <a href="{{ url_for('share_group', group_id=group.group_id) }}" 
+                <a href="{{ url_for('share_group', group_id=group['group_id']) }}"
                    class="chip-button chip-secondary"
                    target="_blank" rel="noopener">
                     <span class="chip-icon">📲</span>
                     <span>Lid uitnodigen</span>
                 </a>
             </div>
+
         </div>
 
         <div class="members-list">
@@ -99,10 +104,10 @@
             <div class="member-item">
                 <div class="member-left">
                     <div class="member-avatar">
-                        {{ m.users.name[0] | upper }}
+                        {{ m["users"]["name"][0] | upper }}
                     </div>
                     <div class="member-name">
-                        {{ m.users.name }}
+                        {{ m["users"]["name"] }}
                     </div>
                 </div>
             </div>
@@ -110,55 +115,61 @@
         </div>
     </section>
 
-    <!-- UITGAVENLIJST -->
+
+    <!-- UITGAVEN -->
     {% if expenses %}
         <section class="expenses-section">
             <h3 class="section-title">Uitgaven</h3>
 
             {% for e in expenses %}
             <div class="expense-card">
+
                 <div class="expense-left">
                     <div class="expense-icon">🧾</div>
                     <div>
                         <div class="expense-title">{{ e.description }}</div>
                         <div class="expense-sub">
-                            Betaald door {{ uid_naam[e.paid_by] }}
+                            Betaald door {{ user_map[e.paid_by] }}
                         </div>
                     </div>
                 </div>
+
                 <div class="expense-amount">
                     €{{ "%.2f"|format(e.total_amount) }}
+
                     <form method="post" action="{{ url_for('delete_expense', expense_id=e.expense_id) }}">
                         <button class="link-danger small">Verwijder</button>
                     </form>
                 </div>
 
-                <!-- Extra info voor huidige gebruiker -->
                 <div class="expense-user-info small muted mt-4">
                     {% set my_uid = session["user_id"] %}
+
                     {% if my_uid in e.shares and e.paid_by != my_uid %}
                         <span class="amount-negative">
                             Verschuldigd: €{{ "%.2f"|format(e.shares[my_uid]) }}
                         </span>
+
                     {% elif e.paid_by == my_uid %}
                         <span class="amount-positive">
                             Te goed: €{{ "%.2f"|format(e.total_amount - e.shares.get(my_uid, 0)) }}
                         </span>
+
                     {% else %}
-                        <span class="amount-neutral">
-                            Niet betrokken bij deze uitgave
-                        </span>
+                        <span class="amount-neutral">Niet betrokken bij deze uitgave</span>
                     {% endif %}
                 </div>
 
             </div>
             {% endfor %}
         </section>
+
     {% else %}
         <p class="muted mt-16">Nog geen uitgaven toegevoegd</p>
     {% endif %}
 
-    <!-- VERRICHTINGEN (betalingen) -->
+
+    <!-- VERRICHTINGEN -->
     <section class="card mt-24">
         <h3 class="section-title">Verrichtingen</h3>
 
@@ -169,28 +180,17 @@
                     {% if p.from_user == p.to_user %}
                         {{ user_map[p.from_user] }} betaalde de app-fee van
                         €{{ "%.2f"|format(p.amount) }}
-                        {% if p.payment_date %}
-                            {% set d = p.payment_date|string %}
-                            {% set parts = d.split("-") %}
-                            op {{ parts[2] }}/{{ parts[1] }}/{{ parts[0] }}
-                        {% endif %}
-
-
 
                     {% else %}
                         {{ user_map[p.from_user] }} betaalde
                         €{{ "%.2f"|format(p.amount) }}
                         aan {{ user_map[p.to_user] }}
-                        {% if p.payment_date %}
-                            {% set d = p.payment_date|string %}
-                            {% set parts = d.split("-") %}
-                            op {{ parts[2] }}/{{ parts[1] }}/{{ parts[0] }}
-                        {% endif %}
 
                     {% endif %}
                 </li>
             {% endfor %}
             </ul>
+
         {% else %}
             <p class="muted">Er zijn nog geen verrichtingen geregistreerd.</p>
         {% endif %}
@@ -199,88 +199,72 @@
 </main>
 {% endblock %}
 
+
+
 {% block expense_modal %}
+<div class="icon-square">🧾</div>
 
-    <div class="icon-square">🧾</div>
+<form method="post" class="form" data-expense-form="1">
 
-    <form method="post" class="form" data-expense-form="1">
+    <label class="label">Beschrijving</label>
+    <input type="text" name="description" class="input">
 
-        <label class="label" for="description">Beschrijving</label>
-        <input
-            type="text"
-            id="description"
-            name="description"
-            class="input"
-            placeholder="Bijv. Boodschappen, Restaurant, etc."
-        >
+    <label class="label">Totaal bedrag</label>
+    <input type="number" step="0.01" name="total_amount" class="input" value="0.00">
 
-        <label class="label" for="total_amount">Totaal bedrag</label>
-        <input
-            type="number"
-            step="0.01"
-            id="total_amount"
-            name="total_amount"
-            class="input"
-            value="0.00"
-        >
+    <label class="label">Betaald door</label>
+    <select name="paid_by" class="input">
+        {% for m in members %}
+            <option value="{{ m['users']['user_id'] }}">{{ m['users']['name'] }}</option>
+        {% endfor %}
+    </select>
 
-        <label class="label" for="paid_by">Betaald door</label>
-        <select id="paid_by" name="paid_by" class="input">
-            {% for m in members %}
-                <option value="{{ m.users.user_id }}">{{ m.users.name }}</option>
-            {% endfor %}
-        </select>
+    <div class="split-row">
+        <span class="label-small">Verdeling</span>
+        <div class="split-buttons">
+            <label class="pill pill-active">
+                <input type="radio" name="split_type" value="equal" checked> Gelijk verdelen
+            </label>
+            <label class="pill">
+                <input type="radio" name="split_type" value="manual"> Aangepast
+            </label>
+        </div>
+    </div>
 
-        <div class="split-row">
-            <span class="label-small">Verdeling</span>
-            <div class="split-buttons">
-                <label class="pill pill-active">
-                    <input type="radio" name="split_type" value="equal" checked> Gelijk verdelen
+    <div class="members-split">
+        <span class="label-small">Verdeel het bedrag over de leden</span>
+
+        {% for m in members %}
+            <div class="split-row-member">
+                <label>
+                    <input type="checkbox" name="members" value="{{ m['users']['user_id'] }}" checked>
+                    {{ m['users']['name'] }}
                 </label>
-                <label class="pill">
-                    <input type="radio" name="split_type" value="manual"> Aangepast
-                </label>
+
+                <input type="number" step="0.01"
+                       name="amount_{{ m['users']['user_id'] }}"
+                       class="input input-small"
+                       value="0.00">
             </div>
-        </div>
+        {% endfor %}
+    </div>
 
-        <div class="members-split">
-            <span class="label-small">Verdeel het bedrag over de leden</span>
-            {% for m in members %}
-                <div class="split-row-member">
-                    <label>
-                        <input type="checkbox" name="members" value="{{ m.users.user_id }}" checked>
-                        {{ m.users.name }}
-                    </label>
-                    <input
-                        type="number"
-                        step="0.01"
-                        name="amount_{{ m.users.user_id }}"
-                        class="input input-small"
-                        value="0.00"
-                    >
-                </div>
-            {% endfor %}
-        </div>
+    <button type="submit" class="btn btn-primary btn-full mt-16">
+        Uitgave toevoegen
+    </button>
+</form>
 
-        <button type="submit" class="btn btn-primary btn-full mt-16">
-            Uitgave toevoegen
-        </button>
-
-    </form>
-
-    <script>
+<script>
 document.addEventListener("DOMContentLoaded", function () {
     const btn = document.getElementById("editNameBtn");
     const form = document.getElementById("editNameForm");
     if (!btn || !form) return;
-
     btn.addEventListener("click", () => {
-        form.style.display = (form.style.display === "none" || form.style.display === "") 
-            ? "block" 
+        form.style.display = 
+            (form.style.display === "none" || form.style.display === "")
+            ? "block"
             : "none";
     });
 });
 </script>
-
-
 {% endblock %}

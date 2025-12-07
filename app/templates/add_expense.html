@@ -1,18 +1,124 @@
-# uitgaven (Milan)
+{% extends "base.html" %}
+{% block title %}Uitgave toevoegen{% endblock %}
+{% block body_class %}bg-app{% endblock %}
 
-<h2>Uitgave toevoegen aan {{ group.name }}</h2>
-<form method="post">
-    Beschrijving: <input type="text" name="description"><br>
-    Totaal bedrag: <input type="number" step="0.01" name="total_amount"><br>
-    Betaald door:
-    <select name="paid_by">
-        {% for member in members %}
-            <option value="{{ member.user_id }}">{{ member.name }}</option>
-        {% endfor %}
-    </select><br>
-    <h3>Verdeel het bedrag:</h3>
-    {% for member in members %}
-        {{ member.name }}: <input type="number" step="0.01" name="share_{{ member.user_id }}"><br>
-    {% endfor %}
-    <input type="submit" value="Toevoegen">
-</form>
+{% block content %}
+
+<div class="header-green">
+    <div class="header-inner">
+        <a href="{{ url_for('group_detail', group_id=group['group_id']) }}" class="header-back-btn">
+            <svg viewBox="0 0 24 24">
+                <path d="M15 18l-6-6 6-6"/>
+            </svg>
+        </a>
+
+        <div class="header-title-wrapper">
+            <h1 class="header-title">Uitgave toevoegen</h1>
+            <p class="header-subtitle">Aan groep: {{ group["name"] }}</p>
+        </div>
+    </div>
+</div>
+
+<main class="page top-overlap">
+
+    <div class="card form-card">
+        <div class="icon-square">🧾</div>
+
+        <form method="post" class="form" id="expenseForm">
+
+            <!-- Beschrijving -->
+            <label class="label" for="description">Beschrijving</label>
+            <input type="text" id="description" name="description" class="input"
+                   placeholder="Bijv. Restaurant, Boodschappen..." required>
+
+            <!-- Totaal bedrag -->
+            <label class="label" for="total_amount">Totaal bedrag</label>
+            <input type="number" step="0.01" id="total_amount" name="total_amount"
+                   class="input" value="0.00" required>
+
+            <!-- Betaald door -->
+            <label class="label" for="paid_by">Betaald door</label>
+            <select id="paid_by" name="paid_by" class="input">
+                {% for m in members %}
+                    <option value="{{ m['users']['user_id'] }}">
+                        {{ m['users']['name'] }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <!-- Verdeling -->
+            <div class="split-row">
+                <span class="label-small">Verdeling</span>
+                <div class="split-buttons">
+                    <label class="pill pill-active">
+                        <input type="radio" name="split_type" value="equal" checked> Gelijk
+                    </label>
+                    <label class="pill">
+                        <input type="radio" name="split_type" value="manual"> Handmatig
+                    </label>
+                </div>
+            </div>
+
+            <!-- Per-lid verdeling -->
+            <div class="members-split">
+                <span class="label-small">Verdeel het bedrag</span>
+
+                {% for m in members %}
+                <div class="split-row-member">
+                    <label>
+                        <input type="checkbox" name="members" value="{{ m['users']['user_id'] }}" checked>
+                        {{ m['users']['name'] }}
+                    </label>
+
+                    <input type="number" step="0.01"
+                           name="amount_{{ m['users']['user_id'] }}"
+                           class="input input-small"
+                           value="0.00">
+                </div>
+                {% endfor %}
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full mt-16">
+                Uitgave toevoegen
+            </button>
+
+        </form>
+    </div>
+
+</main>
+
+<!-- JS equal split logic -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("expenseForm");
+    if (!form) return;
+
+    const totalInput = form.querySelector("#total_amount");
+    const equalRadio = form.querySelector("input[name='split_type'][value='equal']");
+    const memberChecks = form.querySelectorAll("input[name='members']");
+
+    function applyEqualSplit() {
+        const totalStr = (totalInput.value || "0").replace(",", ".");
+        const total = parseFloat(totalStr);
+        const checked = Array.from(memberChecks).filter(cb => cb.checked);
+
+        if (!total || checked.length === 0) return;
+
+        let cents = Math.round(total * 100);
+        const base = Math.floor(cents / checked.length);
+        let rest = cents % checked.length;
+
+        checked.forEach((cb, index) => {
+            const uid = cb.value;
+            const amount = ((base + (index < rest ? 1 : 0)) / 100).toFixed(2);
+            const field = form.querySelector(`input[name="amount_${uid}"]`);
+            if (field) field.value = amount;
+        });
+    }
+
+    equalRadio?.addEventListener("change", () => equalRadio.checked && applyEqualSplit());
+    totalInput?.addEventListener("change", () => equalRadio?.checked && applyEqualSplit());
+});
+</script>
+
+{% endblock %}

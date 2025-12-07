@@ -3,6 +3,7 @@
 {% block body_class %}bg-app{% endblock %}
 
 {% block content %}
+
 <header class="top-header">
     <div class="avatar-circle">
         {{ session.get("username", "L")[0] | upper }}
@@ -14,6 +15,7 @@
 </header>
 
 <main class="page">
+
     <div class="page-header-row">
         <h2 class="page-title">Groepen</h2>
 
@@ -30,51 +32,76 @@
         </div>
     </div>
 
-
     {% if not groups %}
+
         <div class="card big-card center-card">
             <div class="icon-large">👥</div>
             <p class="muted">Je zit nog in geen enkele groep</p>
-            <a href="{{ url_for('groups_create') }}" class="btn btn-primary">Maak je eerste groep</a>
+            <a href="{{ url_for('groups_create') }}" class="btn btn-primary">
+                Maak je eerste groep
+            </a>
         </div>
+
     {% else %}
+
         <div class="group-list">
+
             {% for g in groups %}
-            <a href="{{ url_for('group_detail', group_id=g.group_id) }}" class="group-card">
+            <a
+                href="{{ url_for('group_detail', group_id=g['group_id']) }}"
+                class="group-card"
+            >
+
                 <div class="group-left">
 
                     <div class="group-icon-emoji">
-                        {{ g.icon or "👥" }}
+                        {{ g["icon"] or "👥" }}
                     </div>
 
                     <div>
-                        <div class="group-name">{{ g.name }}</div>
-                        <div class="group-date">{{ g.start_date_fmt }}</div>
+                        <div class="group-name">{{ g["name"] }}</div>
 
+                        {# Datum formatteren in template #}
+                        {% set start = g["start_date"] %}
+                        {% if start %}
+                            {% set start_dt = start|string %}
+                            {% set parts = start_dt.split("-") %}
+                            <div class="group-date">{{ parts[2] }}/{{ parts[1] }}/{{ parts[0] }}</div>
+                        {% else %}
+                            <div class="group-date muted">Geen datum</div>
+                        {% endif %}
 
-                        {% if g.my_balance < 0 %}
+                        {% if g["my_balance"] < 0 %}
                             <span class="badge badge-danger">
-                                Je schuld: €{{ "%.2f"|format(-g.my_balance) }}
+                                Je schuld: €{{ "%.2f"|format(-g["my_balance"]) }}
                             </span>
-                        {% elif g.my_balance > 0 %}
+
+                        {% elif g["my_balance"] > 0 %}
                             <span class="badge badge-success">
-                                Je krijgt: €{{ "%.2f"|format(g.my_balance) }}
+                                Je krijgt: €{{ "%.2f"|format(g["my_balance"]) }}
                             </span>
+
                         {% else %}
                             <span class="badge badge-light">Je bent quitte</span>
                         {% endif %}
                     </div>
-
                 </div>
 
                 <div class="group-amount
-                    {% if g.my_balance < 0 %}text-red{% elif g.my_balance > 0 %}text-green{% else %}text-neutral{% endif %}">
-                    €{{ "%.2f"|format(g.my_balance) }}
+                    {% if g['my_balance'] < 0 %}text-red
+                    {% elif g['my_balance'] > 0 %}text-green
+                    {% else %}text-neutral
+                    {% endif %}
+                ">
+                    €{{ "%.2f"|format(g["my_balance"]) }}
                 </div>
 
             </a>
             {% endfor %}
+
         </div>
+
     {% endif %}
+
 </main>
 {% endblock %}

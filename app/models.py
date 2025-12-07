@@ -1,32 +1,43 @@
 from supabase import create_client
 import os
 
+# ============================================================
+# SUPABASE CLIENT
+# ============================================================
 
-# Supabase client
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
-# ============================
+# ============================================================
 # USERS
-# ============================
-
+# ============================================================
 
 def get_user_by_name(username):
     """Zoek gebruiker op naam."""
-    return supabase.table("users").select("*").eq("name", username).execute().data
+    return (
+        supabase.table("users")
+        .select("*")
+        .eq("name", username)
+        .execute()
+        .data
+    )
 
 
 def create_user(username):
     """Maak een nieuwe gebruiker aan."""
-    return supabase.table("users").insert({"name": username}).execute().data[0]
+    return (
+        supabase.table("users")
+        .insert({"name": username})
+        .execute()
+        .data[0]
+    )
 
 
-# ============================
+# ============================================================
 # GROUPS
-# ============================
-
+# ============================================================
 
 def get_user_groups(user_id):
     """Gebruik Supabase RPC om groepen van user op te halen."""
@@ -34,36 +45,19 @@ def get_user_groups(user_id):
     return result.data if result.data else []
 
 
-def create_group(name, start_date, end_date, organizer_id, icon):
-    """Maak groep + voeg organizer toe aan group_members."""
-    group = supabase.table("groups").insert({
-        "name": name,
-        "start_date": start_date,
-        "end_date": end_date,
-        "organizer_id": organizer_id,
-        "icon": icon,      # emoji opslaan
-        "app_fee": 3.00    # TOTALE FEE PER GROEP
-    }).execute().data[0]
-
-    supabase.table("group_members").insert({
-        "group_id": group["group_id"],
-        "user_id": organizer_id,
-        "role": "organizer"
-    }).execute()
-
-    return group
-
-
-
-
-def get_group_members(group_id):
-    """Alle leden van een groep ophalen zonder joined user-info."""
-    return supabase.table("group_members").select("*").eq("group_id", group_id).execute().data
-
-
 def get_group_detail(group_id):
-    """Groep + alle leden mét user info ophalen."""
-    group = supabase.table("groups").select("*").eq("group_id", group_id).execute().data
+    """
+    Haal groep + alle leden met user-info op.
+    Wordt gebruikt in routes.py op meerdere plaatsen.
+    """
+    group = (
+        supabase.table("groups")
+        .select("*")
+        .eq("group_id", group_id)
+        .execute()
+        .data
+    )
+
     members = (
         supabase.table("group_members")
         .select("*, users(*)")
@@ -71,28 +65,143 @@ def get_group_detail(group_id):
         .execute()
         .data
     )
+
     return (group[0] if group else None), members
 
 
-# ============================
-# EXPENSES
-# ============================
+def create_group(name, start_date, end_date, organizer_id, icon):
+    """
+    Nieuwe groep aanmaken:
+    ✔ Organizer toevoegen
+    ✔ Automatische app-fee expense (organizer betaalt initieel €3)
+    ✔ Bij latere groepsuitbreiding → fee wordt automatisch herverdeeld
+    """
 
+    # 1. groep maken
+    group = (
+        supabase.table("groups")
+        .insert({
+            "name": name,
+            "start_date": start_date,
+            "end_date": end_date,
+            "organizer_id": organizer_id,
+            "icon": icon
+        })
+        .execute()
+        .data[0]
+    )
+    group_id = group["group_id"]
 
-def add_expense(group_id, paid_by, description, total_amount, shares_dict):
-    result = supabase.table("expenses").insert({
+    # 2. organizer toevoegen
+    supabase.table("group_members").insert({
         "group_id": group_id,
-        "paid_by": paid_by,
-        "description": description,
-        "total_amount": total_amount
+        "user_id": organizer_id,
+        "role": "organizer"
     }).execute()
 
-    if not result.data:
-        raise Exception("Kon expense niet opslaan.")
+    # 3. automatische fee expense
+    APP_FEE = 3.00
+
+    exp = (
+        supabase.table("expenses")
+        .insert({
+            "group_id": group_id,
+            "paid_by": organizer_id,
+            "description": "FairSplit+ app fee",
+            "total_amount": APP_FEE
+        })
+        .execute()
+        .data[0]
+    )
+    fee_expense_id = exp["expense_id"]
+
+    # initieel 1 lid → hele fee gaat naar organizer
+    supabase.table("expense_shares").insert({
+        "expense_id": fee_expense_id,
+        "user_id": organizer_id,
+        "amount": APP_FEE
+    }).execute()
+
+    return group
+
+
+# ============================================================
+# APP-FEE HERVERDELING
+# ============================================================
+
+def redistribute_app_fee(group_id):
+    """
+    Herverdeel de app-fee over alle leden:
+    ✔ Vind de fee expense
+    ✔ Vind alle members
+    ✔ Deel fee gelijk (equal split)
+    ✔ Verwijder oude shares
+    ✔ Voeg nieuwe shares toe
+    """
+
+    # 1. leden
+    members = (
+        supabase.table("group_members")
+        .select("user_id")
+        .eq("group_id", group_id)
+        .execute()
+        .data
+    )
+    member_ids = [m["user_id"] for m in members]
+    n = len(member_ids)
+
+    # 2. fee expense zoeken
+    fee_expense = (
+        supabase.table("expenses")
+        .select("expense_id, total_amount")
+        .eq("group_id", group_id)
+        .eq("description", "FairSplit+ app fee")
+        .execute()
+        .data
+    )
+
+    if not fee_expense:
+        return
+
+    expense_id = fee_expense[0]["expense_id"]
+    fee_total = float(fee_expense[0]["total_amount"])
+
+    # 3. nieuwe shares
+    per_user = round(fee_total / n, 2)
+
+    # 4. oude shares verwijderen
+    supabase.table("expense_shares").delete().eq("expense_id", expense_id).execute()
+
+    # 5. nieuwe shares aanmaken
+    for uid in member_ids:
+        supabase.table("expense_shares").insert({
+            "expense_id": expense_id,
+            "user_id": uid,
+            "amount": per_user
+        }).execute()
+
+
+# ============================================================
+# EXPENSES
+# ============================================================
+
+def add_expense(group_id, paid_by, description, total_amount, shares_dict):
+    """Voeg een expense toe + een lijst shares."""
+    result = (
+        supabase.table("expenses")
+        .insert({
+            "group_id": group_id,
+            "paid_by": paid_by,
+            "description": description,
+            "total_amount": total_amount
+        })
+        .execute()
+    )
 
     expense = result.data[0]
     expense_id = expense["expense_id"]
 
+    # shares opslaan
     for user_id, amount in shares_dict.items():
         supabase.table("expense_shares").insert({
             "expense_id": expense_id,
@@ -103,32 +212,38 @@ def add_expense(group_id, paid_by, description, total_amount, shares_dict):
     return expense
 
 
-# ============================
+# ============================================================
 # PAYMENTS
-# ============================
-
+# ============================================================
 
 def add_payment(group_id, from_user_id, to_user_id, amount, method="bank", reference=None):
-    """Registreer een betaling tussen twee users in een groep."""
+    """Registreer een betaling in payments-tabel."""
     return supabase.table("payments").insert({
         "from_user": from_user_id,
         "to_user": to_user_id,
         "group_id": group_id,
         "amount": amount,
         "method": method,
-        "status": "completed",   # direct voltooid
+        "status": "completed",
         "reference": reference,
     }).execute()
 
 
-# ============================
-# BALANCES (VOOR UI)
-# ============================
-
+# ============================================================
+# BALANCES (som moet exact 0 zijn)
+# ============================================================
 
 def get_balances_for_group(group_id):
-    """Bereken balans per persoon voor de balanspagina en toon de app-fee."""
+    """
+    Balans per persoon:
+    saldo = (betaald) - (verschuldigd)
 
+    ✔ fee zit in expense → géén extra logica nodig
+    ✔ saldi tellen altijd op tot 0
+    ✔ werkt perfect voor optimale betalingen
+    """
+
+    # 1. members
     members = (
         supabase.table("group_members")
         .select("user_id")
@@ -136,11 +251,14 @@ def get_balances_for_group(group_id):
         .execute()
         .data
     )
-    users = supabase.table("users").select("user_id, name, payment_method").execute().data
+    member_ids = [m["user_id"] for m in members]
 
-    user_name_dict = {u["user_id"]: u["name"] for u in users}
-    user_iban_dict = {u["user_id"]: u.get("payment_method") for u in users}
+    # 2. user data
+    users = supabase.table("users").select("*").execute().data
+    name_map = {u["user_id"]: u["name"] for u in users}
+    iban_map = {u["user_id"]: u.get("payment_method") for u in users}
 
+    # 3. expenses
     expenses = (
         supabase.table("expenses")
         .select("*")
@@ -150,6 +268,7 @@ def get_balances_for_group(group_id):
     )
     expense_ids = [e["expense_id"] for e in expenses] or [-1]
 
+    # 4. shares
     shares = (
         supabase.table("expense_shares")
         .select("*")
@@ -158,31 +277,19 @@ def get_balances_for_group(group_id):
         .data or []
     )
 
-    group_list = (
-        supabase.table("groups")
-        .select("app_fee")
-        .eq("group_id", group_id)
-        .execute()
-        .data
-    )
-    total_fee = float(group_list[0]["app_fee"]) if group_list else 0.0
+    # 5. basisstructuren
+    paid = {uid: 0.0 for uid in member_ids}
+    owed = {uid: 0.0 for uid in member_ids}
 
-    n_members = len(members)
-    fee_per_person = round(total_fee / n_members, 2) if n_members else 0.0
+    # geld voorgeschoten
+    for e in expenses:
+        paid[e["paid_by"]] += float(e["total_amount"])
 
-    paid = {m["user_id"]: 0.0 for m in members}
-    owed = {m["user_id"]: 0.0 for m in members}
+    # verdeling van kosten
+    for s in shares:
+        owed[s["user_id"]] += float(s["amount"])
 
-    # uitgaven meenemen
-    for exp in expenses:
-        if exp["paid_by"] in paid:
-            paid[exp["paid_by"]] += float(exp["total_amount"])
-
-    for share in shares:
-        if share["user_id"] in owed:
-            owed[share["user_id"]] += float(share["amount"])
-
-    # payments meenemen (status completed)
+    # 6. payments verwerken
     payments = (
         supabase.table("payments")
         .select("*")
@@ -193,64 +300,48 @@ def get_balances_for_group(group_id):
     )
 
     for p in payments:
-        from_id = p["from_user"]
-        to_id = p["to_user"]
         amt = float(p["amount"])
+        paid[p["from_user"]] += amt
+        if p["to_user"] in paid and p["to_user"] != p["from_user"]:
+            paid[p["to_user"]] -= amt
 
-        # betaler heeft effectief meer betaald
-        if from_id in paid:
-            paid[from_id] += amt
-
-        # ontvanger heeft minder voorgeschoten (zijn tegoed daalt),
-        # MAAR niet als from_id == to_id (zoals bij de app-fee die je aan jezelf markeert)
-        if to_id in paid and to_id != from_id:
-            paid[to_id] -= amt
-
-
+    # 7. saldi
     balances = []
-    for m in members:
-        uid = m["user_id"]
-        saldo = round(paid[uid] - owed[uid] - fee_per_person, 2)
+    for uid in member_ids:
+        saldo = round(paid[uid] - owed[uid], 2)
         balances.append({
             "user_id": uid,
-            "name": user_name_dict.get(uid, "Onbekend"),
-            "iban": user_iban_dict.get(uid),
-            "saldo": saldo,
-            "app_fee": fee_per_person
+            "name": name_map.get(uid, "Onbekend"),
+            "iban": iban_map.get(uid),
+            "saldo": saldo
         })
 
     return balances
 
 
 # ============================================================
-# ONS "SLIM" ALGORITME VOOR OPTIMALE BETALINGEN
+# ONS SLIM ALGORITME VOOR OPTIMALE AFBETALINGEN
 # ============================================================
-
 
 def compute_optimal_transactions(ui_balances):
     """
-    Berekent alleen de optimale betalingen TUSSEN personen.
-    De app-fee-transactie wordt later in balances_route toegevoegd.
+    Berekent minimale set betalingen zoals Splitwise:
 
-    (SLIM ALGORITME:
-    - Werkt op UI-saldi (inclusief fee)
-    - Lost eerst ALLE interne schulden op
-    - Combineert daarna ALLE resterende debiteuren
-    - De grootste debiteur betaalt ALTIJD de volledige fee (€3)
-    - Minimaliseert het aantal transacties (zoals Splitwise))
+    ✔ Splits debiteuren en crediteuren
+    ✔ Combineert grote bedragen eerst
+    ✔ Minimaliseert aantal betalingen
+    ✔ Werkt perfect omdat saldi altijd = 0 som
     """
 
     EPS = 0.005
 
-    # 1. Netto UI-saldi
     members = [{
-        "user_id": bal["user_id"],
-        "name": bal["name"],
-        "iban": bal["iban"],
-        "amount": bal["saldo"]
-    } for bal in ui_balances]
+        "user_id": b["user_id"],
+        "name": b["name"],
+        "iban": b["iban"],
+        "amount": b["saldo"],
+    } for b in ui_balances]
 
-    # 2. Split in debiteuren en crediteuren
     debtors = []
     creditors = []
 
@@ -260,13 +351,12 @@ def compute_optimal_transactions(ui_balances):
         elif m["amount"] > EPS:
             creditors.append(m)
 
-    debtors.sort(key=lambda x: x["amount"], reverse=True)   # grootste schuld eerst
-    creditors.sort(key=lambda x: x["amount"], reverse=True) # grootste tegoed eerst
+    debtors.sort(key=lambda x: x["amount"], reverse=True)
+    creditors.sort(key=lambda x: x["amount"], reverse=True)
 
     transactions = []
-
-    # 3. Optimaliseren: zo weinig mogelijk betalingen
     i = j = 0
+
     while i < len(debtors) and j < len(creditors):
         d = debtors[i]
         c = creditors[j]

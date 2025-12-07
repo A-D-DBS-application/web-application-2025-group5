@@ -10,7 +10,7 @@
 
 <body class="{% block body_class %}{% endblock %}">
 
-    {# ===== LOGOUT: alleen op groepenlijst ===== #}
+    {# ===== LOGOUT (alleen op groepenlijst) ===== #}
     {% if session.get("user_id") and request.endpoint == 'groups_list' %}
     <a href="{{ url_for('logout') }}" class="logout-btn">
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -22,7 +22,7 @@
     </a>
     {% endif %}
 
-    {# ===== HOME KNOP (rechtsboven) ===== #}
+    {# ===== HOME KNOP ===== #}
     {% if session.get("user_id") and request.endpoint not in ['login', 'groups_list'] %}
     <a href="{{ url_for('groups_list') }}" class="top-home-btn" aria-label="Home">
         <svg viewBox="0 0 24 24">
@@ -32,53 +32,51 @@
     </a>
     {% endif %}
 
-    {# ===== GENERIC TERUGKNOP: niet tonen op pages met eigen header ===== #}
+    {# ===== GENERIC BACK KNOP ===== #}
     {% if session.get("user_id")
-    and request.endpoint not in ['login', 'groups_list', 'group_detail', 'balances_route','groups_create','profile'] %}
+       and request.endpoint not in [
+            'login', 'groups_list',
+            'group_detail', 'balances_route',
+            'groups_create', 'profile'
+       ] %}
     <button type="button" class="top-back-btn" onclick="window.history.back()" aria-label="Ga terug">
         ←
     </button>
     {% endif %}
 
     {# ===== FLASH MESSAGES ===== #}
-        {% with messages = get_flashed_messages(with_categories=true) %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
     <div class="flash-container">
         {% for category, message in messages %}
 
-            {% if category not in ['expense_success', 'group_success', 'success-confetti'] %}
+            {% if category not in ['expense_success','group_success','success-confetti'] %}
                 <div class="flash flash-{{ category }}">{{ message }}</div>
             {% endif %}
 
-            {% if category in ['expense_success', 'group_success', 'success-confetti'] %}
-               
-    <script>
+            {% if category in ['expense_success','group_success','success-confetti'] %}
+                <script>window.confettiMessage = "{{ category }}";</script>
 
-        window.confettiMessage = "{{ category }}";
-    </script>
-
-    <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const flashes = document.querySelectorAll(".flash");
-    flashes.forEach(flash => {
-        setTimeout(() => {
-            flash.style.opacity = "0";
-            flash.style.transition = "opacity 0.5s ease";
-
-            setTimeout(() => flash.remove(), 500); // echt verwijderen
-        }, 3000); // 3 seconden zichtbaar
-    });
-});
-</script>
-
-{% endif %}
+                <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    const flashes = document.querySelectorAll(".flash");
+                    flashes.forEach(flash => {
+                        setTimeout(() => {
+                            flash.style.opacity = "0";
+                            flash.style.transition = "opacity 0.5s ease";
+                            setTimeout(() => flash.remove(), 500);
+                        }, 3000);
+                    });
+                });
+                </script>
+            {% endif %}
 
         {% endfor %}
     </div>
     {% endif %}
     {% endwith %}
 
-
+    {# ===== PAGE CONTENT ===== #}
     {% block content %}{% endblock %}
 
     {# ===== BOTTOM NAV ===== #}
@@ -87,20 +85,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
     <nav class="bottom-nav">
 
-        {# LINKS: Balans #}
+        {# BALANS #}
         {% if group is defined and group %}
-        <a href="{{ url_for('balances_route', group_id=group.group_id) }}" class="bottom-nav-item">
+        <a href="{{ url_for('balances_route', group_id=group['group_id']) }}" class="bottom-nav-item">
             <div class="nav-icon-box">⚖️</div>
             <div class="nav-label">Balans</div>
         </a>
         {% else %}
-        <a href="javascript:void(0)" class="bottom-nav-item nav-disabled" onclick="alert('Selecteer eerst een groep');">
+        <a href="javascript:void(0)" class="bottom-nav-item nav-disabled">
             <div class="nav-icon-box">⚖️</div>
             <div class="nav-label">Balans</div>
         </a>
         {% endif %}
 
-        {# MIDDEN: PLUS #}
+        {# UITGAVE #}
         {% if group is defined and group %}
         <a href="javascript:void(0)" class="bottom-nav-item" onclick="openExpenseModal()">
             <div class="nav-icon-box-main"><span>+</span></div>
@@ -113,7 +111,7 @@ document.addEventListener("DOMContentLoaded", function () {
         </a>
         {% endif %}
 
-        {# RECHTS: Profiel #}
+        {# PROFIEL #}
         <a href="{{ url_for('profile') }}" class="bottom-nav-item">
             <div class="nav-icon-box" style="position: relative;">
                 <span>👤</span>
@@ -124,53 +122,48 @@ document.addEventListener("DOMContentLoaded", function () {
             <div class="nav-label">Profiel</div>
         </a>
 
-
-
     </nav>
     {% endif %}
     {% endblock %}
 
-    <!-- ===== CONFETTI ===== -->
+    {# ===== CONFETTI ===== #}
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
-        <script>
-        function showCelebration(message) {
-            confetti({
-                particleCount: 120,        // kleiner
-                spread: 65,
-                startVelocity: 35,
-                scalar: 0.8,               // kleinere stukjes
-                origin: { x: 0.5, y: 0.4 }
-            });
-
-            const box = document.createElement("div");
-            box.className = "celebration-box";
-            box.innerText = message || "Expense shared! 🎉";
-
-            document.body.appendChild(box);
-
-            setTimeout(() => {
-                box.remove();
-            }, 1800);
-        }
-    </script>
     <script>
-document.addEventListener("DOMContentLoaded", function () {
-    if (!window.confettiMessage) return;
+    function showCelebration(message) {
+        confetti({
+            particleCount: 120,
+            spread: 65,
+            startVelocity: 35,
+            scalar: 0.8,
+            origin: { x: 0.5, y: 0.4 }
+        });
 
-    const map = {
-        "group_success": "Nieuwe groep aangemaakt! 🎉",
-        "success-confetti": "Lid toegevoegd! 🎉",
-        "expense_success": "Uitgave toegevoegd! 🎉"
-    };
+        const box = document.createElement("div");
+        box.className = "celebration-box";
+        box.innerText = message || "Succes! 🎉";
 
-    showCelebration(map[window.confettiMessage] || "Succes! 🎉");
-});
-</script>
+        document.body.appendChild(box);
 
+        setTimeout(() => box.remove(), 1800);
+    }
+    </script>
 
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        if (!window.confettiMessage) return;
 
-    <!-- ===== MODAL STRUCTURE ===== -->
+        const map = {
+            "group_success": "Nieuwe groep aangemaakt! 🎉",
+            "success-confetti": "Lid toegevoegd! 🎉",
+            "expense_success": "Uitgave toegevoegd! 🎉"
+        };
+
+        showCelebration(map[window.confettiMessage] || "Succes! 🎉");
+    });
+    </script>
+
+    {# ===== MODAL STRUCTURE ===== #}
     {% if session.get("user_id") and request.endpoint != 'login' %}
     <div id="expenseModalOverlay" class="modal-overlay"></div>
 
@@ -187,66 +180,55 @@ document.addEventListener("DOMContentLoaded", function () {
     {% endif %}
 
     <script>
-        function openExpenseModal() {
-            document.getElementById("expenseModal").classList.add("active");
-            document.getElementById("expenseModalOverlay").classList.add("active");
-        }
+    function openExpenseModal() {
+        document.getElementById("expenseModal").classList.add("active");
+        document.getElementById("expenseModalOverlay").classList.add("active");
+    }
 
-        document.getElementById("closeExpenseModal")?.addEventListener("click", () => {
-            expenseModal.classList.remove("active");
-            expenseModalOverlay.classList.remove("active");
-        });
+    document.getElementById("closeExpenseModal")?.addEventListener("click", () => {
+        document.getElementById("expenseModal").classList.remove("active");
+        document.getElementById("expenseModalOverlay").classList.remove("active");
+    });
 
-        document.getElementById("expenseModalOverlay")?.addEventListener("click", () => {
-            expenseModal.classList.remove("active");
-            expenseModalOverlay.classList.remove("active");
-        });
+    document.getElementById("expenseModalOverlay")?.addEventListener("click", () => {
+        document.getElementById("expenseModal").classList.remove("active");
+        document.getElementById("expenseModalOverlay").classList.remove("active");
+    });
     </script>
 
-    <!-- ===== SPLIT LOGIC ===== -->
+    {# ===== SPLIT LOGIC ===== #}
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const form = document.querySelector("[data-expense-form]");
-            if (!form) return;
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.querySelector("[data-expense-form]");
+        if (!form) return;
 
-            const totalInput = form.querySelector("#total_amount");
-            const equalRadio = form.querySelector("input[name='split_type'][value='equal']");
-            const memberChecks = form.querySelectorAll("input[name='members']");
+        const totalInput = form.querySelector("#total_amount");
+        const equalRadio = form.querySelector("input[name='split_type'][value='equal']");
+        const memberChecks = form.querySelectorAll("input[name='members']");
 
-            function applyEqualSplit() {
-                const totalStr = (totalInput.value || "0").replace(",", ".");
-                const total = parseFloat(totalStr);
-                const checked = Array.from(memberChecks).filter(cb => cb.checked);
+        function applyEqualSplit() {
+            const totalStr = (totalInput.value || "0").replace(",", ".");
+            const total = parseFloat(totalStr);
+            const checked = Array.from(memberChecks).filter(cb => cb.checked);
 
-                if (!total || checked.length === 0) return;
+            if (!total || checked.length === 0) return;
 
-                let cents = Math.round(total * 100);
-                const base = Math.floor(cents / checked.length);
-                let rest = cents % checked.length;
+            let cents = Math.round(total * 100);
+            const base = Math.floor(cents / checked.length);
+            let rest = cents % checked.length;
 
-                checked.forEach((cb, index) => {
-                    const uid = cb.value;
-                    const amount = ((base + (index < rest ? 1 : 0)) / 100).toFixed(2);
-                    const field = form.querySelector(`input[name="amount_${uid}"]`);
-                    if (field) field.value = amount;
-                });
-            }
-
-            form.querySelectorAll(".split-buttons .pill").forEach(label => {
-                const input = label.querySelector("input[type='radio']");
-                if (!input) return;
-
-                input.addEventListener("change", () => {
-                    form.querySelectorAll(".pill").forEach(l => l.classList.remove("pill-active"));
-                    label.classList.add("pill-active");
-                });
+            checked.forEach((cb, index) => {
+                const uid = cb.value;
+                const amount = ((base + (index < rest ? 1 : 0)) / 100).toFixed(2);
+                const field = form.querySelector(`input[name="amount_${uid}"]`);
+                if (field) field.value = amount;
             });
+        }
 
-            equalRadio?.addEventListener("change", () => equalRadio.checked && applyEqualSplit());
-            totalInput?.addEventListener("change", () => equalRadio?.checked && applyEqualSplit());
-        });
+        equalRadio?.addEventListener("change", () => equalRadio.checked && applyEqualSplit());
+        totalInput?.addEventListener("change", () => equalRadio?.checked && applyEqualSplit());
+    });
     </script>
 
 </body>
-
 </html>

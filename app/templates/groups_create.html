@@ -3,9 +3,11 @@
 {% block body_class %}bg-app{% endblock %}
 
 {% block content %}
+
 <div class="header-green">
     <div class="header-inner">
-        <!-- Mooie terug-knop -->
+
+        <!-- Back-knop -->
         <a href="{{ url_for('groups_list') }}" class="header-back-btn">
             <svg viewBox="0 0 24 24">
                 <path d="M15 18l-6-6 6-6"/>
@@ -16,15 +18,18 @@
             <h1 class="header-title">Nieuwe groep</h1>
             <p class="header-subtitle">Maak een nieuwe groep aan om uitgaven te delen</p>
         </div>
+
     </div>
 </div>
 
 <main class="page top-overlap">
     <div class="card form-card">
-        <!-- LET OP: alles zit nu binnen hetzelfde <form> -->
+
         <form method="post" class="form">
 
+            <!-- ICON PICKER -->
             <label class="label">Kies een icoon</label>
+
             <div class="icon-picker">
                 {% for emoji in ["🏖️","🍽️","🎉","🚗","🏕️","🛒","💼","🏡","✈️"] %}
                 <label class="icon-option">
@@ -34,8 +39,10 @@
                 {% endfor %}
             </div>
 
-            <div class="icon-square">👥</div>
+            <!-- LIVE PREVIEW VAN HUIDIG ICOON -->
+            <div class="icon-square" id="iconPreview">👥</div>
 
+            <!-- GROEPSNAAM -->
             <label class="label" for="name">Groepsnaam</label>
             <input
                 type="text"
@@ -46,6 +53,7 @@
                 required
             >
 
+            <!-- START- EN EINDDATUM -->
             <label class="label" for="start_date">Startdatum</label>
             <input type="date" id="start_date" name="start_date" class="input" required>
 
@@ -55,21 +63,27 @@
             <button type="submit" class="btn btn-primary btn-full mt-16">
                 Groep aanmaken
             </button>
+
         </form>
+
     </div>
 </main>
+
+<!-- JAVASCRIPT: LIVE EMOJI PREVIEW -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    const iconInputs = document.querySelectorAll('input[name="icon"]');
-    const preview = document.querySelector('.icon-square');
 
-    if (!preview) return;
+    const inputs = document.querySelectorAll('input[name="icon"]');
+    const preview = document.getElementById('iconPreview');
 
-    iconInputs.forEach(input => {
-        input.addEventListener('change', () => {
-            preview.textContent = input.value;   // zet emoji in groene vierkant
+    if (!inputs.length || !preview) return;
+
+    inputs.forEach(input => {
+        input.addEventListener("change", () => {
+            preview.textContent = input.value;
         });
     });
+
 });
 </script>
 
