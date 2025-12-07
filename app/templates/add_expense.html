@@ -8,7 +8,7 @@
     <div class="header-inner">
         <a href="{{ url_for('group_detail', group_id=group['group_id']) }}" class="header-back-btn">
             <svg viewBox="0 0 24 24">
-                <path d="M15 18l-6-6 6-6"/>
+                <path d="M15 18l-6-6 6-6" />
             </svg>
         </a>
 
@@ -29,20 +29,19 @@
             <!-- Beschrijving -->
             <label class="label" for="description">Beschrijving</label>
             <input type="text" id="description" name="description" class="input"
-                   placeholder="Bijv. Restaurant, Boodschappen..." required>
+                placeholder="Bijv. Restaurant, Boodschappen..." required>
 
             <!-- Totaal bedrag -->
             <label class="label" for="total_amount">Totaal bedrag</label>
-            <input type="number" step="0.01" id="total_amount" name="total_amount"
-                   class="input" value="0.00" required>
+            <input type="number" step="0.01" id="total_amount" name="total_amount" class="input" value="0.00" required>
 
             <!-- Betaald door -->
             <label class="label" for="paid_by">Betaald door</label>
             <select id="paid_by" name="paid_by" class="input">
                 {% for m in members %}
-                    <option value="{{ m['users']['user_id'] }}">
-                        {{ m['users']['name'] }}
-                    </option>
+                <option value="{{ m['users']['user_id'] }}">
+                    {{ m['users']['name'] }}
+                </option>
                 {% endfor %}
             </select>
 
@@ -70,10 +69,8 @@
                         {{ m['users']['name'] }}
                     </label>
 
-                    <input type="number" step="0.01"
-                           name="amount_{{ m['users']['user_id'] }}"
-                           class="input input-small"
-                           value="0.00">
+                    <input type="number" step="0.01" name="amount_{{ m['users']['user_id'] }}" class="input input-small"
+                        value="0.00">
                 </div>
                 {% endfor %}
             </div>
@@ -87,38 +84,64 @@
 
 </main>
 
-<!-- JS equal split logic -->
+<!-- JS equal / handmatig split logic -->
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const form = document.getElementById("expenseForm");
-    if (!form) return;
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("expenseForm");
+        if (!form) return;
 
-    const totalInput = form.querySelector("#total_amount");
-    const equalRadio = form.querySelector("input[name='split_type'][value='equal']");
-    const memberChecks = form.querySelectorAll("input[name='members']");
+        const totalInput = form.querySelector("#total_amount");
+        const equalRadio = form.querySelector("input[name='split_type'][value='equal']");
+        const radios = form.querySelectorAll("input[name='split_type']");
+        const memberChecks = form.querySelectorAll("input[name='members']");
+        const pillLabels = document.querySelectorAll(".split-buttons .pill");
 
-    function applyEqualSplit() {
-        const totalStr = (totalInput.value || "0").replace(",", ".");
-        const total = parseFloat(totalStr);
-        const checked = Array.from(memberChecks).filter(cb => cb.checked);
+        function applyEqualSplit() {
+            const totalStr = (totalInput.value || "0").replace(",", ".");
+            const total = parseFloat(totalStr);
+            const checked = Array.from(memberChecks).filter(cb => cb.checked);
 
-        if (!total || checked.length === 0) return;
+            if (!total || checked.length === 0) return;
 
-        let cents = Math.round(total * 100);
-        const base = Math.floor(cents / checked.length);
-        let rest = cents % checked.length;
+            let cents = Math.round(total * 100);
+            const base = Math.floor(cents / checked.length);
+            let rest = cents % checked.length;
 
-        checked.forEach((cb, index) => {
-            const uid = cb.value;
-            const amount = ((base + (index < rest ? 1 : 0)) / 100).toFixed(2);
-            const field = form.querySelector(`input[name="amount_${uid}"]`);
-            if (field) field.value = amount;
+            checked.forEach((cb, index) => {
+                const uid = cb.value;
+                const amount = ((base + (index < rest ? 1 : 0)) / 100).toFixed(2);
+                const field = form.querySelector(`input[name="amount_${uid}"]`);
+                if (field) field.value = amount;
+            });
+        }
+
+        function updatePills() {
+            pillLabels.forEach(label => {
+                const input = label.querySelector("input[type='radio']");
+                label.classList.toggle("pill-active", input.checked);
+            });
+        }
+
+        // Init: juiste pill actief bij laden
+        updatePills();
+
+        radios.forEach(radio => {
+            radio.addEventListener("change", () => {
+                updatePills();
+                if (radio.value === "equal" && radio.checked) {
+                    applyEqualSplit();
+                }
+            });
         });
-    }
 
-    equalRadio?.addEventListener("change", () => equalRadio.checked && applyEqualSplit());
-    totalInput?.addEventListener("change", () => equalRadio?.checked && applyEqualSplit());
-});
+        if (totalInput && equalRadio) {
+            totalInput.addEventListener("change", () => {
+                if (equalRadio.checked) {
+                    applyEqualSplit();
+                }
+            });
+        }
+    });
 </script>
 
 {% endblock %}

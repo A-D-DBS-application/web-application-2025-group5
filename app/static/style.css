@@ -55,6 +55,7 @@ a {
 .flash-error {
     background-color: #b91c1c;
 }
+
 .flash-success {
     background-color: #065f46;
 }
@@ -103,7 +104,8 @@ a {
 }
 
 .page {
-    padding: 24px 24px 140px; /* extra ruimte voor bottom-nav */
+    padding: 24px 24px 140px;
+    /* extra ruimte voor bottom-nav */
     max-width: 960px;
     margin: 0 auto;
 }
@@ -273,7 +275,8 @@ a {
 .header-green {
     background-color: #1d5c35;
     color: #ffffff;
-    padding: 16px 24px 56px; /* iets slanker dan origineel */
+    padding: 16px 24px 56px;
+    /* iets slanker dan origineel */
     border-bottom-left-radius: 32px;
     border-bottom-right-radius: 32px;
     position: relative;
@@ -286,7 +289,7 @@ a {
     align-items: center;
     gap: 16px;
     position: relative;
-    text-align:center;
+    text-align: center;
     flex-direction: column;
 }
 
@@ -297,8 +300,8 @@ a {
 .header-title {
     font-size: 26px;
     margin: 0 0 4px;
-    text-align:center;
-    width:100%;
+    text-align: center;
+    width: 100%;
 }
 
 .header-subtitle {
@@ -306,7 +309,7 @@ a {
     margin: 4px 0 0;
     opacity: 0.9;
     text-align: center;
-    width:100%
+    width: 100%
 }
 
 /* oude simpele tekst-link (wordt nog gebruikt op sommige plekken) */
@@ -342,7 +345,8 @@ a {
 }
 
 .top-overlap {
-    margin-top: -32px; /* kaartjes overlappen de header een beetje */
+    margin-top: -32px;
+    /* kaartjes overlappen de header een beetje */
 }
 
 /* Center card helper */
@@ -402,17 +406,27 @@ a {
     font-weight: 700;
     font-size: 16px;
 }
+
 /*voor balans kleuren en opmaal*/
-.text-red { color: red; }
-.text-green { color: green; }
-.text-neutral { color: black; }
+.text-red {
+    color: red;
+}
+
+.text-green {
+    color: green;
+}
+
+.text-neutral {
+    color: black;
+}
 
 
 
 /* ===== Stats ===== */
 .stats-row {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr)); /* altijd 3 naast elkaar */
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    /* altijd 3 naast elkaar */
     gap: 12px;
     margin-bottom: 16px;
 }
@@ -421,7 +435,7 @@ a {
     padding: 12px 10px;
     border-radius: 18px;
     text-align: center;
-    box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
 }
 
 .stat-label-row {
@@ -458,6 +472,7 @@ a {
     background: #ffecec;
     border: 1px solid #fecaca;
 }
+
 .stat-card-debt .stat-amount {
     color: #b91c1c;
 }
@@ -466,6 +481,7 @@ a {
     background: #ecfdf3;
     border: 1px solid #bbf7d0;
 }
+
 .stat-card-credit .stat-amount {
     color: #047857;
 }
@@ -474,6 +490,7 @@ a {
     background: #ecfdf3;
     border: 1px solid #bbf7d0;
 }
+
 .midcard-green .stat-amount {
     color: #047857;
 }
@@ -482,6 +499,7 @@ a {
     background: #ffecec;
     border: 1px solid #fecaca;
 }
+
 .midcard-red .stat-amount {
     color: #b91c1c;
 }
@@ -536,7 +554,7 @@ a {
     background: #ffffff;
     border-radius: 26px;
     padding: 1rem 1.25rem;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.07);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.07);
     margin-top: 20px;
     margin-bottom: 20px;
 }
@@ -661,16 +679,28 @@ a {
     padding: 6px 10px;
     background-color: #edf0f7;
     font-size: 13px;
+    cursor: pointer;
+    /* klikbaar */
+    transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .pill input {
     display: none;
 }
 
-.pill-active {
-    background-color: #286238;
-    color: #ffffff;
+
+/* Zorg dat ALLE pills standaard grijs zijn */
+.split-buttons .pill {
+    background-color: #edf0f7;
+    color: #000000;
 }
+
+/* Zorg dat ENKEL de geselecteerde pill groen wordt */
+.split-buttons .pill:has(input:checked) {
+    background-color: #286238 !important;
+    color: #ffffff !important;
+}
+
 
 .members-split {
     margin-top: 12px;
@@ -695,21 +725,24 @@ a {
 /* Basis layout */
 .expense-card {
     display: flex;
-    flex-wrap: wrap;               /* laat content wrappen op smalle schermen */
+    flex-wrap: wrap;
+    /* laat content wrappen op smalle schermen */
     justify-content: space-between;
     align-items: center;
-    gap: 8px;                     /* ruimte tussen icon, tekst en bedrag */
+    gap: 8px;
+    /* ruimte tussen icon, tekst en bedrag */
     padding: 10px 12px;
     border-radius: 16px;
     background: #fff;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
     margin-bottom: 12px;
 }
 
 /* Linkerkant: icon + tekst */
 .expense-left {
     display: flex;
-    flex: 1 1 180px;               /* minimale breedte, wrappen indien nodig */
+    flex: 1 1 180px;
+    /* minimale breedte, wrappen indien nodig */
     gap: 8px;
     align-items: flex-start;
 }
@@ -740,7 +773,8 @@ a {
 
 /* Bedrag + verwijderknop */
 .expense-amount {
-    flex: 0 0 auto;                /* blijft zijn breedte behouden */
+    flex: 0 0 auto;
+    /* blijft zijn breedte behouden */
     min-width: 80px;
     text-align: right;
     font-weight: 700;
@@ -750,17 +784,30 @@ a {
 .expense-user-info {
     width: 100%;
     font-size: 13px;
-    font-weight:600;
+    font-weight: 600;
     color: #666;
     margin-top: 4px;
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
 }
+
 /* Bedrag kleuren */
-.amount-positive { color: #31a056; } /* groen */
-.amount-negative { color: #b64040; } /* rood */
-.amount-neutral  { color: #666; }    /* neutraal */
+.amount-positive {
+    color: #31a056;
+}
+
+/* groen */
+.amount-negative {
+    color: #b64040;
+}
+
+/* rood */
+.amount-neutral {
+    color: #666;
+}
+
+/* neutraal */
 
 /* Mobiele weergave */
 @media (max-width: 430px) {
@@ -768,22 +815,27 @@ a {
         padding: 8px 10px;
         gap: 6px;
     }
+
     .expense-icon {
         width: 24px;
         height: 24px;
         font-size: 14px;
     }
+
     .expense-title {
         font-size: 12px;
     }
+
     .expense-sub {
         font-size: 11px;
     }
+
     .expense-amount {
         font-size: 14px;
         min-width: 50px;
         margin-top: 6px;
     }
+
     .expense-left {
         gap: 6px;
     }
@@ -807,38 +859,42 @@ a {
     border-bottom: 1px solid #e5e7eb;
     color: #6b7280;
 }
+
 /*extra voor overzicht balans*/
 .payment-list {
-  list-style: none;
-  padding-left: 0;
-  margin-top: 12px;
+    list-style: none;
+    padding-left: 0;
+    margin-top: 12px;
 }
 
 .payment-list li {
-  font-size: 15px;
-  margin-bottom: 8px;
-  color: #333;
-  display: flex;
-  align-items: center;
+    font-size: 15px;
+    margin-bottom: 8px;
+    color: #333;
+    display: flex;
+    align-items: center;
 }
 
 .payment-list .pay-icon {
-  margin-right: 8px;
-  font-size: 18px;
+    margin-right: 8px;
+    font-size: 18px;
 }
 
 .payment-list .amount {
-  color: #0c7b31; /* groen accent voor bedrag */
-  font-weight: 600;
-  margin: 0 6px;
+    color: #0c7b31;
+    /* groen accent voor bedrag */
+    font-weight: 600;
+    margin: 0 6px;
 }
 
 .payment-list .pay-name {
-  color: #b00020; /* rood accent voor betaler */
+    color: #b00020;
+    /* rood accent voor betaler */
 }
 
 .payment-list .receive-name {
-  color: #0c7b31; /* groen accent voor ontvanger */
+    color: #0c7b31;
+    /* groen accent voor ontvanger */
 }
 
 /* Maak tabel horizontaal scrollbaar op kleine schermen */
@@ -848,24 +904,36 @@ a {
 
 /* Mobiele aanpassingen */
 @media (max-width: 430px) {
-    .table th, .table td {
+
+    .table th,
+    .table td {
         padding: 8px 4px;
         font-size: 13px;
     }
 
     .payment-list li {
-        flex-wrap: wrap; /* lange teksten netjes opbreken */
+        flex-wrap: wrap;
+        /* lange teksten netjes opbreken */
     }
 
     .card {
-        padding: 16px; /* minder padding voor mobiel */
+        padding: 16px;
+        /* minder padding voor mobiel */
     }
 }
 
 /* ===== Utilities ===== */
-.mt-16 { margin-top: 16px; }
-.mt-24 { margin-top: 24px; }
-.mt-32 { margin-top: 32px; }
+.mt-16 {
+    margin-top: 16px;
+}
+
+.mt-24 {
+    margin-top: 24px;
+}
+
+.mt-32 {
+    margin-top: 32px;
+}
 
 /* ===== Huisje rechtsboven (fixed SVG) ===== */
 .top-home-btn {
@@ -916,15 +984,22 @@ a {
     font-size: 18px;
     font-weight: 600;
     color: #286238;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.16);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.16);
     z-index: 99999;
     animation: fadeInScale 0.25s ease-out;
 }
 
 
 @keyframes fadeInScale {
-    from { transform: translate(-50%, -50%) scale(0.7); opacity: 0; }
-    to   { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    from {
+        transform: translate(-50%, -50%) scale(0.7);
+        opacity: 0;
+    }
+
+    to {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
 }
 
 /* ===== Leden + Toevoegen knop (oude stijl, nog gebruikt?) ===== */
@@ -938,7 +1013,7 @@ a {
     color: #ffffff;
     font-size: 14px;
     text-decoration: none;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .member-add-btn:hover {
@@ -1004,13 +1079,17 @@ a {
     left: 0;
     right: 0;
     bottom: 0;
-    background: #2f3338;                 /* iets lichter dan bijna zwart */
-    padding: 10px 18px 14px;             /* dunner */
+    background: #2f3338;
+    /* iets lichter dan bijna zwart */
+    padding: 10px 18px 14px;
+    /* dunner */
     display: flex;
     justify-content: space-evenly;
-    align-items: center;                  /* alles in het midden */
+    align-items: center;
+    /* alles in het midden */
     z-index: 30;
-    border-top: 1px solid #4b5563;       /* fijn randje */
+    border-top: 1px solid #4b5563;
+    /* fijn randje */
     border-top-left-radius: 18px;
     border-top-right-radius: 18px;
 }
@@ -1042,9 +1121,10 @@ a {
     align-items: center;
     justify-content: center;
     background: transparent;
-    color: #e5e7eb;                      /* iets lichter */
+    color: #e5e7eb;
+    /* iets lichter */
     font-size: 20px;
-    }
+}
 
 .nav-icon-box svg {
     width: 24px;
@@ -1080,6 +1160,7 @@ a {
     opacity: 0.5;
     cursor: default;
 }
+
 .nav-disabled .nav-icon-box {
     pointer-events: none;
 }
@@ -1119,7 +1200,7 @@ a {
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.45);
+    background: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(3px);
     opacity: 0;
     pointer-events: none;
@@ -1136,7 +1217,7 @@ a {
     max-width: 600px;
     background: white;
     border-radius: 24px 24px 0 0;
-    box-shadow: 0 -4px 30px rgba(0,0,0,0.2);
+    box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.2);
     padding: 20px;
     z-index: 1000;
     height: 70vh;
@@ -1217,17 +1298,22 @@ a {
     position: absolute;
     top: 20px;
     right: 18px;
-    background: #f97373;            /* zachter rood */
+    background: #f97373;
+    /* zachter rood */
     color: #ffffff;
-    padding: 6px 10px;              /* kleiner */
-    border-radius: 10px;            /* subtieler */
+    padding: 6px 10px;
+    /* kleiner */
+    border-radius: 10px;
+    /* subtieler */
     display: flex;
     align-items: center;
     gap: 6px;
     text-decoration: none;
-    font-size: 12px;                /* kleiner tekst */
+    font-size: 12px;
+    /* kleiner tekst */
     font-weight: 600;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.18);  /* minder heavy */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+    /* minder heavy */
     z-index: 999;
 }
 
@@ -1241,6 +1327,7 @@ a {
 
 /* ===== Responsief algemene padding ===== */
 @media (max-width: 640px) {
+
     .page,
     .top-header,
     .header-inner {
@@ -1259,19 +1346,23 @@ a {
     .header-title {
         font-size: 20px;
     }
+
     .group-detail-dates,
     .header-subtitle {
         font-size: 13px;
     }
+
     .stats-row {
         gap: 10px;
         margin-top: -4px;
     }
+
     .stat-amount {
         font-size: 18px;
     }
 }
-    /* Header titel netjes centreren tussen back-knop en schermrand */
+
+/* Header titel netjes centreren tussen back-knop en schermrand */
 .header-title-wrapper {
     margin-left: 56px;
     margin-right: 16px;
@@ -1285,9 +1376,11 @@ a {
         margin-right: 12px;
         text-align: center;
     }
+
     .header-title {
         font-size: 20px;
     }
+
     .header-subtitle {
         font-size: 13px;
     }
@@ -1302,7 +1395,8 @@ a {
         margin-bottom: 12px;
     }
 
-    .members-card, .expense-card {
+    .members-card,
+    .expense-card {
         padding: 16px;
     }
 
@@ -1323,18 +1417,22 @@ a {
 
 .header-green {
     padding-top: 10px !important;
-    padding-bottom: 10px !important;  /* dunne, mooie header */
+    padding-bottom: 10px !important;
+    /* dunne, mooie header */
 }
 
 /* stat cards lager zodat ze niet raken */
 .stats-row {
-    margin-top: 22px !important;   /* altijd veilige ruimte */
+    margin-top: 22px !important;
+    /* altijd veilige ruimte */
 }
+
 /* === PDF-KNOP FIX — nu iets dichter bij het huisje === */
 
 .pdf-btn-top {
     position: absolute;
-    right: 25px;                    /* WAS 70px → nu dichter bij home */
+    right: 25px;
+    /* WAS 70px → nu dichter bij home */
     top: 50%;
     transform: translateY(-50%);
     background: #184e2e;
@@ -1355,7 +1453,8 @@ a {
 /* iPhone fix (home-knop staat relatief groter → meer margin vereist) */
 @media (max-width: 430px) {
     .pdf-btn-top {
-        right: 78px !important;     /* WAS 100px → dichter maar nog veilig */
+        right: 78px !important;
+        /* WAS 100px → dichter maar nog veilig */
         padding: 5px 12px !important;
         font-size: 12px !important;
     }
@@ -1364,8 +1463,10 @@ a {
 /* === TITEL CENTREREN TUSSEN BACK & PDF === */
 
 .header-title-wrapper {
-    margin-left: 70px !important;    /* laat ruimte voor back-knop */
-    margin-right: 110px !important;  /* WAS 90px → meer ruimte rechts door verschuiving PDF */
+    margin-left: 70px !important;
+    /* laat ruimte voor back-knop */
+    margin-right: 110px !important;
+    /* WAS 90px → meer ruimte rechts door verschuiving PDF */
     text-align: left;
 }
 
@@ -1373,9 +1474,11 @@ a {
 .header-inner {
     justify-content: center !important;
 }
+
 /* ==== GROUP DETAIL: Titel verder naar links van het huisje ==== */
 .header-green .header-inner h1.header-title {
-    margin-right: 40px !important;   /* duwt titel naar links */
+    margin-right: 40px !important;
+    /* duwt titel naar links */
 }
 
 /* iPhone extra ruimte */
@@ -1384,15 +1487,18 @@ a {
         margin-right: 55px !important;
     }
 }
+
 /*===PER EXPENSE SALDO===*/
 .expense-user-info {
-  font-size: 12px;
-  color: #666;
-  margin-top: 4px;
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
 }
+
 .expense-user-info span {
-  margin-right: 8px;
+    margin-right: 8px;
 }
+
 /*new/*
 /* ===== HEADER TITEL PERFECT GECENTREERD (DESKTOP + GSM) ===== */
 
@@ -1531,15 +1637,15 @@ a {
     border-radius: 14px;
     background: #e1efe6;
     font-size: 22px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
     transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
 }
 
-.icon-option input[type="radio"]:checked + .icon-emoji {
+.icon-option input[type="radio"]:checked+.icon-emoji {
     background: #286238;
     color: #fff;
     transform: translateY(-1px) scale(1.03);
-    box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
 }
 
 /* Rood alert dot bij profiel als onvolledig */
@@ -1569,7 +1675,8 @@ a {
 
 .group-search-input {
     max-width: 190px;
-    margin-bottom: 0;   /* geen extra ruimte onderaan */
+    margin-bottom: 0;
+    /* geen extra ruimte onderaan */
     font-size: 14px;
 }
 
@@ -1591,6 +1698,7 @@ a {
         max-width: none;
     }
 }
+
 .edit-icon {
     font-size: 18px;
     margin-left: 8px;
@@ -1618,6 +1726,7 @@ a {
     font-size: 14px;
     border-radius: 10px;
 }
+
 .edit-name-trigger {
     font-size: 14px;
     color: #777;
@@ -1651,8 +1760,10 @@ a {
     padding: 0;
     border: none;
     background: none;
-    font-size: 13px;           /* zelfde grootte als .expense-sub */
-    color: #6b7280;            /* zelfde grijs als 'Betaald door ...' */
+    font-size: 13px;
+    /* zelfde grootte als .expense-sub */
+    color: #6b7280;
+    /* zelfde grijs als 'Betaald door ...' */
     cursor: pointer;
 }
 
@@ -1690,7 +1801,8 @@ a {
 
 .group-expired-label {
     font-size: 12px;
-    color: #6b7280; /* zelfde grijs als andere subtitels */
+    color: #6b7280;
+    /* zelfde grijs als andere subtitels */
 }
 
 .group-expired-btn {
