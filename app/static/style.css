@@ -402,6 +402,18 @@ a {
     color: #374151;
 }
 
+.badge-expired {
+    background-color: #d00000;
+    color: #ffffff;
+    font-size: 0.75rem;
+    padding: 3px 8px;
+    border-radius: 6px;
+    margin-left: 6px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+
 .group-amount {
     font-weight: 700;
     font-size: 16px;

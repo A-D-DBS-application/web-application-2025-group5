@@ -17,7 +17,7 @@ from app.models import (
     supabase,
     add_payment,
 )
-from datetime import datetime
+from datetime import datetime, date
 import urllib.parse
 from io import BytesIO
 
@@ -102,6 +102,7 @@ def logout():
 # GROUP LIST
 # ============================================================
 
+
 @app.route("/groups")
 @login_required
 def groups_list():
@@ -118,16 +119,40 @@ def groups_list():
             0.0
         )
 
+        # ------------------------------
+        # EINDE-DATUM CHECK (VERLOPEN)
+        # ------------------------------
+        end_date = g.get("end_date")
+        is_expired = False
+
+        if end_date:
+            try:
+                # Als end_date string is (zoals meestal)
+                if isinstance(end_date, str):
+                    ed = datetime.strptime(end_date, "%Y-%m-%d").date()
+                else:
+                    ed = end_date  # fallback als het al een date is
+
+                if date.today() > ed:
+                    is_expired = True
+            except:
+                pass
+
+        # ------------------------------
+        # GROEP TOEVOEGEN AAN LIJST
+        # ------------------------------
         groups.append({
             "group_id": group_id,
             "name": g["name"],
             "start_date": g.get("start_date"),
-            "end_date": g.get("end_date"),
+            "end_date": end_date,
             "icon": g.get("icon") or "👥",
-            "my_balance": round(my_balance, 2)
+            "my_balance": round(my_balance, 2),
+            "expired": is_expired,   # 👈 BELANGRIJK
         })
 
     return render_template("groups_list.html", groups=groups)
+
 
 
 
@@ -199,10 +224,33 @@ def group_detail(group_id):
         flash("Groep niet gevonden.", "error")
         return redirect(url_for("groups_list"))
 
+    # --------------------------------
+    # Check of de groep verlopen is
+    # --------------------------------
+    is_expired = False
+    end_date = group.get("end_date")
+
+    if end_date:
+        try:
+            # end_date kan bv. "2025-12-08" of "2025-12-08T00:00:00+00:00" zijn
+            end_str = str(end_date)[:10]          # eerste 10 tekens: YYYY-MM-DD
+            ed = datetime.strptime(end_str, "%Y-%m-%d").date()
+
+            if date.today() > ed:
+                is_expired = True
+        except Exception as e:
+            print("Fout bij parsen einddatum groep:", e)
+
     # -------------------------------
     # POST = nieuwe uitgave
     # -------------------------------
     if request.method == "POST":
+
+        # als groep verlopen is → niks meer toevoegen
+        if is_expired:
+            flash("Deze groep is verlopen. Je kunt geen uitgaven meer toevoegen.", "error")
+            return redirect(url_for("group_detail", group_id=group_id))
+
         try:
             description = request.form.get("description", "").strip()
             total_amount = float(request.form.get("total_amount", "0").replace(",", "."))
@@ -290,7 +338,9 @@ def group_detail(group_id):
         je_schuld=je_schuld,
         payments=payments,
         user_map=user_map,
+        group_expired=is_expired,   # kan je in de template gebruiken als je wil
     )
+
 
 
 
