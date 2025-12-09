@@ -1830,3 +1830,148 @@ a {
 .group-expired-btn:hover {
     background: #d1d5db;
 }
+/* =========================================
+   JOIN PAGE — PREMIUM FANCY VERSION
+   ========================================= */
+
+body.join-page {
+    background: #e8e5df;
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+    font-family: 'Inter', sans-serif;
+    color: #2d2d2d;
+    text-align: center;
+
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* fancy fade-in */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* container */
+.join-container {
+    width: 100%;
+    max-width: 420px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    animation: slideUp 0.7s ease-out;
+}
+
+/* smooth slide-up for content */
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* icon boven titel */
+.join-icon {
+    font-size: 40px;
+    margin-bottom: 10px;
+
+    color: #184e2e;
+    opacity: 0.9;
+
+    transform: translateY(-3px);
+}
+
+/* titel */
+.join-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    margin-bottom: 14px;
+}
+
+/* subtiele beschrijving */
+.join-description {
+    font-size: 15px;
+    color: #4b4b4b;
+    line-height: 1.55;
+
+    max-width: 380px;
+    margin-bottom: 24px;
+
+    transform: translateY(-4px);
+}
+
+/* form */
+.join-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* label links */
+.input-label {
+    width: 100%;
+    text-align: left;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: -6px;
+}
+
+/* INPUT — modern input + soft shadow */
+.input-field {
+    width: 100%;
+    padding: 12px 14px;
+
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    background: #ffffff;
+
+    font-size: 15px;
+
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    transition: 0.2s ease;
+}
+
+.input-field:focus {
+    border-color: #184e2e;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    outline: none;
+}
+
+/* BUTTON — premium animation */
+.join-button {
+    width: 100%;
+    padding: 12px;
+
+    border-radius: 10px;
+    background: #184e2e;
+    color: white;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    border: none;
+    cursor: pointer;
+
+    transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.join-button:hover {
+    background: #133b25;
+    transform: scale(1.02);
+}
+
+.join-button:active {
+    transform: scale(0.98);
+}
+
+/* responsive */
+@media (max-width: 480px) {
+    .join-title { font-size: 22px; }
+    .join-description { font-size: 14px; }
+}
