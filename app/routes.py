@@ -167,11 +167,16 @@ def groups_create():
         name = request.form["name"].strip()
         start_date = request.form["start_date"]
         end_date = request.form["end_date"]
-        icon = request.form.get("icon", "👥")
+        icon = request.form.get("icon")
         organizer_id = session["user_id"]
 
         if not name:
             flash("Geef een groepsnaam in.", "error")
+            return redirect(url_for("groups_create"))
+        
+         # NIEUWE CHECK: icoon verplicht
+        if not icon:
+            flash("Kies een icoon voor de groep.", "error")
             return redirect(url_for("groups_create"))
 
         # datum controle
