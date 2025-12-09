@@ -24,14 +24,8 @@
                 <label for="groupSearch" class="subtitle group-search-label">
                     Zoek groep
                 </label>
-                <input
-                    id="groupSearch"
-                    type="text"
-                    name="q"
-                    class="input group-search-input"
-                    placeholder="Typ een naam..."
-                    value="{{ q or '' }}"
-                >
+                <input id="groupSearch" type="text" name="q" class="input group-search-input"
+                    placeholder="Typ een naam..." value="{{ q or '' }}">
             </form>
         </div>
     </div>
@@ -71,26 +65,44 @@
                         {% endif %}
                     </div>
 
+                    {# ---------------------------------------------------------- #}
+                    {# STARTDATUM EN EINDDATUM #}
+                    {# ---------------------------------------------------------- #}
+
+                    {# Startdatum #}
                     {% set start = g["start_date"] %}
                     {% if start %}
-                        {% set start_dt = start|string %}
-                        {% set parts = start_dt.split("-") %}
-                        <div class="group-date">{{ parts[2] }}/{{ parts[1] }}/{{ parts[0] }}</div>
+                    {% set s = (start|string).split("-") %}
+                    {% set start_text = s[2] ~ "/" ~ s[1] ~ "/" ~ s[0] %}
                     {% else %}
-                        <div class="group-date muted">Geen datum</div>
+                    {% set start_text = "?" %}
                     {% endif %}
 
-                    {% if g["my_balance"] < 0 %}
-                        <span class="badge badge-danger">
-                            Je schuld: €{{ "%.2f"|format(-g["my_balance"]) }}
+                    {# Einddatum #}
+                    {% set end = g["end_date"] %}
+                    {% if end %}
+                    {% set e = (end|string).split("-") %}
+                    {% set end_text = e[2] ~ "/" ~ e[1] ~ "/" ~ e[0] %}
+                    {% else %}
+                    {% set end_text = "?" %}
+                    {% endif %}
+
+                    <div class="group-date">
+                        {{ start_text }} – {{ end_text }}
+                    </div>
+
+                    {# ---------------------------------------------------------- #}
+
+                    {% if g["my_balance"] < 0 %} <span class="badge badge-danger">
+                        Je schuld: €{{ "%.2f"|format(-g["my_balance"]) }}
                         </span>
-                    {% elif g["my_balance"] > 0 %}
+                        {% elif g["my_balance"] > 0 %}
                         <span class="badge badge-success">
                             Je krijgt: €{{ "%.2f"|format(g["my_balance"]) }}
                         </span>
-                    {% else %}
+                        {% else %}
                         <span class="badge badge-light">Je bent quitte</span>
-                    {% endif %}
+                        {% endif %}
                 </div>
             </div>
 
