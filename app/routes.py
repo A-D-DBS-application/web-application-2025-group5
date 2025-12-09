@@ -107,6 +107,8 @@ def logout():
 @login_required
 def groups_list():
     user_id = session["user_id"]
+    search = request.args.get("q", "").strip()  # naam van inputveld
+
     groups_raw = get_user_groups(user_id)
 
     groups = []
@@ -119,28 +121,19 @@ def groups_list():
             0.0
         )
 
-        # ------------------------------
-        # EINDE-DATUM CHECK (VERLOPEN)
-        # ------------------------------
         end_date = g.get("end_date")
         is_expired = False
-
         if end_date:
             try:
-                # Als end_date string is (zoals meestal)
                 if isinstance(end_date, str):
                     ed = datetime.strptime(end_date, "%Y-%m-%d").date()
                 else:
-                    ed = end_date  # fallback als het al een date is
-
+                    ed = end_date
                 if date.today() > ed:
                     is_expired = True
             except:
                 pass
 
-        # ------------------------------
-        # GROEP TOEVOEGEN AAN LIJST
-        # ------------------------------
         groups.append({
             "group_id": group_id,
             "name": g["name"],
@@ -148,10 +141,17 @@ def groups_list():
             "end_date": end_date,
             "icon": g.get("icon") or "👥",
             "my_balance": round(my_balance, 2),
-            "expired": is_expired,   # 👈 BELANGRIJK
+            "expired": is_expired,
         })
 
-    return render_template("groups_list.html", groups=groups)
+    # hier filteren op naam
+    if search:
+        groups = [
+            g for g in groups
+            if search.lower() in g["name"].lower()
+        ]
+
+    return render_template("groups_list.html", groups=groups, q=search)
 
 
 

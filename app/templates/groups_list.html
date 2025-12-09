@@ -20,10 +20,19 @@
         <h2 class="page-title">Groepen</h2>
 
         <div class="group-search-wrapper">
-            <label for="groupSearch" class="subtitle group-search-label">
-                Zoek groep
-            </label>
-            <input id="groupSearch" type="text" class="input group-search-input" placeholder="Typ een naam...">
+            <form method="get" action="{{ url_for('groups_list') }}">
+                <label for="groupSearch" class="subtitle group-search-label">
+                    Zoek groep
+                </label>
+                <input
+                    id="groupSearch"
+                    type="text"
+                    name="q"
+                    class="input group-search-input"
+                    placeholder="Typ een naam..."
+                    value="{{ q or '' }}"
+                >
+            </form>
         </div>
     </div>
 
@@ -52,7 +61,6 @@
 
                 <div>
 
-                    <!-- GROEPNAAM + VERLOPEN BADGE -->
                     <div class="group-name">
                         {{ g["name"] }}
 
@@ -63,28 +71,26 @@
                         {% endif %}
                     </div>
 
-                    {# Datum formatteren in template #}
                     {% set start = g["start_date"] %}
                     {% if start %}
-                    {% set start_dt = start|string %}
-                    {% set parts = start_dt.split("-") %}
-                    <div class="group-date">{{ parts[2] }}/{{ parts[1] }}/{{ parts[0] }}</div>
+                        {% set start_dt = start|string %}
+                        {% set parts = start_dt.split("-") %}
+                        <div class="group-date">{{ parts[2] }}/{{ parts[1] }}/{{ parts[0] }}</div>
                     {% else %}
-                    <div class="group-date muted">Geen datum</div>
+                        <div class="group-date muted">Geen datum</div>
                     {% endif %}
 
-                    {% if g["my_balance"] < 0 %} <span class="badge badge-danger">
-                        Je schuld: €{{ "%.2f"|format(-g["my_balance"]) }}
+                    {% if g["my_balance"] < 0 %}
+                        <span class="badge badge-danger">
+                            Je schuld: €{{ "%.2f"|format(-g["my_balance"]) }}
                         </span>
-
-                        {% elif g["my_balance"] > 0 %}
+                    {% elif g["my_balance"] > 0 %}
                         <span class="badge badge-success">
                             Je krijgt: €{{ "%.2f"|format(g["my_balance"]) }}
                         </span>
-
-                        {% else %}
+                    {% else %}
                         <span class="badge badge-light">Je bent quitte</span>
-                        {% endif %}
+                    {% endif %}
                 </div>
             </div>
 
