@@ -1,12 +1,12 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/DxqGQVx4)
-# FairSplit+  
+## FairSplit+  
 Web Application Development Project 2025 – Group 5
 
 FairSplit+ is een webapplicatie waarmee vriendengroepen eenvoudig gezamenlijke uitgaven kunnen beheren tijdens reizen, weekends, activiteiten of evenementen.  
 De app ondersteunt het aanmaken van tijdelijke groepen, het toevoegen van kosten, automatische saldoberekening, afbetalingen via een knop en een automatische verdeling van de app-fee.
 
 
- Functionaliteiten
+Functionaliteiten
 
 ## Groepen & leden
 - Aanmaken van tijdelijke groepen met een start- en einddatum  
@@ -16,7 +16,7 @@ De app ondersteunt het aanmaken van tijdelijke groepen, het toevoegen van kosten
 ## Uitgavenbeheer
 - Toevoegen van uitgaven met beschrijving en totale kost   
 - Automatische verdeling van kosten per gebruiker  
-- Mogelijkheid tot equal split of handmatig andere bedragen
+- Mogelijkheid tot equal split of handmatig andere bedragen over leden
 
 ## Berekeningen & betalingen
 - Automatische berekening van wie hoeveel moet betalen  
@@ -52,12 +52,15 @@ Te vinden in:
 Te vinden in:  
 `docs/backup/`
 
-### Feedbackmomenten
+### FEEDBACKMOMENTEN
 Links hieronder:
-Opmerking: onze externe partner heeft het zeer druk gehad dit semester. Hij heeft zijn uiterste best gedaan om feedback te kunnen geven. We hebben een feedback via mail over de database en een videofeedback over de applicatie zelf.
-Link videofeedback: https://drive.google.com/file/d/18GVGtQyVDlZQXwmkKhk9-Z1LCEiNyXLe/view
+Opmerking: 1 feedback vond plaats via mail. De externe partner heeft het zeer druk gehad dit semester. 
+- mail:
+   # onze mail
 
 
+- Link videofeedback 1: https://drive.google.com/file/d/18GVGtQyVDlZQXwmkKhk9-Z1LCEiNyXLe/view
+- Link videofeedback 2: 
 
 ## Teamleden
 Vul hieronder jullie namen in:
@@ -69,8 +72,7 @@ Milan Dever - Programmeur (hoofdzakelijk routes en models)
 Nicolas Bruijlants - Programmeur (hoofdzakelijk routes en models)
 
 ## Mogelijke uitbreidingen
-- Realtime synchronisatie tussen devices  
 - AI-gestuurde bonnenscanner  
 - Automatische categorisatie van kosten  
 - Groepsstatistieken & grafieken  
-- Notificaties bij betalingen en wijzigingen  
+- Notificaties bij betalingen en verlopen van de groep
