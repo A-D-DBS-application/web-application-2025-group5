@@ -70,7 +70,7 @@ De feedback via mail kunnen jullie raadplegen onder:
    `docs/feedbackmail/`
 
 - Link videofeedback 1: https://drive.google.com/file/d/18GVGtQyVDlZQXwmkKhk9-Z1LCEiNyXLe/view
-- Link videofeedback 2: 
+- Link videofeedback 2: https://drive.google.com/file/d/18Nwji8h_Ud8JTCY79aqU4V9VTB3dq_e5/view
 
 ## Teamleden
 
