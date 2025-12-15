@@ -5,6 +5,12 @@ Web Application Development Project 2025 – Group 5
 FairSplit+ is een webapplicatie waarmee vriendengroepen eenvoudig gezamenlijke uitgaven kunnen beheren tijdens reizen, weekends, activiteiten of evenementen.  
 De app ondersteunt het aanmaken van tijdelijke groepen, het toevoegen van kosten, automatische saldoberekening, afbetalingen via een knop en een automatische verdeling van de app-fee.
 
+## Demo
+Link naar de demo: https://drive.google.com/file/d/1DqNsop8qBCVDp1NZKJnEVvzkPlY0RfFu/view
+
+## Presentatie
+Te vinden onder:
+`docs/presentatie/`
 
 Functionaliteiten
 
@@ -34,7 +40,8 @@ Functionaliteiten
 
 ### User Stories  
 Te vinden in:  
-`docs/user_stories/UserStories_OnePage.docx`
+`docs/user_stories/`
+Opmerking: In samenspraak met assistent Derave en de partner is beslist om AI-functionaliteiten, zoals spraakmogelijkheden en het uitlezen van bedragen uit bonnetjes, te classificeren als een could in plaats van een must.
 
 ### DDL / databank
 Te vinden in:  
@@ -43,10 +50,14 @@ Te vinden in:
 ### ERD-model
 Te vinden in:  
 `docs/erd/`
+Opmerking: Voor onze applicatie maken wij geen gebruik van een ORM. Dit hebben wij besproken met assistent Derave om na te gaan of dit alsnog aangepast moest worden. Hij heeft duidelijk aangegeven dat dit niet nodig is.  
+De bijbehorende e-mailcommunicatie is terug te vinden onder:
+`docs/mailORM/`
 
 ### UI-screenshots
 Te vinden in:  
 `docs/ui/`
+Opmerking: deze UI werd gemaakt met behulp van Lovable
 
 ### Database backup
 Te vinden in:  
@@ -55,15 +66,13 @@ Te vinden in:
 ### FEEDBACKMOMENTEN
 Links hieronder:
 Opmerking: 1 feedback vond plaats via mail. De externe partner heeft het zeer druk gehad dit semester. 
-- mail:
-   # onze mail
-
+De feedback via mail kunnen jullie raadplegen onder:
+   `docs/feedbackmail/`
 
 - Link videofeedback 1: https://drive.google.com/file/d/18GVGtQyVDlZQXwmkKhk9-Z1LCEiNyXLe/view
 - Link videofeedback 2: 
 
 ## Teamleden
-Vul hieronder jullie namen in:
 
 Victor De Greef - Algemeen manager (alle taken)
 Heike Vandewalle - Databasemanager (hoofdzakelijk supabase)
