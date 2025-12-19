@@ -13,7 +13,7 @@ Link naar de presentatie (Google Drive):
 [https://docs.google.com/presentation/d/1SugZQhHqAE7xcgoYFEgJmEHtwWBIlhy9/edit?usp=sharing&ouid=112093568013996913032&rtpof=true&sd=true](https://ugentbe-my.sharepoint.com/:p:/g/personal/nicolas_bruijlants_ugent_be/IQA0ZUYJok4zS7JSB-U9nSG3AT1cKRvCeVVvmzAznBfQ-AA?e=eByHrM)
 
 
-Functionaliteiten
+## Functionaliteiten
 
 ## Groepen & leden
 - Aanmaken van tijdelijke groepen met een start- en einddatum  
