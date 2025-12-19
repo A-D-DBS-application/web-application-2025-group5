@@ -6,7 +6,7 @@ FairSplit+ is een webapplicatie waarmee vriendengroepen eenvoudig gezamenlijke u
 De app ondersteunt het aanmaken van tijdelijke groepen, het toevoegen van kosten, automatische saldoberekening, afbetalingen via een knop en een automatische verdeling van de app-fee.
 
 ## Demo
-Link naar de demo: https://drive.google.com/file/d/1DqNsop8qBCVDp1NZKJnEVvzkPlY0RfFu/view
+Link naar de demo: https://ugentbe-my.sharepoint.com/:p:/g/personal/nicolas_bruijlants_ugent_be/IQA0ZUYJok4zS7JSB-U9nSG3AT1cKRvCeVVvmzAznBfQ-AA?e=8brL6b
 
 ## Presentatie
 Link naar de presentatie (Google Drive): 
