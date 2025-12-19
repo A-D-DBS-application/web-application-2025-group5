@@ -15,23 +15,23 @@ Link naar de presentatie (Google Drive):
 
 ## Functionaliteiten
 
-## Groepen & leden
+### Groepen & leden
 - Aanmaken van tijdelijke groepen met een start- en einddatum  
 - Uitnodigen van leden via een gedeelde whatsapp link  
 - Automatische sluiting van groepen na de einddatum (uitgaven toevoegen wordt niet meer mogelijk) 
 
-## Uitgavenbeheer
+### Uitgavenbeheer
 - Toevoegen van uitgaven met beschrijving en totale kost   
 - Automatische verdeling van kosten per gebruiker  
 - Mogelijkheid tot equal split of handmatig andere bedragen over leden
 
-## Berekeningen & betalingen
+### Berekeningen & betalingen
 - Automatische berekening van wie hoeveel moet betalen  
 - Optimalisatie van het aantal transacties (=slim algoritme)
 - Ondersteuning voor afbetalingen via knop "ik heb betaald"  
 - Opslag van uitgevoerde betalingen in de database  
 
-## Rapportage
+### Rapportage
 - Overzichtelijk saldo per persoon  
 - Eindoverzicht van alle uitgaven  
 - Exportmogelijkheden (PDF-document)
