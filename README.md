@@ -9,8 +9,9 @@ De app ondersteunt het aanmaken van tijdelijke groepen, het toevoegen van kosten
 Link naar de demo: https://drive.google.com/file/d/1DqNsop8qBCVDp1NZKJnEVvzkPlY0RfFu/view
 
 ## Presentatie
-Te vinden onder:
-`docs/presentatie/`
+Link naar de presentatie (Google Drive): 
+https://docs.google.com/presentation/d/1SugZQhHqAE7xcgoYFEgJmEHtwWBIlhy9/edit?usp=sharing&ouid=112093568013996913032&rtpof=true&sd=true
+
 
 Functionaliteiten
 
@@ -57,7 +58,7 @@ De bijbehorende e-mailcommunicatie is terug te vinden onder:
 ### UI-screenshots
 Te vinden in:  
 `docs/ui/`
-Opmerking: deze UI werd gemaakt met behulp van Lovable
+Opmerking: deze UI werd gemaakt met behulp van Lovable. Voor onze eigen UI is er gekozen voor een volledig custom design. Van daar dat dit een redelijk groot bestand is. 
 
 ### Database backup
 Te vinden in:  
