@@ -76,7 +76,7 @@ De feedback via mail kunnen jullie raadplegen onder:
 ## Teamleden
 
 Victor De Greef - Algemeen manager (alle taken)
-Heike Vandewalle - Databasemanager (hoofdzakelijk supabase)
+Heike Van de Walle - Databasemanager (hoofdzakelijk supabase)
 Louise Callebaut - UI-designer (hoofdzakelijk html en style)
 Milan Dever - Programmeur (hoofdzakelijk routes en models)
 Nicolas Bruijlants - Programmeur (hoofdzakelijk routes en models)
